@@ -3,15 +3,12 @@ const path = require("path");
 const ejs = require("ejs");
 const authRoutes = require("./routes/auth");
 const imageRoutes = require("./routes/images");
-const userDocRoutes = require("./routes/user_docs");
 const authMiddleware = require("./middleware/auth");
 const db = require("./db/db");
 const logger = require("./utils/logger");
-const { getCallerInfo, cleanupUserData, cleanupLogs } = require("./utils/utilities");
+const { getCallerInfo, cleanupLogs } = require("./utils/utilities");
 const usersRoutes = require("./routes/users");
 const usersController = require("./controllers/users");
-const accountsRoutes = require("./routes/accounts");
-const accountsController = require("./controllers/accounts");
 const { SECURITY_QUESTIONS } = require("./data/security_questions");
 
 const app = express();
@@ -39,24 +36,7 @@ app.get("/pages/dashboard.html", async (req, res, next) => {
         next(error);
     }
 });
-app.get("/pages/accounts_list.html", async (req, res, next) => {
-    const user = await usersController.getUserById(req.user.id);
-    const role = user ? user.role : "none";
-    let allUsers = [];
-    if(role == "administrator"){
-        allUsers = await usersController.listUsers();;
-    }
-    try {
-        logger.log("debug", "Rendering accounts list", { userId: req.user?.id, role }, getCallerInfo(), req.user?.id);
-        const result = await accountsController.listAccounts(req.user.id, req.user.token);
-        const accounts = result.rows;
-        const allCategories = await accountsController.listAccountCategories();
-        res.render("accounts_list", { accounts, role, allUsers, allCategories });
-    } catch (error) {
-        logger.log("error", `Accounts list render failed: ${error.message}`, { userId: req.user?.id }, getCallerInfo(), req.user?.id);
-        next(error);
-    }
-});
+
 app.get("/pages/public/forgot-password_submit.html", async (req, res, next) => {
     const emptyQuestions = {
         security_question_1: "",
@@ -110,7 +90,6 @@ app.get("/pages/profile.html", async (req, res, next) => {
 });
 app.use(express.static("web"));
 app.use("/api/users", usersRoutes);
-app.use("/api/accounts", accountsRoutes);
 app.use("/images", imageRoutes);
 
 // This if statement ensures the server only starts if this file is run directly.
@@ -125,7 +104,6 @@ if (require.main === module) {
         async () => {
             try {
                 await usersController.logoutInactiveUsers();
-                await usersController.unsuspendExpiredSuspensions();
             } catch (error) {
                 logger.log("error", `Error: ${error.message}`, {}, getCallerInfo());
             }
@@ -138,7 +116,6 @@ if (require.main === module) {
             try {
                 await usersController.sendPasswordExpiryWarnings();
                 await usersController.suspendUsersWithExpiredPasswords();
-                await cleanupUserData();
             } catch (error) {
                 logger.log("error", `Error: ${error.message}`, {}, getCallerInfo());
             }

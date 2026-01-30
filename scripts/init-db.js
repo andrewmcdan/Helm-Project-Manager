@@ -14,7 +14,7 @@ const fs = require("fs/promises");
 const path = require("path");
 const { Client } = require("pg");
 
-const SQL_DIR = path.resolve(__dirname, "..", "docker", "postgres"); // This path contains the SQL files to run
+const SQL_DIR = path.resolve(__dirname, "..", "sql"); // This path contains the SQL files to run
 const MIGRATIONS_DIR = path.join(SQL_DIR, "migrations");
 const README_PATH = path.join(SQL_DIR, "README.md");
 const VERBOSE = process.env.DB_INIT_VERBOSE !== "0";
