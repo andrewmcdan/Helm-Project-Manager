@@ -9,6 +9,6 @@ yarn-error.log*
 .idea/
 coverage/
 dist/
-./logs/
+logs/
 *.log
 *.logs
