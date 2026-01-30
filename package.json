@@ -1,0 +1,26 @@
+{
+  "name": "helm-project-manager",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A project management tool for developers, by developers.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file=.env src/server.js",
+    "predev": "npm run db-init",
+    "dev": "nodemon --env-file=.env src/server.js",
+    "db-init": "node --env-file=.env scripts/init-db.js",
+    "db-reset": "node --env-file=.env scripts/reset-db.js",
+    "db-init:test": "node --env-file=.env.test scripts/init-db.js",
+    "pretest": "npm run db-init:test",
+    "prestart": "npm run db-init",
+    "test": "node --env-file=.env.test --test --test-concurrency=1"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.11.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

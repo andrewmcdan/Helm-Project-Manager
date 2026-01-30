@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Helm Project Manager</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        margin: 2rem;
+        color: #1f2937;
+        background: #f8fafc;
+      }
+      .card {
+        max-width: 720px;
+        padding: 1.5rem;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+      }
+      code {
+        background: #f1f5f9;
+        padding: 0.1rem 0.3rem;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Helm Project Manager</h1>
+      <p>Backend status: <strong id="health">Loading...</strong></p>
+      <p>Database time: <strong id="dbtime">Loading...</strong></p>
+      <p>Try <code>/api/health</code> and <code>/api/db-time</code> from your browser.</p>
+    </div>
+
+    <script>
+      async function loadHealth() {
+        const res = await fetch("/api/health");
+        const data = await res.json();
+        document.getElementById("health").textContent = data.status;
+      }
+
+      async function loadDbTime() {
+        const res = await fetch("/api/db-time");
+        const data = await res.json();
+        document.getElementById("dbtime").textContent = data.now || data.error;
+      }
+
+      loadHealth();
+      loadDbTime();
+    </script>
+  </body>
+</html>
