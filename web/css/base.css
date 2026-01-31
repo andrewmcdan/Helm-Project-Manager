@@ -1,18 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600;700&family=Sora:wght@300;400;500;600;700&display=swap");
+
 :root {
-    --bg: #060e3b;
-    --bg-deep: #040828;
-    --surface-soft: rgba(255, 255, 255, 0.253);
-    --surface: rgba(255, 255, 255, 0.536);
+    --bg: #0b133d;
+    --bg-deep: #050b2b;
+    --surface-soft: rgba(255, 255, 255, 0.3);
+    --surface: rgba(255, 255, 255, 0.78);
     --surface-strong: #ffffff;
-    --ink: #080f4e;
-    --muted: #2c3031;
-    --accent: #080f4e;
-    --accent-strong: #71778b;
-    --accent-soft: rgba(11, 22, 123, 0.12);
-    --border: rgba(35, 45, 55, 0.14);
-    --shadow: rgba(22, 21, 40, 0.14);
-    --radius: 16px;
-    --font-sans: "Space Grotesk", "Avenir Next", "Segoe UI", sans-serif;
+    --ink: #0c143a;
+    --muted: #2f3646;
+    --accent: #1b2f8a;
+    --accent-alt: #2a6bb5;
+    --accent-strong: #141f63;
+    --accent-soft: rgba(27, 47, 138, 0.14);
+    --border: rgba(20, 27, 60, 0.16);
+    --shadow: rgba(8, 12, 30, 0.18);
+    --radius: 20px;
+    --font-sans: "Sora", "Avenir Next", "Segoe UI", sans-serif;
+    --font-display: "Fraunces", "Georgia", serif;
     --space-1: 0.25rem;
     --space-2: 0.5rem;
     --space-3: 0.75rem;
@@ -30,7 +34,11 @@ body {
     min-height: 100vh;
     font-family: var(--font-sans);
     color: var(--ink);
-    background: radial-gradient(circle at 14% 16%, rgba(11, 89, 47, 0.221), transparent 40%), radial-gradient(circle at 86% 8%, rgba(4, 62, 33, 0.197), transparent 55%), linear-gradient(135deg, var(--bg), var(--bg-deep));
+    background:
+        radial-gradient(circle at 12% 14%, rgba(27, 47, 138, 0.35), transparent 45%),
+        radial-gradient(circle at 86% 18%, rgba(42, 107, 181, 0.32), transparent 50%),
+        repeating-linear-gradient(135deg, rgba(12, 20, 58, 0.07), rgba(12, 20, 58, 0.07) 2px, transparent 2px, transparent 16px),
+        linear-gradient(160deg, var(--bg), var(--bg-deep));
 }
 
 #helm-canvas {
@@ -65,5 +73,13 @@ p {
 }
 
 ::selection {
-    background: rgba(11, 13, 123, 0.2);
+    background: rgba(27, 47, 138, 0.25);
+}
+
+h1,
+h2,
+h3,
+.brand-name {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
 }
