@@ -1,56 +1,57 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- favicon -->
-    <link rel="icon" type="image/png" href="public_images/favicon.ico" />
-    <title>Helm Project Manager</title>
-    <style>
-      body {
-        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-        margin: 2rem;
-        color: #1f2937;
-        background: #f8fafc;
-      }
-      .card {
-        max-width: 720px;
-        padding: 1.5rem;
-        background: #ffffff;
-        border: 1px solid #e5e7eb;
-        border-radius: 12px;
-        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-      }
-      code {
-        background: #f1f5f9;
-        padding: 0.1rem 0.3rem;
-        border-radius: 4px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card">
-      <h1>Helm Project Manager</h1>
-      <p>Backend status: <strong id="health">Loading...</strong></p>
-      <p>Database time: <strong id="dbtime">Loading...</strong></p>
-      <p>Try <code>/api/health</code> and <code>/api/db-time</code> from your browser.</p>
-    </div>
-
-    <script>
-      async function loadHealth() {
-        const res = await fetch("/api/health");
-        const data = await res.json();
-        document.getElementById("health").textContent = data.status;
-      }
-
-      async function loadDbTime() {
-        const res = await fetch("/api/db-time");
-        const data = await res.json();
-        document.getElementById("dbtime").textContent = data.now || data.error;
-      }
-
-      loadHealth();
-      loadDbTime();
-    </script>
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" href="css/base.css" />
+        <link rel="stylesheet" href="css/layout.css" />
+        <link rel="icon" type="image/png" href="public_images/favicon.ico" />
+        <title>Helm Project Manager</title>
+    </head>
+    <body>
+        <canvas id="helm-canvas" aria-hidden="true"></canvas>
+        <div class="app-shell">
+            <header class="app-header">
+                <div class="brand" data-brand-logo>
+                    <div class="brand-mark">
+                        <img src="public_images/favicon.svg" alt="FinLedger logo" />
+                    </div>
+                    <div>
+                        <div class="brand-name">HELM</div>
+                        <div class="brand-tag">Project management system</div>
+                    </div>
+                </div>
+                <nav class="app-nav">
+                    <a href="#/dashboard" data-route="dashboard">Dashboard</a>
+                    <a href="#/accounts_list" data-route="accounts_list">Tasks</a>
+                    <a href="#/help" data-route="help">Help</a>
+                    <a href="#/login" data-route="login" data-route2="logout" data-login-button>Login</a>
+                </nav>
+                <div class="user-profile-button-container" data-profile-menu>
+                    <div class="profile-menu" data-profile-menu-panel aria-hidden="true">
+                        <div class="profile-menu-card">
+                            <div class="profile-menu-avatar">
+                                <img alt="User profile" data-user-icon-menu />
+                            </div>
+                            <div class="profile-menu-actions">
+                                <button type="button" class="button-small" data-profile-action="profile">Go to profile</button>
+                                <button type="button" class="button-small" data-profile-action="logout">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="user_profile_button" aria-label="User Profile" aria-expanded="false" data-user-profile-button>
+                        <span data-profile-name></span>
+                        <img alt="User Profile" data-user-icon />
+                    </button>
+                </div>
+            </header>
+            <main id="app" class="app-main" aria-live="polite"></main>
+        </div>
+        <div id="loading_overlay" aria-hidden="true">
+            <div class="loading-spinner"></div>
+            <div>Loading...</div>
+        </div>
+        <script type="module" src="js/background.js"></script>
+        <script type="module" src="js/app.js"></script>
+    </body>
 </html>

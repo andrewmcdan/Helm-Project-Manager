@@ -1,0 +1,20 @@
+<section class="page narrow" data-login-container>
+    <header class="page-header">
+        <h1>Sign in</h1>
+        <p>Use your organization credentials.</p>
+    </header>
+    <form class="stack" data-login>
+        <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" autocomplete="username" required />
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+        </div>
+        <button type="submit">Log In</button>
+        <button type="button" id="new_user">New User</button>
+        <button type="button" id="forgot_password">Forgot Password</button>
+    </form>
+    <p class="notice" data-login-message></p>
+</section>

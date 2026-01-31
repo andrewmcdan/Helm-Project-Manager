@@ -12,6 +12,15 @@ const CONSOLE_LOG_LEVEL = process.env.CONSOLE_LOG_LEVEL || "debug";
 // Define log levels
 const levels = { trace: 0, debug: 1, info: 2, warn: 3, error: 4, fatal: 5 };
 
+const fs = require("fs");
+// Ensure folder exists
+const path = require("path");
+const dir = path.dirname(LOG_FILE_PATH);
+if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+}
+
+
 /**
  * Log an event. Depending on configuration, logs to console, file, and/or database.
  * @param {*} level One of: trace, debug, info, warn, error, fatal
@@ -32,9 +41,9 @@ const log = async (level, message, context = null, source = "", user_id = null, 
 
     // Log to console
     if (!skipConsole && LOG_TO_CONSOLE && levelValue >= levels[CONSOLE_LOG_LEVEL] && sourceLabel) {
-        console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`, context===null ? "" : context, sourceLabel);
+        console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`, context === null ? "" : context, sourceLabel);
     } else if (!skipConsole && LOG_TO_CONSOLE && levelValue >= levels[CONSOLE_LOG_LEVEL]) {
-        console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`, context===null ? "" : context);
+        console.log(`[${timestamp}] [${level.toUpperCase()}] ${message}`, context === null ? "" : context);
     }
 
     // Log to database
@@ -49,15 +58,13 @@ const log = async (level, message, context = null, source = "", user_id = null, 
                 values.push(user_id);
             }
             await db.query(queryString, values);
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Failed to log to database:", error);
         }
     }
 
     // Log to file
     if (!skipFile && LOG_TO_FILE && levelValue >= levels[LOG_TO_FILE_LEVEL]) {
-        const fs = require("fs");
         const logLine = `[${timestamp}] [${level.toUpperCase()}] ${message} ${JSON.stringify(context)} ${sourceLabel}\n`;
         // If file doesn't exist, create it
         if (!fs.existsSync(LOG_FILE_PATH)) {
@@ -81,8 +88,7 @@ const logAudit = async (event_type, user_id = null, entity_type = null, entity_i
         `;
         const values = [event_type, user_id, entity_type, entity_id, changes, metadata];
         await db.query(query, values);
-    }
-    catch (error) {
+    } catch (error) {
         console.error("Failed to log audit event:", error);
     }
 };
@@ -137,7 +143,7 @@ const queryAuditLogs = async (filters = {}) => {
     query += " ORDER BY created_at DESC LIMIT 100"; // limit to 100 results
     const result = await db.query(query, values);
     return result.rows;
-}
+};
 
 // Export log function
 module.exports = {
