@@ -18,6 +18,13 @@
 - login_at: timestamp with time zone
 - logout_at: timestamp with time zone
 
+### public.password_expiry_email_tracking
+- id: bigint
+- user_id: bigint
+- email_sent_at: timestamp with time zone
+- email_sent_date: date
+- password_expires_at: timestamp with time zone
+
 ### public.password_history
 - id: bigint
 - user_id: bigint
@@ -54,3 +61,7 @@
 - security_answer_hash_3: text
 - reset_token: text
 - reset_token_expires_at: timestamp with time zone
+- suspension_end_at: timestamp with time zone
+- suspension_start_at: timestamp with time zone
+- temp_password: boolean
+- user_icon_path: uuid

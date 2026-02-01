@@ -55,10 +55,7 @@ const { SECURITY_QUESTIONS } = require("../data/security_questions");
 const { log } = require("../utils/logger.js");
 const utilities = require("../utils/utilities.js");
 const db = require("../db/db.js");
-
-const sendEmail = (to, subject, body) => {
-    return;
-};
+const { sendEmail } = require("../services/email.js");
 
 router.get("/security-questions-list", async (req, res) => {
     log("debug", "Security questions list requested", { userId: req.user?.id }, utilities.getCallerInfo(), req.user?.id);
@@ -138,7 +135,7 @@ router.post("/email-user", async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
         const user = userResult.rows[0];
-        const emailBody = `Dear ${user.first_name || username},\n\n${message}\n\nBest regards,\nFinLedger Team`;
+        const emailBody = `Dear ${user.first_name || username},\n\n${message}\n\nBest regards,\nHELM Team`;
         const emailResult = await sendEmail(user.email, subject, emailBody);
         if (!emailResult.accepted || emailResult.accepted.length === 0) {
             log("warn", `Failed to send email to ${user.email} for username ${username}`, { function: "email-user" }, utilities.getCallerInfo(), requestingUserId);
@@ -170,11 +167,7 @@ router.get("/approve-user/:userId", async (req, res) => {
     log("info", `User ID ${userIdToApprove} approved by admin user ID ${requestingUserId}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
     const loginLinkUrlBase = process.env.FRONTEND_BASE_URL || "http://localhost:3050";
     const loginLink = `${loginLinkUrlBase}/#/login`;
-    const emailResult = await sendEmail(
-        userData.email,
-        "Your FinLedger Account Has Been Approved",
-        `Dear ${userData.first_name},\n\nWe are pleased to inform you that your FinLedger account has been approved by an administrator. You can now log in with your username and start using our services.\n\nUsername: ${userData.username}\n\nLogin here: ${loginLink}\n\nBest regards,\nThe FinLedger Team\n\n`,
-    );
+    const emailResult = await sendEmail(userData.email, "Your HELM Account Has Been Approved", `Dear ${userData.first_name},\n\nWe are pleased to inform you that your HELM account has been approved by an administrator. You can now log in with your username and start using our services.\n\nUsername: ${userData.username}\n\nLogin here: ${loginLink}\n\nBest regards,\nThe HELM Team\n\n`);
     if (!emailResult.accepted || emailResult.accepted.length === 0) {
         log("warn", `Failed to send approval email to ${userData.email} for user ID ${userIdToApprove}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
     }
@@ -422,7 +415,7 @@ router.post("/register_new_user", async (req, res) => {
         log("info", "Register new user request received", { email, role }, utilities.getCallerInfo());
         const newUser = await createUser(first_name, last_name, email, password, role, address, date_of_birth, null);
         log("info", `New user registered with ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
-        const emailResult = await sendEmail(email, "Welcome to FinLedger - Registration Successful", `Dear ${first_name},\n\nThank you for registering with FinLedger. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe FinLedger Team\n\n`);
+        const emailResult = await sendEmail(email, "Welcome to HELM - Registration Successful", `Dear ${first_name},\n\nThank you for registering with HELM. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe HELM Team\n\n`);
         log("info", `Registration email sent to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
         if (!emailResult.accepted || emailResult.accepted.length === 0) {
             log("warn", `Failed to send registration email to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
@@ -467,8 +460,8 @@ router.get("/reset-password/:email/:userName", async (req, res) => {
     await db.query("UPDATE users SET reset_token = $1, reset_token_expires_at = $2, updated_at = now() WHERE id = $3", [resetToken, tokenExpiry, userData2.id]);
     const emailResult = await sendEmail(
         userData2.email,
-        "FinLedger Password Reset Request",
-        `Dear ${userData2.first_name},\n\nWe received a request to reset your FinLedger account password. Please use the link below to reset your password. This link will expire in 1 hour.\n\nPassword Reset Link: ${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nThe FinLedger Team\n\n`,
+        "HELM Password Reset Request",
+        `Dear ${userData2.first_name},\n\nWe received a request to reset your HELM account password. Please use the link below to reset your password. This link will expire in 1 hour.\n\nPassword Reset Link: ${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nThe HELM Team\n\n`,
     );
     if (!emailResult.accepted || emailResult.accepted.length === 0) {
         log("warn", `Failed to send password reset email to ${userData2.email} for user ID ${userData2.id}`, { function: "reset-password" }, utilities.getCallerInfo(), userData2.id);
@@ -650,7 +643,7 @@ router.get("/reset-user-password/:userId", async (req, res) => {
     try {
         const tempPassword = utilities.generateRandomToken(12) + "aA1!";
         await setUserPassword(userIdToReset, tempPassword, true);
-        const emailResult = await sendEmail(userData.email, "FinLedger Password Reset by Administrator", `Dear ${userData.first_name},\n\nAn administrator has reset your FinLedger account password. Please use the temporary password below to log in and change your password immediately.\n\nTemporary Password: ${tempPassword}\n\nBest regards,\nThe FinLedger Team\n\n`);
+        const emailResult = await sendEmail(userData.email, "HELM Password Reset by Administrator", `Dear ${userData.first_name},\n\nAn administrator has reset your HELM account password. Please use the temporary password below to log in and change your password immediately.\n\nTemporary Password: ${tempPassword}\n\nBest regards,\nThe HELM Team\n\n`);
         if (!emailResult.accepted || emailResult.accepted.length === 0) {
             log("warn", `Failed to send admin password reset email to ${userData.email} for user ID ${userIdToReset}`, { function: "reset-user-password" }, utilities.getCallerInfo(), userIdToReset);
         }

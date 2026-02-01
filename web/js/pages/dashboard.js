@@ -120,7 +120,8 @@ export default async function initDashboard({showLoadingOverlay, hideLoadingOver
                     const roleOptions = [
                         { value: "administrator", label: "Administrator" },
                         { value: "manager", label: "Manager" },
-                        { value: "accountant", label: "Accountant" },
+                        { value: "coder", label: "Coder" },
+                        { value: "viewer", label: "Viewer" },
                     ];
                     const select = createSelect(roleOptions, value, inputAttr);
                     cell.replaceChildren(select);

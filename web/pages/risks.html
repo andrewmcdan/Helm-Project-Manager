@@ -1,0 +1,250 @@
+<section class="page stack">
+    <header class="page-header">
+        <h1>Risks</h1>
+        <p>Track known risks, mitigation plans, and current status.</p>
+    </header>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Risk snapshot</h2>
+            <p class="meta">Current risk posture for the project.</p>
+            <div class="data-row data-row--columns">
+                <div class="data-column">
+                    <p class="meta">Open risks</p>
+                    <p class="value">6</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">High impact</p>
+                    <p class="value">2</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Monitoring</p>
+                    <p class="value">3</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Mitigating</p>
+                    <p class="value">2</p>
+                </div>
+            </div>
+            <p class="meta">Review high-impact risks before each sprint.</p>
+        </section>
+
+        <section class="card stack">
+            <h2>Primary actions</h2>
+            <p class="meta">Keep the risk log current.</p>
+            <div class="stack">
+                <button type="button">Add risk</button>
+                <button type="button" class="button-small">Review high risks</button>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View mitigation plans</button>
+                <button type="button" class="button-small">Export risk list</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Risk register</h2>
+        <p class="meta">Filter by status, likelihood, or impact.</p>
+        <form class="grid" aria-label="Risk filters">
+            <div class="field">
+                <label for="risk-status">Status</label>
+                <select id="risk-status">
+                    <option value="">All statuses</option>
+                    <option>Open</option>
+                    <option>Monitoring</option>
+                    <option>Mitigating</option>
+                    <option>Closed</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="risk-likelihood">Likelihood</label>
+                <select id="risk-likelihood">
+                    <option value="">All likelihoods</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="risk-impact">Impact</label>
+                <select id="risk-impact">
+                    <option value="">All impacts</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+        </form>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Risk ID</th>
+                        <th>Title</th>
+                        <th>Likelihood</th>
+                        <th>Impact</th>
+                        <th>Status</th>
+                        <th>Owner</th>
+                        <th>Last updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>R-01</td>
+                        <td>Time constraints due to schedules</td>
+                        <td>High</td>
+                        <td>High</td>
+                        <td><span class="badge">Monitoring</span></td>
+                        <td>Andrew</td>
+                        <td>Today</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Update status</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>R-02</td>
+                        <td>Uneven contribution across team</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                        <td><span class="badge">Mitigating</span></td>
+                        <td>Kevin</td>
+                        <td>Yesterday</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Update status</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>R-03</td>
+                        <td>Scope creep requests late in term</td>
+                        <td>Medium</td>
+                        <td>High</td>
+                        <td><span class="badge">Open</span></td>
+                        <td>Jay</td>
+                        <td>2 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Update status</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>R-04</td>
+                        <td>Technical experience variability</td>
+                        <td>Medium</td>
+                        <td>Medium</td>
+                        <td><span class="badge">Monitoring</span></td>
+                        <td>Dylan</td>
+                        <td>4 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Update status</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>R-05</td>
+                        <td>Testing time reduced near deadline</td>
+                        <td>Low</td>
+                        <td>Medium</td>
+                        <td><span class="badge">Open</span></td>
+                        <td>Daija</td>
+                        <td>1 week ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Update status</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Risk details</h2>
+            <p class="meta">Selected risk summary and context.</p>
+            <h3>R-01 · Time constraints due to schedules</h3>
+            <p>Team members balancing full-time coursework and employment may cause delays.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Likelihood</span>
+                    <span class="badge">High</span>
+                </p>
+                <p class="meta">Impact: High</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Status</span>
+                    <span class="badge">Monitoring</span>
+                </p>
+                <p class="meta">Owner: Andrew</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">Update status</button>
+                <button type="button" class="button-small">Edit risk</button>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Mitigation plan</h2>
+            <p class="meta">How the team is addressing this risk.</p>
+            <p>Use an iterative schedule, prioritize core features early, and rebalance tasks when availability changes.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Next review</span>
+                    <span>Mid-week check-in</span>
+                </p>
+                <p class="meta">Capture updates after each sprint.</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">Add update</button>
+                <button type="button" class="button-small">View history</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Recent updates</h2>
+        <p class="meta">Latest notes and status changes.</p>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Risk</th>
+                        <th>Update</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Today</td>
+                        <td>R-01</td>
+                        <td>Reviewed upcoming sprint capacity and adjusted timeline.</td>
+                        <td>Andrew</td>
+                    </tr>
+                    <tr>
+                        <td>Yesterday</td>
+                        <td>R-02</td>
+                        <td>Assigned owners to each requirement and scheduled check-in.</td>
+                        <td>Kevin</td>
+                    </tr>
+                    <tr>
+                        <td>2 days ago</td>
+                        <td>R-03</td>
+                        <td>Reconfirmed scope boundaries with team.</td>
+                        <td>Jay</td>
+                    </tr>
+                    <tr>
+                        <td>4 days ago</td>
+                        <td>R-04</td>
+                        <td>Identified pairing opportunities for skill gaps.</td>
+                        <td>Dylan</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>

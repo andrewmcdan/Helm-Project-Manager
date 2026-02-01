@@ -1,7 +1,10 @@
 const routes = {
     dashboard: { title: "Dashboard", page: "pages/dashboard", module: "js/pages/dashboard" },
-    transactions: { title: "Transactions", page: "pages/transactions", module: "js/pages/transactions" },
-    reports: { title: "Reports", page: "pages/reports", module: "js/pages/reports" },
+    requirements: { title: "Requirements", page: "pages/requirements", module: "js/pages/requirements" },
+    effort: { title: "Effort", page: "pages/effort", module: "js/pages/effort" },
+    risks: { title: "Risks", page: "pages/risks", module: "js/pages/risks" },
+    team: { title: "Team", page: "pages/team", module: "js/pages/team" },
+    project_settings: { title: "Project Settings", page: "pages/project_settings", module: "js/pages/project_settings" },
     login: { title: "Login", page: "pages/public/login", module: "js/pages/public/login" },
     help: { title: "Help", page: "pages/public/help", module: "js/pages/public/help" },
     logout: { title: "Logout", page: "pages/public/logout", module: "js/pages/public/logout" },
@@ -64,7 +67,7 @@ function withLoadingOverlay(task, message) {
     }
 }
 
-window.FinLedgerLoading = {
+window.HELMLoading = {
     show: showLoadingOverlay,
     hide: hideLoadingOverlay,
     withLoading: withLoadingOverlay,
@@ -181,7 +184,7 @@ async function fetchPageMarkup(pageName) {
             window.location.hash = "#/not_authorized";
             return;
         }
-        if(resJson?.error === "NOT_LOGGED_IN") {
+        if (resJson?.error === "NOT_LOGGED_IN") {
             window.location.hash = "#/not_logged_in";
             return;
         }
@@ -239,7 +242,7 @@ async function loadModule(moduleName) {
         const module = await import(moduleUrl);
         URL.revokeObjectURL(moduleUrl);
         if (typeof module.default === "function") {
-            module.default({showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl});
+            module.default({ showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl });
         }
     } catch (error) {
         console.error(`Failed to load module ${moduleName}`, error);
@@ -314,13 +317,13 @@ async function renderRoute() {
         if (profileNameSpan && !profileMenuInitialized) {
             const username = localStorage.getItem("username") || "None";
             profileNameSpan.textContent = "Profile: " + username;
-            if(username == "None") {
+            if (username == "None") {
                 // disable the profile hover activation
                 const menuWrapper = document.querySelector("[data-profile-menu]");
                 if (menuWrapper) {
                     menuWrapper.style.pointerEvents = "none";
                 }
-            }else{
+            } else {
                 const menuWrapper = document.querySelector("[data-profile-menu]");
                 if (menuWrapper) {
                     menuWrapper.style.pointerEvents = "auto";
@@ -387,5 +390,3 @@ import { updateLoginLogoutButton } from "./utils/login_logout_button.js";
 
 window.addEventListener("DOMContentLoaded", updateLoginLogoutButton);
 window.addEventListener("hashchange", updateLoginLogoutButton);
-
-

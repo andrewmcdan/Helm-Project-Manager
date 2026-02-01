@@ -1,0 +1,211 @@
+<section class="page stack">
+    <header class="page-header">
+        <h1>Requirements</h1>
+        <p>Create, prioritize, and track functional and non-functional requirements.</p>
+    </header>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Overview</h2>
+            <p class="meta">Current requirement health.</p>
+            <div class="data-row data-row--columns">
+                <div class="data-column">
+                    <p class="meta">Total</p>
+                    <p class="value">28</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Functional</p>
+                    <p class="value">20</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Non-functional</p>
+                    <p class="value">8</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">In progress</p>
+                    <p class="value">6</p>
+                </div>
+            </div>
+            <p class="meta">Focus on logging effort once work begins.</p>
+        </section>
+
+        <section class="card stack">
+            <h2>Primary actions</h2>
+            <p class="meta">Keep requirements moving forward.</p>
+            <div class="stack">
+                <button type="button">Create requirement</button>
+                <button type="button" class="button-small">Log effort</button>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View effort totals</button>
+                <button type="button" class="button-small">Export list</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Requirements index</h2>
+        <p class="meta">Filter and manage the requirement backlog.</p>
+        <div class="span-actions">
+            <button type="button" class="button-small">Functional</button>
+            <button type="button" class="button-small">Non-functional</button>
+        </div>
+        <form class="grid" aria-label="Requirement filters">
+            <div class="field">
+                <label for="requirement-search">Search</label>
+                <input id="requirement-search" type="search" placeholder="Search by title or ID" />
+            </div>
+            <div class="field">
+                <label for="requirement-status">Status</label>
+                <select id="requirement-status">
+                    <option value="">All statuses</option>
+                    <option>Proposed</option>
+                    <option>Approved</option>
+                    <option>In Progress</option>
+                    <option>Done</option>
+                    <option>Deferred</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="requirement-priority">Priority</label>
+                <select id="requirement-priority">
+                    <option value="">All priorities</option>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+        </form>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Priority</th>
+                        <th>Total effort</th>
+                        <th>Last updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>FR-001</td>
+                        <td>Project overview and ownership</td>
+                        <td><span class="badge">Approved</span></td>
+                        <td>High</td>
+                        <td>14.5 hrs</td>
+                        <td>Today</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">Details</button>
+                            <button type="button" class="button-small">Effort</button>
+                            <button type="button" class="button-small">Edit</button>
+                            <button type="button" class="button-small">Archive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>FR-011</td>
+                        <td>Effort logging with categories</td>
+                        <td><span class="badge">In Progress</span></td>
+                        <td>High</td>
+                        <td>22.0 hrs</td>
+                        <td>Yesterday</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">Details</button>
+                            <button type="button" class="button-small">Effort</button>
+                            <button type="button" class="button-small">Edit</button>
+                            <button type="button" class="button-small">Archive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>FR-014</td>
+                        <td>Requirement status workflow</td>
+                        <td><span class="badge">Proposed</span></td>
+                        <td>Medium</td>
+                        <td>0 hrs</td>
+                        <td>2 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">Details</button>
+                            <button type="button" class="button-small">Effort</button>
+                            <button type="button" class="button-small">Edit</button>
+                            <button type="button" class="button-small">Archive</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>NFR-003</td>
+                        <td>Token-based authentication</td>
+                        <td><span class="badge">Done</span></td>
+                        <td>High</td>
+                        <td>18.0 hrs</td>
+                        <td>4 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">Details</button>
+                            <button type="button" class="button-small">Effort</button>
+                            <button type="button" class="button-small">Edit</button>
+                            <button type="button" class="button-small">Archive</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Requirement details</h2>
+            <p class="meta">Selected requirement preview.</p>
+            <h3>FR-011 · Effort logging with categories</h3>
+            <p>Allow users to record effort entries tied to a requirement with category selection.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Status</span>
+                    <span class="badge">In Progress</span>
+                </p>
+                <p class="meta">Priority: High</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Type</span>
+                    <span class="badge">Functional</span>
+                </p>
+                <p class="meta">Tags: effort, logging, validation</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Acceptance criteria</span>
+                    <span class="badge">3 items</span>
+                </p>
+                <p class="meta">Inline validation and totals must be shown.</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View details</button>
+                <button type="button" class="button-small">Edit requirement</button>
+                <button type="button" class="button-small">Log effort</button>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Effort links</h2>
+            <p class="meta">Jump to effort details for this requirement.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Total logged hours</span>
+                    <span>22.0</span>
+                </p>
+                <p class="meta">View category breakdown and entries in Effort.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Last entry</span>
+                    <span>Yesterday</span>
+                </p>
+                <p class="meta">8.0 hrs · Coding · Jay</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View effort entries</button>
+                <button type="button" class="button-small">Log effort</button>
+            </div>
+        </section>
+    </div>
+</section>

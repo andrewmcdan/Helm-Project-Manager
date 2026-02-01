@@ -1,0 +1,206 @@
+<section class="page stack">
+    <header class="page-header">
+        <h1>Team</h1>
+        <p>Manage project members, roles, and access status.</p>
+    </header>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Team snapshot</h2>
+            <p class="meta">Current membership for the Helm project.</p>
+            <div class="data-row data-row--columns">
+                <div class="data-column">
+                    <p class="meta">Total members</p>
+                    <p class="value">5</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Active</p>
+                    <p class="value">5</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Admins</p>
+                    <p class="value">1</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Pending</p>
+                    <p class="value">0</p>
+                </div>
+            </div>
+            <p class="meta">If invites are disabled, this list is read-only.</p>
+        </section>
+
+        <section class="card stack">
+            <h2>Primary actions</h2>
+            <p class="meta">Keep access and roles up to date.</p>
+            <div class="stack">
+                <button type="button">Add member</button>
+                <button type="button" class="button-small">Invite member</button>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">Export roster</button>
+                <button type="button" class="button-small">View roles</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Team directory</h2>
+        <p class="meta">Search by name, role, or status.</p>
+        <form class="grid" aria-label="Team filters">
+            <div class="field">
+                <label for="team-search">Search</label>
+                <input id="team-search" type="search" placeholder="Search by name or email" />
+            </div>
+            <div class="field">
+                <label for="team-role">Role</label>
+                <select id="team-role">
+                    <option value="">All roles</option>
+                    <option>Administrator</option>
+                    <option>Project Manager</option>
+                    <option>Contributor</option>
+                    <option>Viewer</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="team-status">Status</label>
+                <select id="team-status">
+                    <option value="">All statuses</option>
+                    <option>Active</option>
+                    <option>Inactive</option>
+                    <option>Pending</option>
+                </select>
+            </div>
+        </form>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Last active</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Andrew McDaniel</td>
+                        <td>andrew@example.com</td>
+                        <td>Administrator</td>
+                        <td><span class="badge">Active</span></td>
+                        <td>Today</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Edit role</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Kevin Lara</td>
+                        <td>kevin@example.com</td>
+                        <td>Project Manager</td>
+                        <td><span class="badge">Active</span></td>
+                        <td>Yesterday</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Edit role</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Jay Lee</td>
+                        <td>jay@example.com</td>
+                        <td>Contributor</td>
+                        <td><span class="badge">Active</span></td>
+                        <td>Yesterday</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Edit role</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Dylan McKee</td>
+                        <td>dylan@example.com</td>
+                        <td>Contributor</td>
+                        <td><span class="badge">Active</span></td>
+                        <td>2 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Edit role</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Daija McLee</td>
+                        <td>daija@example.com</td>
+                        <td>Viewer</td>
+                        <td><span class="badge">Active</span></td>
+                        <td>4 days ago</td>
+                        <td class="span-actions">
+                            <button type="button" class="button-small">View</button>
+                            <button type="button" class="button-small">Edit role</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Member details</h2>
+            <p class="meta">Selected member overview.</p>
+            <h3>Kevin Lara</h3>
+            <p>Responsible for tracking risks and coordinating weekly updates.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Role</span>
+                    <span class="badge">Project Manager</span>
+                </p>
+                <p class="meta">Status: Active</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Focus area</span>
+                    <span>Risk tracking</span>
+                </p>
+                <p class="meta">Last active yesterday.</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">Message</button>
+                <button type="button" class="button-small">Change role</button>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Role definitions</h2>
+            <p class="meta">Quick reference for access levels.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Administrator</span>
+                    <span class="badge">Full access</span>
+                </p>
+                <p class="meta">Manage settings, members, and data.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Project Manager</span>
+                    <span class="badge">Lead</span>
+                </p>
+                <p class="meta">Plan work, review risks, approve requirements.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Contributor</span>
+                    <span class="badge">Build</span>
+                </p>
+                <p class="meta">Create requirements, log effort, update risks.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Viewer</span>
+                    <span class="badge">Read</span>
+                </p>
+                <p class="meta">Read-only access to project data.</p>
+            </div>
+        </section>
+    </div>
+</section>

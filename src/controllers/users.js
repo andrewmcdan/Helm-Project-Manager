@@ -7,10 +7,7 @@ const fs = require("fs");
 const path = require("path");
 const logger = require("./../utils/logger");
 const utilities = require("./../utils/utilities");
-
-const sendEmail = (to, subject, body) => {
-    return;
-};
+const { sendEmail } = require("../services/email.js");
 
 function checkPasswordComplexity(password) {
     if (password.length < 8) {
@@ -250,7 +247,7 @@ const updateUserProfile = async (userId, profileUpdates) => {
  * @param {String} lastName
  * @param {String} email
  * @param {String} password
- * @param {String} role - 'accountant', 'administrator', or 'manager'
+ * @param {String} role - 'administrator', 'manager', 'coder' or' 'viewer'
  * @param {String} address
  * @param {Date} dateOfBirth
  * @param {String} profileImage - Absolute path to temp profile image
@@ -260,7 +257,7 @@ const createUser = async (firstName, lastName, email, password, role, address, d
     logger.log("info", "Creating user", { email, role }, utilities.getCallerInfo());
     // username should be made of the first name initial, the full last name, and a four digit (two-digit month and two-digit year) of when the account is created
     const username = `${firstName.charAt(0)}${lastName}${String(new Date().getMonth() + 1).padStart(2, "0")}${String(new Date().getFullYear()).slice(-2)}`;
-    if (role !== "accountant" && role !== "administrator" && role !== "manager") {
+    if (role !== "administrator" && role !== "manager" && role !== "coder" && role !== "viewer") {
         logger.log("error", `Invalid role specified when creating user: ${role}`, { function: "createUser" }, utilities.getCallerInfo());
         throw new Error("Invalid role specified");
     }
@@ -294,8 +291,8 @@ const createUser = async (firstName, lastName, email, password, role, address, d
         fs.renameSync(sourcePath, destPath);
     }
     if (tempPasswordFlag) {
-        const emailSubject = "Your FinLedger Account Has Been Created";
-        const emailBody = `Dear ${firstName} ${lastName},\n\nYour FinLedger account has been created successfully.\n\nUsername: ${username}\nTemporary Password: ${password}\n\nPlease log in and change your password at your earliest convenience.\n\nBest regards,\nFinLedger Team`;
+        const emailSubject = "Your HELM Account Has Been Created";
+        const emailBody = `Dear ${firstName} ${lastName},\n\nYour HELM account has been created successfully.\n\nUsername: ${username}\nTemporary Password: ${password}\n\nPlease log in and change your password at your earliest convenience.\n\nBest regards,\nHELM Team`;
         let result = await sendEmail(email, emailSubject, emailBody);
         logger.log("info", `Sent account creation email to ${email} with result: ${JSON.stringify(result)}`, { function: "createUser" }, utilities.getCallerInfo());
     }
@@ -379,7 +376,7 @@ const sendPasswordExpiryWarnings = async () => {
         }
         const daysLeft = Math.ceil((row.password_expires_at - new Date()) / (1000 * 60 * 60 * 24));
         const emailSubject = "Password Expiration Warning";
-        const emailBody = `Dear ${row.first_name} ${row.last_name},\n\nThis is a reminder that your password will expire in ${daysLeft} day(s) on ${row.password_expires_at.toDateString()}.\n\nPlease log in and change your password to avoid any disruption to your account access.\n\nBest regards,\nFinLedger Team`;
+        const emailBody = `Dear ${row.first_name} ${row.last_name},\n\nThis is a reminder that your password will expire in ${daysLeft} day(s) on ${row.password_expires_at.toDateString()}.\n\nPlease log in and change your password to avoid any disruption to your account access.\n\nBest regards,\nHELM Team`;
         let emailResult = await sendEmail(row.email, emailSubject, emailBody);
         logger.log("info", `Sent password expiration warning email to ${row.email} with result: ${JSON.stringify(emailResult)}`, { function: "sendPasswordExpiryWarnings" }, utilities.getCallerInfo(), row.id);
     }
@@ -391,7 +388,7 @@ const suspendUsersWithExpiredPasswords = async () => {
     const result = await db.query("UPDATE users SET status = 'suspended', suspension_start_at = now(), suspension_end_at = NULL, updated_at = now() WHERE password_expires_at <= now() AND status != 'suspended' RETURNING id, email, first_name, last_name");
     for (const row of result.rows) {
         const emailSubject = "Account Suspended Due to Expired Password";
-        const emailBody = `Dear ${row.first_name} ${row.last_name},\n\nYour account has been suspended because your password has expired. Please contact the system administrator to reinstate your account and set a new password.\n\nBest regards,\nFinLedger Team`;
+        const emailBody = `Dear ${row.first_name} ${row.last_name},\n\nYour account has been suspended because your password has expired. Please contact the system administrator to reinstate your account and set a new password.\n\nBest regards,\nHELM Team`;
         let emailResult = await sendEmail(row.email, emailSubject, emailBody);
         // update password_expiry_email_tracking to log this suspension email
         const passwordExpiresAtResult = await db.query("SELECT password_expires_at FROM users WHERE id = $1", [row.id]);

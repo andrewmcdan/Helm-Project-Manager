@@ -46,7 +46,7 @@ const templateValues = {
 
 // If the admin email is not set in the .env file or environment, derive it from the username.
 if (!templateValues.ADMIN_EMAIL && templateValues.ADMIN_USERNAME) {
-    templateValues.ADMIN_EMAIL = `${templateValues.ADMIN_USERNAME}@finledger.local`;
+    templateValues.ADMIN_EMAIL = `${templateValues.ADMIN_USERNAME}@helm.local`;
 }
 
 // Simple literal escaping for SQL templates
@@ -83,23 +83,23 @@ function getClient() {
         return new Client({
             host: process.env.POSTGRES_TEST_HOST || "localhost",
             port: Number(process.env.POSTGRES_TEST_PORT || 5433),
-            user: process.env.POSTGRES_TEST_USER || "finledger_test",
-            password: process.env.POSTGRES_TEST_PASSWORD || "finledger_test",
-            database: process.env.POSTGRES_TEST_DB || "finledger_test",
+            user: process.env.POSTGRES_TEST_USER || "helm_test",
+            password: process.env.POSTGRES_TEST_PASSWORD || "helm_test",
+            database: process.env.POSTGRES_TEST_DB || "helm_test",
         });
     }
 
     logInfo("Using POSTGRES_* environment variables for Postgres connection.");
     let port = Number(process.env.POSTGRES_PORT || 5432);
-    if(process.env.POSTGRES_HOST && (process.env.POSTGRES_HOST === "db")) {
+    if (process.env.POSTGRES_HOST && process.env.POSTGRES_HOST === "db") {
         port = 5432;
     }
     return new Client({
         host: process.env.POSTGRES_HOST || "localhost",
         port: port,
-        user: process.env.POSTGRES_USER || "finledger",
-        password: process.env.POSTGRES_PASSWORD || "finledger",
-        database: process.env.POSTGRES_DB || "finledger",
+        user: process.env.POSTGRES_USER || "helm",
+        password: process.env.POSTGRES_PASSWORD || "helm",
+        database: process.env.POSTGRES_DB || "helm",
     });
 }
 
@@ -110,20 +110,20 @@ function getAdminClient() {
         return new Client({
             host: process.env.POSTGRES_TEST_HOST || "localhost",
             port: Number(process.env.POSTGRES_TEST_PORT || 5433),
-            user: process.env.POSTGRES_TEST_USER || "finledger_test",
-            password: process.env.POSTGRES_TEST_PASSWORD || "finledger_test",
+            user: process.env.POSTGRES_TEST_USER || "helm_test",
+            password: process.env.POSTGRES_TEST_PASSWORD || "helm_test",
             database: process.env.POSTGRES_TEST_ADMIN_DB || "postgres",
         });
     }
     let port = Number(process.env.POSTGRES_PORT || 5432);
-    if(process.env.POSTGRES_HOST && (process.env.POSTGRES_HOST === "db")) {
+    if (process.env.POSTGRES_HOST && process.env.POSTGRES_HOST === "db") {
         port = 5432;
     }
     return new Client({
         host: process.env.POSTGRES_HOST || "localhost",
         port: port,
-        user: process.env.POSTGRES_USER || "finledger",
-        password: process.env.POSTGRES_PASSWORD || "finledger",
+        user: process.env.POSTGRES_USER || "helm",
+        password: process.env.POSTGRES_PASSWORD || "helm",
         database: process.env.POSTGRES_ADMIN_DB || "postgres",
     });
 }
@@ -132,9 +132,9 @@ function getTargetDbName() {
     const argv = new Set(process.argv);
     const useTestDb = argv.has("--db-test") || argv.has("--test-db") || process.env.DB_TESTING_ENABLED === "true";
     if (useTestDb) {
-        return process.env.POSTGRES_TEST_DB || "finledger_test";
+        return process.env.POSTGRES_TEST_DB || "helm_test";
     }
-    return process.env.POSTGRES_DB || "finledger";
+    return process.env.POSTGRES_DB || "helm";
 }
 
 async function ensureDatabaseExists() {

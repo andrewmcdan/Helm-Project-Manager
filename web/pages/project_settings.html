@@ -1,0 +1,166 @@
+<section class="page stack">
+    <header class="page-header">
+        <h1>Project Settings</h1>
+        <p>Maintain global project info, defaults, and ownership.</p>
+    </header>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Project summary</h2>
+            <p class="meta">Single shared project configuration.</p>
+            <div class="data-row data-row--columns">
+                <div class="data-column">
+                    <p class="meta">Project</p>
+                    <p class="value">Helm</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Owner / PM</p>
+                    <p class="value">Andrew McDaniel</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Team size</p>
+                    <p class="value">5</p>
+                </div>
+            </div>
+            <p class="meta">Changes apply to all authenticated users.</p>
+        </section>
+
+        <section class="card stack">
+            <h2>Primary actions</h2>
+            <p class="meta">Save updates or review dashboard.</p>
+            <div class="stack">
+                <button type="button">Save project settings</button>
+                <button type="button" class="button-small">View dashboard</button>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View team</button>
+                <button type="button" class="button-small">Reset changes</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Project information</h2>
+        <p class="meta">Update the project description and ownership.</p>
+        <form class="stack" data-project-settings>
+            <div class="grid">
+                <div class="field">
+                    <label for="project-name">Project name</label>
+                    <input id="project-name" name="project_name" type="text" value="Helm" />
+                </div>
+                <div class="field">
+                    <label for="project-owner">Owner / PM</label>
+                    <input id="project-owner" name="project_owner" type="text" value="Andrew McDaniel" />
+                </div>
+            </div>
+            <div class="field">
+                <label for="project-description">Project description</label>
+                <textarea id="project-description" name="project_description" rows="4">Helm is a web-based project management system for tracking requirements, effort, and risks.</textarea>
+            </div>
+            <div class="grid">
+                <div class="field">
+                    <label for="project-email">Project contact email</label>
+                    <input id="project-email" name="project_email" type="email" placeholder="project@helm.com" />
+                </div>
+                <div class="field">
+                    <label for="project-status">Project status</label>
+                    <select id="project-status" name="project_status">
+                        <option>Planning</option>
+                        <option selected>Active</option>
+                        <option>Stabilizing</option>
+                        <option>Complete</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Effort defaults</h2>
+            <p class="meta">Set the baseline for new effort entries.</p>
+            <div class="field">
+                <label for="effort-default-mode">Default entry mode</label>
+                <select id="effort-default-mode" name="effort_default_mode">
+                    <option>Daily</option>
+                    <option>Weekly</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="week-start-day">Week start day</label>
+                <select id="week-start-day" name="week_start_day">
+                    <option>Sunday</option>
+                    <option selected>Monday</option>
+                    <option>Saturday</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="effort-rounding">Rounding increment</label>
+                <select id="effort-rounding" name="effort_rounding">
+                    <option>0.25 hours</option>
+                    <option>0.5 hours</option>
+                    <option>1.0 hour</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Access and visibility</h2>
+            <p class="meta">Global access controls for this project.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Project scope</span>
+                    <span class="badge">Single project</span>
+                </p>
+                <p class="meta">All users share the same project data.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Authentication</span>
+                    <span class="badge">Token-based</span>
+                </p>
+                <p class="meta">All project data is restricted to signed-in users.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Invites</span>
+                    <span class="badge">Manual</span>
+                </p>
+                <p class="meta">New users are reviewed before activation.</p>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Change log</h2>
+        <p class="meta">Recent updates to project settings.</p>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Change</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Today</td>
+                        <td>Updated default effort mode to Daily.</td>
+                        <td>Andrew</td>
+                    </tr>
+                    <tr>
+                        <td>Yesterday</td>
+                        <td>Edited project description.</td>
+                        <td>Kevin</td>
+                    </tr>
+                    <tr>
+                        <td>4 days ago</td>
+                        <td>Changed project status to Active.</td>
+                        <td>Andrew</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</section>

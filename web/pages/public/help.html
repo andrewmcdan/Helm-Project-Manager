@@ -1,95 +1,417 @@
-<section class="page"> 
+<section class="page stack">
     <header class="page-header">
         <h1>Help</h1>
-        <p>Get assistance and find answers to common questions.</p>
+        <p>Guides for every major workflow in Helm.</p>
     </header>
-    <section class="card">
-        <h2>Account Access</h2>
-        <div class="stack">
-            <div class="faq-item">
-                <h3>Login</h3>
-                <p>Use your username and password from the login screen to access the app.</p>
+
+    <section class="card stack">
+        <h2>What Helm is</h2>
+        <p>Helm is a single shared project workspace for tracking requirements, effort, and risks for small teams.</p>
+        <div class="data-row data-row--columns">
+            <div class="data-column">
+                <p class="meta">Project model</p>
+                <p class="value">One global project</p>
             </div>
-            <div class="faq-item">
-                <h3>Register a New User</h3>
-                <p>Submit the registration form on the login page. New accounts require administrator approval.</p>
+            <div class="data-column">
+                <p class="meta">Core areas</p>
+                <p class="value">Requirements · Effort · Risks</p>
             </div>
-            <div class="faq-item">
-                <h3>Forgot Password</h3>
-                <p>Use the "Forgot Password" flow to request a reset link and set a new password with your security answers.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Temporary Password Change</h3>
-                <p>If your account requires a temporary password change, you will be redirected to the Change Password page after login.</p>
+            <div class="data-column">
+                <p class="meta">Access</p>
+                <p class="value">Authenticated users only</p>
             </div>
         </div>
     </section>
-    <section class="card">
-        <h2>Profile & Security</h2>
-        <div class="stack">
-            <div class="faq-item">
-                <h3>Update Profile Info</h3>
-                <p>Edit your name, email, address, and profile image from the Profile page.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Change Password</h3>
-                <p>Use the Change Password form on your Profile page.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Update Security Questions</h3>
-                <p>Select new questions and answers on the Profile page.</p>
-            </div>
+
+    <section class="card stack">
+        <h2>Quick start</h2>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">1. Review the Dashboard</span>
+                <span class="badge">Start here</span>
+            </p>
+            <p class="meta">Get an overview of requirements, effort, and risk status.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">2. Add requirements</span>
+                <span class="badge">Requirements</span>
+            </p>
+            <p class="meta">Create functional or non-functional requirements and assign priority.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">3. Log effort</span>
+                <span class="badge">Effort</span>
+            </p>
+            <p class="meta">Record hours by requirement and activity category.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">4. Track risks</span>
+                <span class="badge">Risks</span>
+            </p>
+            <p class="meta">Keep risk likelihood, impact, and mitigation plans up to date.</p>
         </div>
     </section>
-    <section class="card">
-        <h2>Administrator Tools</h2>
-        <div class="stack">
-            <div class="faq-item">
-                <h3>User Approvals</h3>
-                <p>Approve or reject new registrations from the Dashboard.</p>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Navigation map</h2>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Dashboard</span>
+                    <span class="badge">Overview</span>
+                </p>
+                <p class="meta">Key metrics, recent updates, and attention needed.</p>
             </div>
-            <div class="faq-item">
-                <h3>Create Users</h3>
-                <p>Create users directly in the Dashboard and optionally upload a profile image.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Requirements</span>
+                    <span class="badge">Define</span>
+                </p>
+                <p class="meta">Manage requirement lists, details, and statuses.</p>
             </div>
-            <div class="faq-item">
-                <h3>Suspend & Reinstate Users</h3>
-                <p>Suspend accounts for a date range and reinstate them when needed.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Effort</span>
+                    <span class="badge">Log</span>
+                </p>
+                <p class="meta">Enter effort, review totals, and export.</p>
             </div>
-            <div class="faq-item">
-                <h3>Reset User Password</h3>
-                <p>Trigger a reset email for a user from the admin Dashboard.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Risks</span>
+                    <span class="badge">Monitor</span>
+                </p>
+                <p class="meta">Track likelihood, impact, and mitigation updates.</p>
             </div>
-            <div class="faq-item">
-                <h3>Email a User</h3>
-                <p>Send a direct email to a selected user using the Dashboard email form.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Team</span>
+                    <span class="badge">People</span>
+                </p>
+                <p class="meta">View members, roles, and access status.</p>
             </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Project Settings</span>
+                    <span class="badge">Config</span>
+                </p>
+                <p class="meta">Edit project info and effort defaults.</p>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Dashboard help</h2>
+            <p class="meta">Use the dashboard for a quick state check.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Quick actions</span>
+                    <span class="badge">Add / Log</span>
+                </p>
+                <p class="meta">Buttons to add requirements, log effort, or add risks.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Key metrics</span>
+                    <span class="badge">Totals</span>
+                </p>
+                <p class="meta">Shows requirement counts, effort totals, and open risks.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Recently updated</span>
+                    <span class="badge">Changes</span>
+                </p>
+                <p class="meta">Latest requirement, effort, and risk updates.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Attention needed</span>
+                    <span class="badge">Review</span>
+                </p>
+                <p class="meta">Highlights requirements with no effort and high risks.</p>
+            </div>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Requirements</h2>
+        <p class="meta">Create and manage functional or non-functional requirements.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Create requirement</span>
+                <span class="badge">Primary action</span>
+            </p>
+            <p class="meta">Add title, description, acceptance criteria, status, and priority.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Filter and search</span>
+                <span class="badge">Find fast</span>
+            </p>
+            <p class="meta">Filter by status or priority and search by title or ID.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Row actions</span>
+                <span class="badge">Details</span>
+            </p>
+            <p class="meta">Use Details, Edit, Archive, or Effort for a specific requirement.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Effort link</span>
+                <span class="badge">Fast path</span>
+            </p>
+            <p class="meta">Use the Effort button to jump to effort logging for that requirement.</p>
         </div>
     </section>
-    <section class="card">
-        <h2>Data & Reports</h2>
-        <div class="stack">
-            <div class="faq-item">
-                <h3>Transactions</h3>
-                <p>Use the Transactions page to view and refresh activity.</p>
-            </div>
-            <div class="faq-item">
-                <h3>Reports</h3>
-                <p>Visit Reports to review summary metrics and time periods.</p>
-            </div>
+
+    <section class="card stack">
+        <h2>Requirement details</h2>
+        <p class="meta">Each requirement includes status, priority, and acceptance criteria.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Status workflow</span>
+                <span class="badge">Proposed to Done</span>
+            </p>
+            <p class="meta">Track progress using Proposed, Approved, In Progress, Done, or Deferred.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Quick actions</span>
+                <span class="badge">Log effort</span>
+            </p>
+            <p class="meta">Log effort directly from the requirement or jump to Effort.</p>
         </div>
     </section>
-    <section class="card">
-        <h2>Support</h2>
-        <div class="stack">
-            <div class="faq-item">
-                <h3>Contact Support</h3>
-                <p>Contact your manager first. If unresolved, email support@finledger.com.</p>
-            </div>
-            <div class="faq-item">
-                <h3>User Manual</h3>
-                <p>The user manual will be linked here when available.</p>
-            </div>
+
+    <section class="card stack">
+        <h2>Effort logging</h2>
+        <p class="meta">Effort entries always map to a requirement and a category.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Daily vs weekly</span>
+                <span class="badge">Entry mode</span>
+            </p>
+            <p class="meta">Choose a daily date or a week-of date for weekly totals.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Required fields</span>
+                <span class="badge">Validate</span>
+            </p>
+            <p class="meta">Requirement, category, and hours must be filled in.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Log from Effort or Requirements</span>
+                <span class="badge">Two paths</span>
+            </p>
+            <p class="meta">Use Log effort buttons in both places to stay in flow.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Effort overview</h2>
+        <p class="meta">Review totals and drill into requirements.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Filters</span>
+                <span class="badge">Range / User</span>
+            </p>
+            <p class="meta">Filter by date range, user, or category for reports.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Totals by requirement</span>
+                <span class="badge">Drill in</span>
+            </p>
+            <p class="meta">Use View requirement to jump back to details.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Totals by category</span>
+                <span class="badge">Activity mix</span>
+            </p>
+            <p class="meta">See how time is spent across activities.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Recent entries</span>
+                <span class="badge">Latest</span>
+            </p>
+            <p class="meta">Review who logged effort most recently.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Risks</h2>
+        <p class="meta">Use the risk register to track potential issues.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Core fields</span>
+                <span class="badge">Likelihood / Impact</span>
+            </p>
+            <p class="meta">Rate likelihood and impact as Low, Medium, or High.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Statuses</span>
+                <span class="badge">Open to Closed</span>
+            </p>
+            <p class="meta">Move risks through Open, Monitoring, Mitigating, or Closed.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Mitigation plan</span>
+                <span class="badge">Action</span>
+            </p>
+            <p class="meta">Record how the team will address the risk.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Team</h2>
+        <p class="meta">Manage membership and access roles.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Add or invite members</span>
+                <span class="badge">Access</span>
+            </p>
+            <p class="meta">Invite if supported, or keep as a read-only roster.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Roles</span>
+                <span class="badge">Permissions</span>
+            </p>
+            <p class="meta">Administrator, Project Manager, Contributor, or Viewer.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Status</span>
+                <span class="badge">Active</span>
+            </p>
+            <p class="meta">Track Active, Inactive, or Pending members.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Project settings</h2>
+        <p class="meta">Update global project information and defaults.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Project info</span>
+                <span class="badge">Description</span>
+            </p>
+            <p class="meta">Edit the project name, owner, and description.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Effort defaults</span>
+                <span class="badge">Daily / Weekly</span>
+            </p>
+            <p class="meta">Set default entry mode, week start day, and rounding.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Access model</span>
+                <span class="badge">Single project</span>
+            </p>
+            <p class="meta">All users work in the same project workspace.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Account and profile</h2>
+        <p class="meta">Manage sign-in, profile, and security info.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Register and sign in</span>
+                <span class="badge">Access</span>
+            </p>
+            <p class="meta">Create an account and sign in to access project data.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Profile updates</span>
+                <span class="badge">Profile</span>
+            </p>
+            <p class="meta">Update name, email, address, and profile image.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Security</span>
+                <span class="badge">Password</span>
+            </p>
+            <p class="meta">Change your password and security questions in Profile.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Definitions</h2>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Functional requirement</span>
+                <span class="badge">What it does</span>
+            </p>
+            <p class="meta">A feature or behavior the system must provide.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Non-functional requirement</span>
+                <span class="badge">How it behaves</span>
+            </p>
+            <p class="meta">Performance, security, usability, and other quality constraints.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Effort categories</span>
+                <span class="badge">Activities</span>
+            </p>
+            <p class="meta">Requirements Analysis, Design, Coding, Testing, Project Management.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Risk likelihood vs impact</span>
+                <span class="badge">Probability vs damage</span>
+            </p>
+            <p class="meta">Likelihood is how likely the risk is; impact is how severe it is.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Troubleshooting</h2>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Cannot sign in</span>
+                <span class="badge">Auth</span>
+            </p>
+            <p class="meta">Confirm your account is active and password is correct.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Missing requirement in Effort dropdown</span>
+                <span class="badge">Requirement</span>
+            </p>
+            <p class="meta">Ensure the requirement exists and is not archived.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Unable to save effort</span>
+                <span class="badge">Validation</span>
+            </p>
+            <p class="meta">Requirement, category, and hours are required and must be valid.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Totals not updating</span>
+                <span class="badge">Refresh</span>
+            </p>
+            <p class="meta">Reload the page or check filters for the selected range.</p>
         </div>
     </section>
 </section>

@@ -50,7 +50,7 @@ router.post("/login", async (req, res) => {
     }
 
     // Now we check the password
-    const userRows = await db.query("SELECT id, profile_image_url, suspension_end_at, status, temp_password FROM users WHERE password_hash = crypt($1, password_hash) AND username = $2", [password, username]);
+    const userRows = await db.query("SELECT id, suspension_end_at, status, temp_password FROM users WHERE password_hash = crypt($1, password_hash) AND username = $2", [password, username]);
     // If the password was correct, we'll have one row in userRows
     const user = userRows.rows[0];
 

@@ -1,0 +1,165 @@
+<section class="page stack">
+    <header class="page-header">
+        <h1>Dashboard</h1>
+        <p>One screen that answers what should I do next and what’s happening.</p>
+    </header>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Project Snapshot</h2>
+            <p class="meta">Single shared project overview.</p>
+            <div class="data-row data-row--columns">
+                <div class="data-column">
+                    <p class="meta">Project</p>
+                    <p class="value">Helm</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Owner / PM</p>
+                    <p class="value">Andrew McDaniel</p>
+                </div>
+                <div class="data-column">
+                    <p class="meta">Team</p>
+                    <p class="value">5 members</p>
+                </div>
+            </div>
+            <p>Helm keeps requirements, effort, and risks visible for the whole team.</p>
+        </section>
+
+        <section class="card stack">
+            <h2>Quick Actions</h2>
+            <p class="meta">Jump straight into the most common tasks.</p>
+            <div class="stack">
+                <button type="button">Add requirement</button>
+                <button type="button">Log effort</button>
+                <button type="button">Add risk</button>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small">View all requirements</button>
+                <button type="button" class="button-small">View effort report</button>
+            </div>
+        </section>
+    </div>
+
+    <section class="stack">
+        <h2>Key Metrics</h2>
+        <div class="grid">
+            <article class="card stack">
+                <h3>Total requirements</h3>
+                <p class="value">28</p>
+                <p class="meta">20 functional · 8 non-functional</p>
+            </article>
+            <article class="card stack">
+                <h3>Effort logged (week)</h3>
+                <p class="value">32.5 hrs</p>
+                <p class="meta">Across 11 entries</p>
+            </article>
+            <article class="card stack">
+                <h3>Effort logged (total)</h3>
+                <p class="value">214 hrs</p>
+                <p class="meta">Project lifetime</p>
+            </article>
+            <article class="card stack">
+                <h3>Open risks</h3>
+                <p class="value">6</p>
+                <p class="meta">2 high · 3 medium · 1 low</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>This week’s effort by category</h2>
+        <p class="meta">Totals for the current week across all contributors.</p>
+        <div class="table-scroll">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Hours</th>
+                        <th>Trend</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Requirements Analysis</td>
+                        <td>6.0</td>
+                        <td><span class="badge">Steady</span></td>
+                    </tr>
+                    <tr>
+                        <td>Design</td>
+                        <td>7.5</td>
+                        <td><span class="badge">Rising</span></td>
+                    </tr>
+                    <tr>
+                        <td>Coding</td>
+                        <td>12.0</td>
+                        <td><span class="badge">Peak</span></td>
+                    </tr>
+                    <tr>
+                        <td>Testing</td>
+                        <td>4.5</td>
+                        <td><span class="badge">Starting</span></td>
+                    </tr>
+                    <tr>
+                        <td>Project Management</td>
+                        <td>2.5</td>
+                        <td><span class="badge">Light</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="grid">
+        <section class="card stack">
+            <h2>Recently updated</h2>
+            <p class="meta">Latest changes across requirements, effort, and risks.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">FR-014 · Effort logging validation</span>
+                    <span class="badge">Requirement</span>
+                </p>
+                <p class="meta">Updated 2 hours ago by Dylan</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">8 hrs · Coding on FR-011</span>
+                    <span class="badge">Effort</span>
+                </p>
+                <p class="meta">Logged yesterday by Jay</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">R-03 · Scope creep risk moved to High</span>
+                    <span class="badge">Risk</span>
+                </p>
+                <p class="meta">Updated yesterday by Andrew</p>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Attention needed</h2>
+            <p class="meta">Items that could use a follow-up this week.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">5 requirements with no effort logged</span>
+                    <span class="badge">Review</span>
+                </p>
+                <p class="meta">Start logging once implementation begins.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">R-02 · Uneven contribution risk</span>
+                    <span class="badge">High</span>
+                </p>
+                <p class="meta">Assign owners and check in mid-week.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">R-01 · Time constraints risk</span>
+                    <span class="badge">High</span>
+                </p>
+                <p class="meta">Confirm availability before next sprint.</p>
+            </div>
+        </section>
+    </div>
+</section>
