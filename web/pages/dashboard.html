@@ -5,24 +5,26 @@
     </header>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" data-project-snapshot>
             <h2>Project Snapshot</h2>
             <p class="meta">Single shared project overview.</p>
-            <div class="data-row data-row--columns">
-                <div class="data-column">
-                    <p class="meta">Project</p>
-                    <p class="value">Helm</p>
-                </div>
-                <div class="data-column">
-                    <p class="meta">Owner / PM</p>
-                    <p class="value">Andrew McDaniel</p>
-                </div>
-                <div class="data-column">
-                    <p class="meta">Team</p>
-                    <p class="value">5 members</p>
+            <div class="overflow-scroll-horizontal">
+                <div class="data-row data-row--columns">
+                    <div class="data-column">
+                        <p class="meta">Project</p>
+                        <p class="value" data-project-name>Helm</p>
+                    </div>
+                    <div class="data-column">
+                        <p class="meta">Owner / PM</p>
+                        <p class="value" data-project-owner>Andrew McDaniel</p>
+                    </div>
+                    <div class="data-column">
+                        <p class="meta">Team</p>
+                        <p class="value" data-team-size>5 members</p>
+                    </div>
                 </div>
             </div>
-            <p>Helm keeps requirements, effort, and risks visible for the whole team.</p>
+            <p data-project-summary>Helm keeps requirements, effort, and risks visible for the whole team.</p>
         </section>
 
         <section class="card stack">
@@ -40,33 +42,33 @@
         </section>
     </div>
 
-    <section class="stack">
+    <section class="stack" data-key-metrics>
         <h2>Key Metrics</h2>
         <div class="grid">
             <article class="card stack">
                 <h3>Total requirements</h3>
-                <p class="value">28</p>
-                <p class="meta">20 functional · 8 non-functional</p>
+                <p class="value" data-metric-total-requirements>28</p>
+                <p class="meta" data-metric-requirements-breakdown>20 functional · 8 non-functional</p>
             </article>
             <article class="card stack">
                 <h3>Effort logged (week)</h3>
-                <p class="value">32.5 hrs</p>
-                <p class="meta">Across 11 entries</p>
+                <p class="value" data-metric-effort-week>32.5 hrs</p>
+                <p class="meta" data-metric-effort-week-meta>Across 11 entries</p>
             </article>
             <article class="card stack">
                 <h3>Effort logged (total)</h3>
-                <p class="value">214 hrs</p>
-                <p class="meta">Project lifetime</p>
+                <p class="value" data-metric-effort-total>214 hrs</p>
+                <p class="meta" data-metric-effort-total-meta>Project lifetime</p>
             </article>
             <article class="card stack">
                 <h3>Open risks</h3>
-                <p class="value">6</p>
-                <p class="meta">2 high · 3 medium · 1 low</p>
+                <p class="value" data-metric-open-risks>6</p>
+                <p class="meta" data-metric-open-risks-meta>2 high · 3 medium · 1 low</p>
             </article>
         </div>
     </section>
 
-    <section class="card stack">
+    <section class="card stack" data-effort-by-category>
         <h2>This week’s effort by category</h2>
         <p class="meta">Totals for the current week across all contributors.</p>
         <div class="table-scroll">
@@ -78,7 +80,7 @@
                         <th>Trend</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody data-effort-by-category-body>
                     <tr>
                         <td>Requirements Analysis</td>
                         <td>6.0</td>
@@ -113,53 +115,321 @@
         <section class="card stack">
             <h2>Recently updated</h2>
             <p class="meta">Latest changes across requirements, effort, and risks.</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">FR-014 · Effort logging validation</span>
-                    <span class="badge">Requirement</span>
-                </p>
-                <p class="meta">Updated 2 hours ago by Dylan</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">8 hrs · Coding on FR-011</span>
-                    <span class="badge">Effort</span>
-                </p>
-                <p class="meta">Logged yesterday by Jay</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">R-03 · Scope creep risk moved to High</span>
-                    <span class="badge">Risk</span>
-                </p>
-                <p class="meta">Updated yesterday by Andrew</p>
+            <div class="stack" data-recent-activity-list>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">FR-014 · Effort logging validation</span>
+                        <span class="badge">Requirement</span>
+                    </p>
+                    <p class="meta">Updated 2 hours ago by Dylan</p>
+                </div>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">8 hrs · Coding on FR-011</span>
+                        <span class="badge">Effort</span>
+                    </p>
+                    <p class="meta">Logged yesterday by Jay</p>
+                </div>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">R-03 · Scope creep risk moved to High</span>
+                        <span class="badge">Risk</span>
+                    </p>
+                    <p class="meta">Updated yesterday by Andrew</p>
+                </div>
             </div>
         </section>
 
         <section class="card stack">
             <h2>Attention needed</h2>
             <p class="meta">Items that could use a follow-up this week.</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">5 requirements with no effort logged</span>
-                    <span class="badge">Review</span>
-                </p>
-                <p class="meta">Start logging once implementation begins.</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">R-02 · Uneven contribution risk</span>
-                    <span class="badge">High</span>
-                </p>
-                <p class="meta">Assign owners and check in mid-week.</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">R-01 · Time constraints risk</span>
-                    <span class="badge">High</span>
-                </p>
-                <p class="meta">Confirm availability before next sprint.</p>
+            <div class="stack" data-attention-needed-list>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">5 requirements with no effort logged</span>
+                        <span class="badge">Review</span>
+                    </p>
+                    <p class="meta">Start logging once implementation begins.</p>
+                </div>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">R-02 · Uneven contribution risk</span>
+                        <span class="badge">High</span>
+                    </p>
+                    <p class="meta">Assign owners and check in mid-week.</p>
+                </div>
+                <div class="data-row">
+                    <p class="value">
+                        <span class="span-label">R-01 · Time constraints risk</span>
+                        <span class="badge">High</span>
+                    </p>
+                    <p class="meta">Confirm availability before next sprint.</p>
+                </div>
             </div>
         </section>
     </div>
+
+    <%
+    const usersWithPendingApprovals = users.filter((user) => user.status === "pending");
+    const usersWithSuspendedAccounts = users.filter((user) => user.status === "suspended");
+    const usersAvailableToSuspend = users.filter((user) => user.status === "active" && user.id !== currentUserId);
+    const usersWithExpiredPasswords = users.filter((user) => user.password_expires_at && new Date(user.password_expires_at) < new Date());
+    %>
+    <% if (role === "administrator") { %>
+    <section class="stack" data-user-management>
+        <header class="page-header">
+            <h2>User Management</h2>
+            <p>Approve users, manage access, and handle password resets.</p>
+        </header>
+        <script type="application/json" id="users-data"><%- JSON.stringify({ users, currentUserId }).replace(/</g, "\\u003c") %></script>
+        <div>
+            <button type="button" data-refresh>Refresh data</button>
+        </div>
+        <div class="grid">
+            <section class="card stack">
+                <h2>User approvals</h2>
+                <div class="stack" data-user-approvals-list>
+                    <% if (usersWithPendingApprovals.length === 0) { %>
+                    <p class="meta" data-user-approvals-empty>No pending user approvals</p>
+                    <% } %>
+                    <% usersWithPendingApprovals.forEach(user => { %>
+                    <article class="data-row" data-user_id-<%= user.id %>>
+                        <p class="value">
+                            <span class="span-label">
+                                <span><%= user.username %></span>
+                                <span class="meta"> (Full name: <%= user.first_name %> <%= user.last_name %> · Role: <%= user.role %>)</span>
+                            </span>
+                            <span class="span-actions">
+                                <button class="button-small" data-user-action="approve" data-user-id="<%= user.id %>">Approve</button>
+                                <button class="button-small" data-user-action="reject" data-user-id="<%= user.id %>">Reject</button>
+                            </span>
+                        </p>
+                        <p class="meta">Pending since <%= user.created_at %></p>
+                    </article>
+                    <% }); %>
+                </div>
+            </section>
+            <section class="card stack">
+                <h2>Users with expired passwords</h2>
+                <div class="stack" data-expired-passwords-list>
+                    <% if (usersWithExpiredPasswords.length === 0) { %>
+                    <p class="meta" data-expired-passwords-empty>No users with expired passwords</p>
+                    <% } %>
+                    <% usersWithExpiredPasswords.forEach(user => { %>
+                    <article class="data-row">
+                        <p class="value">
+                            <span><%= user.username %></span>
+                            <span class="meta"> (Full name: <%= user.first_name %> <%= user.last_name %>)</span>
+                            <button type="button" class="button-small">Suspend user</button>
+                        </p>
+                        <p class="meta">Password expired on <%= user.password_expires_at %></p>
+                    </article>
+                    <% }); %>
+                </div>
+            </section>
+        </div>
+        <div class="grid">
+            <section class="card stack">
+                <h2>Suspended users</h2>
+                <div class="stack" data-suspended-users-list>
+                    <% if (usersWithSuspendedAccounts.length === 0) { %>
+                    <p class="meta" data-suspended-users-empty>No suspended user accounts</p>
+                    <% } %>
+                    <% usersWithSuspendedAccounts.forEach(user => { %>
+                    <article class="data-row" data-suspended_user_id-<%= user.id %>>
+                        <p class="value">
+                            <span class="span-label">
+                                <span><%= user.username %></span>
+                                <span class="meta"> (Full name: <%= user.first_name %> <%= user.last_name %>)</span>
+                            </span>
+                            <span class="span-actions">
+                                <button class="button-small" data-user-action="reinstate" data-user-id="<%= user.id %>">Reinstate</button>
+                            </span>
+                        </p>
+                        <p class="meta">Ends <%= user.suspension_end_at %></p>
+                    </article>
+                    <% }); %>
+                </div>
+            </section>
+            <section class="card stack">
+                <h2>Currently logged-in users</h2>
+                <div class="stack" data-logged-in-users-list>
+                    <% if (loggedInUsers.length === 0) { %>
+                    <p class="meta" data-logged-in-users-empty>No users currently logged in</p>
+                    <% } %>
+                    <% loggedInUsers.forEach(user => { %>
+                    <article class="data-row">
+                        <% const matchedUser = users.find(u => u.id === user.user_id); %>
+                        <% if (matchedUser) { %>
+                        <p class="value"><%= matchedUser.last_name %>, <%= matchedUser.first_name %></p>
+                        <p class="meta">Username: <%= matchedUser.username %></p>
+                        <% } else { %>
+                        <p class="value">Unknown user</p>
+                        <% } %>
+                    </article>
+                    <% }); %>
+                </div>
+            </section>
+        </div>
+        <div class="grid">
+            <section class="card stack">
+                <h2>All users</h2>
+                <p class="meta">Click data to edit.</p>
+                <div class="table-scroll">
+                    <table class="table table--wide" id="users_table" data-users-table>
+                        <thead>
+                            <tr>
+                                <th>Username</th>
+                                <th>Full name</th>
+                                <th>Status</th>
+                                <th>Role</th>
+                                <th>Created at</th>
+                                <th>Last login</th>
+                                <th>Password expires</th>
+                                <th>Suspension starts</th>
+                                <th>Suspension ends</th>
+                                <th>Email</th>
+                                <th>Address</th>
+                                <th>Temp password</th>
+                            </tr>
+                        </thead>
+                        <tbody data-users-table-body>
+                            <% users.forEach(user => { %>
+                            <tr>
+                                <td data-username-<%= user.id %>><%= user.username %></td>
+                                <td data-fullname-<%= user.id %>><%= `${user.first_name || ""} ${user.last_name || ""}`.trim() %></td>
+                                <td data-status-<%= user.id %>><%= user.status %></td>
+                                <td data-role-<%= user.id %>><%= user.role %></td>
+                                <td data-created_at-<%= user.id %>><%= user.created_at %></td>
+                                <td data-last_login_at-<%= user.id %>><%= user.last_login_at %></td>
+                                <td data-password_expires_at-<%= user.id %>><%= user.password_expires_at || "N/A" %></td>
+                                <td data-suspension_start_at-<%= user.id %>><%= user.suspension_start_at || "N/A" %></td>
+                                <td data-suspension_end_at-<%= user.id %>><%= user.suspension_end_at || "N/A" %></td>
+                                <td data-email-<%= user.id %>><%= user.email %></td>
+                                <td data-address-<%= user.id %>><%= user.address || "" %></td>
+                                <td data-temp_password-<%= user.id %>><%= user.temp_password ? "True" : "False" %></td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        <div class="grid">
+            <section class="card stack">
+                <h2>Create user</h2>
+                <form id="create-user-form" class="stack">
+                    <div class="field">
+                        <label for="first_name">First name</label>
+                        <input type="text" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="field">
+                        <label for="last_name">Last name</label>
+                        <input type="text" id="last_name" name="last_name" required>
+                    </div>
+                    <div class="field">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" required>
+                    </div>
+                    <div class="field">
+                        <label for="date_of_birth">Date of birth</label>
+                        <input type="date" id="date_of_birth" name="date_of_birth" required>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="field">
+                        <label for="role">Role</label>
+                        <select id="role" name="role" required>
+                            <option value="administrator">Administrator</option>
+                            <option value="manager">Manager</option>
+                            <option value="coder">Coder</option>
+                            <option value="viewer">Viewer</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="user_icon">Profile image</label>
+                        <input type="file" id="user_icon" name="user_icon" accept="image/png, image/jpeg, image/jpg, image/gif, image/webp">
+                    </div>
+                    <button type="submit">Create user</button>
+                </form>
+            </section>
+            <div class="stack">
+                <section class="card stack">
+                    <h2>Delete user</h2>
+                    <form id="delete-user-form" class="stack">
+                        <div class="field">
+                            <label for="delete_username">Username</label>
+                            <input type="text" id="delete_username" name="username" required>
+                        </div>
+                        <button type="submit">Delete user</button>
+                    </form>
+                </section>
+                <section class="card stack">
+                    <h2>Reset user password</h2>
+                    <form id="reset-password-form" class="stack">
+                        <div class="field">
+                            <label for="reset_username">Username</label>
+                            <input type="text" id="reset_username" name="username" required>
+                        </div>
+                        <button type="submit">Reset password</button>
+                    </form>
+                </section>
+                <section class="card stack">
+                    <h2>Suspend user account</h2>
+                    <form id="suspend-user-form" class="stack">
+                        <div class="field">
+                            <label for="suspend_username">Username</label>
+                            <select id="suspend_username" name="suspend_username" required>
+                                <% if (usersAvailableToSuspend.length === 0) { %>
+                                <option value="" disabled selected>No eligible users</option>
+                                <% } else { %>
+                                <option value="" disabled selected>Select a user</option>
+                                <% usersAvailableToSuspend.forEach(user => { %>
+                                <option value="<%= user.username %>"><%= user.username %></option>
+                                <% }); %>
+                                <% } %>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="suspension_start_date">Suspension start date/time</label>
+                            <input type="datetime-local" id="suspension_start_date" name="suspension_start_date" required>
+                        </div>
+                        <div class="field">
+                            <label for="suspension_end_date">Suspension end date/time</label>
+                            <input type="datetime-local" id="suspension_end_date" name="suspension_end_date" required>
+                        </div>
+                        <button type="submit">Suspend user</button>
+                    </form>
+                </section>
+            </div>
+        </div>
+        <div class="grid">
+            <section class="card stack">
+                <h2>Email user</h2>
+                <form id="email-user-form" class="stack">
+                    <div class="field">
+                        <label for="email_username">To</label>
+                        <select id="email_username" name="username" required>
+                            <option value="" disabled selected>Select a user</option>
+                            <% users.forEach(user => { %>
+                            <option value="<%= user.username %>"><%= user.username %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="field">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit">Send email</button>
+                </form>
+            </section>
+        </div>
+    </section>
+    <% } %>
 </section>
