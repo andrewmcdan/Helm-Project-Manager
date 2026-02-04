@@ -12,6 +12,7 @@ router.get("/summary", async (req, res) => {
             log("warn", "No active project data found for dashboard summary", { userId: req.user?.id }, getCallerInfo(), req.user?.id);
             return res.status(404).json({ error: "No active project data found" });
         }
+        // TODO: Get totals for requirements, efforts, risks, team size, etc.
         const summaryData = {
             project_name: projData.project_name,
             project_owner: projData.project_owner,

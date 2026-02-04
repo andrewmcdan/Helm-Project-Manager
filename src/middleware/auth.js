@@ -54,6 +54,7 @@ const authMiddleware = async (req, res, next) => {
         }
     }
     log("trace", `User ${userId} authenticated successfully`, { user_id: userId }, utilities.getCallerInfo(), req.user.id);
+    req.user.loggedIn = true;
     return next();
 };
 

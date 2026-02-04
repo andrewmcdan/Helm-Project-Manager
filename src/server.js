@@ -1,16 +1,11 @@
 const express = require("express");
 const path = require("path");
 const ejs = require("ejs");
-const authRoutes = require("./routes/auth");
-const imageRoutes = require("./routes/images");
-const authMiddleware = require("./middleware/auth");
 const db = require("./db/db");
 const logger = require("./utils/logger");
 const { getCallerInfo, cleanupLogs } = require("./utils/utilities");
-const usersRoutes = require("./routes/users");
 const usersController = require("./controllers/users");
 const { SECURITY_QUESTIONS } = require("./data/security_questions");
-const dashboardRoutes = require("./routes/dashboard");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,9 +14,9 @@ app.use(express.json());
 app.engine("html", ejs.renderFile);
 app.set("view engine", "html");
 app.set("views", path.join(__dirname, "..", "web", "pages"));
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", require("./routes/auth"));
 
-app.use(authMiddleware);
+app.use(require("./middleware/auth"));
 // Any routes added after this point will require authentication
 app.get("/pages/dashboard.html", async (req, res, next) => {
     try {
@@ -81,6 +76,7 @@ app.get("/pages/public/forgot-password_submit.html", async (req, res, next) => {
 app.get("/pages/profile.html", async (req, res, next) => {
     try {
         logger.log("debug", "Rendering profile page", { userId: req.user?.id }, getCallerInfo(), req.user?.id);
+        // TODO: move this db call to usersController
         const result = await db.query("SELECT id, role, first_name, last_name, email, address, password_expires_at, suspension_start_at, suspension_end_at, security_question_1, security_question_2, security_question_3, temp_password FROM users WHERE id = $1", [req.user.id]);
         const user = result.rows[0] || {};
         res.render("profile", { user: user });
@@ -90,9 +86,10 @@ app.get("/pages/profile.html", async (req, res, next) => {
     }
 });
 app.use(express.static("web"));
-app.use("/api/users", usersRoutes);
-app.use("/images", imageRoutes);
-app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", require("./routes/users"));
+app.use("/images", require("./routes/images"));
+app.use("/api/dashboard", require("./routes/dashboard"));
+app.use("/api/requirements", require("./routes/requirements"));
 
 // This if statement ensures the server only starts if this file is run directly.
 // This allows the server to be imported without starting it, which is useful for testing.
