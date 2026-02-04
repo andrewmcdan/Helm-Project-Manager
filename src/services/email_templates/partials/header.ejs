@@ -1,0 +1,25 @@
+<tr>
+  <td align="left" style="padding:18px 22px; background-color:#050b2b;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td align="left" style="vertical-align:middle;">
+          <img
+            src="<%= logoUrl %>"
+            width="140"
+            height="40"
+            alt="<%= companyName %>"
+            border="0"
+            style="display:block; width:140px; height:40px;"
+          />
+        </td>
+        <td align="right" style="vertical-align:middle;">
+          <% if (headerRightText) { %>
+            <span style="font-family:Arial, Helvetica, sans-serif; font-size:12px; color:#ffffff;">
+              <%= headerRightText %>
+            </span>
+          <% } %>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>

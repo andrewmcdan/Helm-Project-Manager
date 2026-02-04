@@ -1,0 +1,36 @@
+<%
+// Variables expected:
+// firstName, appName, loginUrl, approvedDate, userEmail, orgName
+%>
+
+<p style="margin:0; font-family:Arial, Helvetica, sans-serif; font-size:14px; line-height:22px; color:#2f3646;">
+  Hi <%= firstName %>,<br /><br />
+  Your account for <strong style="color:#0c143a;"><%= appName %></strong> has been approved. You can now sign in.
+</p>
+
+<div style="height:14px; line-height:14px; font-size:14px;">&nbsp;</div>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+  <tr>
+    <td style="padding:14px; border:1px solid rgba(20,27,60,0.16); border-radius:12px; background-color:rgba(255,255,255,0.3);">
+      <p style="margin:0 0 8px 0; font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#0c143a; font-weight:bold;">
+        Account details
+      </p>
+      <p style="margin:0; font-family:Arial, Helvetica, sans-serif; font-size:13px; line-height:19px; color:#2f3646;">
+        Username or email: <strong style="color:#0c143a;"><%= userEmail %></strong><br />
+        Approved on: <strong style="color:#0c143a;"><%= approvedDate %></strong><br />
+        Organization: <strong style="color:#0c143a;"><%= orgName %></strong>
+      </p>
+    </td>
+  </tr>
+</table>
+
+<div style="height:14px; line-height:14px; font-size:14px;">&nbsp;</div>
+
+<%- buttonHtml %>
+
+<div style="height:6px; line-height:6px; font-size:6px;">&nbsp;</div>
+
+<p style="margin:0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:18px; color:#2f3646;">
+  If you did not request this account, you can ignore this email.
+</p>

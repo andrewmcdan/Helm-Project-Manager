@@ -1,0 +1,40 @@
+<tr>
+  <td style="padding:8px 22px 0 22px;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+      <tr>
+        <td style="border-top:1px solid rgba(20,27,60,0.16); font-size:0; line-height:0;">&nbsp;</td>
+      </tr>
+    </table>
+  </td>
+</tr>
+
+<tr>
+  <td align="left" style="padding:14px 22px 22px 22px;">
+    <% if (supportEmail) { %>
+      <p style="margin:0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:18px; color:#2f3646;">
+        Need help? Contact
+        <a href="mailto:<%= supportEmail %>" style="color:#2a6bb5; text-decoration:underline;"><%= supportEmail %></a>.
+      </p>
+    <% } %>
+
+    <% if (footerNote) { %>
+      <p style="margin:10px 0 0 0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:18px; color:#2f3646;">
+        <%= footerNote %>
+      </p>
+    <% } %>
+
+    <p style="margin:10px 0 0 0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:18px; color:#2f3646;">
+      <%= companyName %> · <%= companyAddress %>
+    </p>
+
+    <% if (unsubscribeUrl) { %>
+      <p style="margin:10px 0 0 0; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:18px; color:#2f3646;">
+        <a href="<%= unsubscribeUrl %>" style="color:#2a6bb5; text-decoration:underline;">Unsubscribe</a>
+        <% if (preferencesUrl) { %>
+          &nbsp;|&nbsp;
+          <a href="<%= preferencesUrl %>" style="color:#2a6bb5; text-decoration:underline;">Manage preferences</a>
+        <% } %>
+      </p>
+    <% } %>
+  </td>
+</tr>
