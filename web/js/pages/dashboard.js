@@ -1,8 +1,65 @@
 export default async function initDashboard({showLoadingOverlay, hideLoadingOverlay}) {
-    const authHelpers = await loadFetchWithAuth();
-    const { fetchWithAuth } = authHelpers;
-    const domHelpers = await loadDomHelpers();
-    const { createInput, createSelect } = domHelpers;
+    const { fetchWithAuth } = await loadFetchWithAuth();
+    const { createInput, createSelect } = await loadDomHelpers();
+    
+    const projectSnapshotEl = document.querySelector("[data-project-snapshot]");
+    const projectNameEl = document.querySelector("[data-project-name]");
+    const projectOwnerEl = document.querySelector("[data-project-owner]");
+    const projectTeamSizeEl = document.querySelector("[data-team-size]");
+    const projectSummaryEl = document.querySelector("[data-project-summary]");
+    if (projectSnapshotEl) {
+        if(projectNameEl){
+            projectNameEl.textContent = "Loading...";
+        }
+        if(projectOwnerEl){
+            projectOwnerEl.textContent = "Loading...";
+        }
+        if(projectTeamSizeEl){
+            projectTeamSizeEl.textContent = "Loading...";
+        }
+        if(projectSummaryEl){
+            projectSummaryEl.textContent = "Loading...";
+        }
+        try {
+            fetchWithAuth("/api/dashboard/summary", {
+                method: "GET",
+                headers: {},
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.project_name && projectNameEl) {
+                        projectNameEl.textContent = data.project_name;
+                    }
+                    if (data.project_owner && projectOwnerEl) {
+                        projectOwnerEl.textContent = data.project_owner;
+                    }
+                    if (data.team_size !== undefined && projectTeamSizeEl) {
+                        projectTeamSizeEl.textContent = String(data.team_size);
+                    }
+                    if (data.project_summary && projectSummaryEl) {
+                        projectSummaryEl.textContent = data.project_summary;
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error fetching project snapshot:", error);
+                    if(projectNameEl){
+                        projectNameEl.textContent = "Error";
+                    }
+                    if(projectOwnerEl){
+                        projectOwnerEl.textContent = "Error";
+                    }
+                    if(projectTeamSizeEl){
+                        projectTeamSizeEl.textContent = "Error";
+                    }
+                    if(projectSummaryEl){
+                        projectSummaryEl.textContent = "Error";
+                    }
+                });
+        } catch (error) {
+            console.error("Error processing project snapshot:", error);
+        }
+    }
+    
     const stamp = document.querySelector("[data-last-updated]");
     if (stamp) {
         stamp.textContent = new Date().toLocaleString();
@@ -395,5 +452,3 @@ async function loadFetchWithAuth() {
     const { fetchWithAuth } = module;
     return { fetchWithAuth };
 }
-
-

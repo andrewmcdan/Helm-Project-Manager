@@ -41,3 +41,12 @@ CREATE TABLE IF NOT EXISTS project_settings_change_log (
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_settings_change_log_project ON project_settings_change_log(project_settings_id);
+
+CREATE TABLE IF NOT EXISTS project_team_members (
+    id BIGSERIAL PRIMARY KEY,
+    project_settings_id BIGINT NOT NULL REFERENCES project_settings(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role TEXT NOT NULL,
+    added_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    added_by BIGINT NULL REFERENCES users(id) ON DELETE SET NULL
+);

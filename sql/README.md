@@ -90,6 +90,14 @@
 - change_description: text
 - changes: jsonb
 
+### public.project_team_members
+- id: bigint
+- project_settings_id: bigint
+- user_id: bigint
+- role: text
+- added_at: timestamp with time zone
+- added_by: bigint
+
 ### public.requirements
 - id: bigint
 - requirement_code: text

@@ -16,11 +16,17 @@ const transporter = nodemailer.createTransport({
 
 function sendEmail(to, subject, body) {
     logger.log("info", `Sending email to ${to} with subject "${subject}"`, { function: "sendEmail" }, utilities.getCallerInfo());
+    let htmlBody = null;
+    if(body.includes("<!doctype html>") || body.includes("<html")){
+        htmlBody = body;
+        body = "This is an HTML email. Please view it in an HTML-compatible email viewer.";
+    }
     const mailOptions = {
-        from: process.env.SMTP_EMAIL_FROM,
+        from: `HELM Project Manager <${process.env.SMTP_EMAIL_FROM}>`,
         to: to,
         subject: subject,
         text: body,
+        html: htmlBody,
     };
     return transporter.sendMail(mailOptions)
         .then((result) => {

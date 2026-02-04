@@ -10,6 +10,7 @@ const { getCallerInfo, cleanupLogs } = require("./utils/utilities");
 const usersRoutes = require("./routes/users");
 const usersController = require("./controllers/users");
 const { SECURITY_QUESTIONS } = require("./data/security_questions");
+const dashboardRoutes = require("./routes/dashboard");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -91,6 +92,7 @@ app.get("/pages/profile.html", async (req, res, next) => {
 app.use(express.static("web"));
 app.use("/api/users", usersRoutes);
 app.use("/images", imageRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // This if statement ensures the server only starts if this file is run directly.
 // This allows the server to be imported without starting it, which is useful for testing.
