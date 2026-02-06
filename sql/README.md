@@ -100,7 +100,8 @@
 
 ### public.requirements
 - id: bigint
-- requirement_code: text
+- requirement_code_prefix: text
+- requirement_code_number: integer
 - project_id: bigint
 - title: text
 - description: text

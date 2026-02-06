@@ -34,7 +34,11 @@ router.get("/get-by-filter/:offset/:count", loggedInCheck, async (req, res) => {
             sortField,
             sortOrder,
         });
-        res.json(requirements);
+        if (!Array.isArray(requirements)) {
+            res.json([]);
+        } else {
+            res.json(requirements);
+        }
     } catch (error) {
         log("error", `Failed to fetch requirements: ${error.message}`, { userId, offset, count }, getCallerInfo(), userId);
         res.status(500).json({ error: "Failed to fetch requirements" });

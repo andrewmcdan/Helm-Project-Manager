@@ -32,9 +32,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
 
     const createRequirementBtn = document.getElementById("create_requirement_button");
     const createRequirementForm = document.getElementById("add_requirement_form");
-    createRequirementBtn.addEventListener("click", async (event) => {
-        event.preventDefault();
-        const formData = new FormData(createRequirementForm);
+    const createRequirement = async (formData)=>{
         const requirementTitle = formData.get("requirement_title");
         const requirementDescription = formData.get("requirement_description");
         const requirementType = formData.get("requirement_type");
@@ -62,7 +60,6 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             return;
         }
         try {
-            showLoadingOverlay("Creating requirement...");
             const response = await fetchWithAuth("/api/requirements/new", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -79,13 +76,45 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
                 const errorData = await response.json().catch(() => ({}));
                 throw new Error(errorData.error || "Failed to create requirement");
             }
-            const newRequirement = await response.json();
-            addRequirementModal.classList.remove("is-visible");
-            addRequirementModal.setAttribute("aria-hidden", "true");
-            hideLoadingOverlay();
+            await response.json();
+            return true;
+            
         } catch (error) {
             hideLoadingOverlay();
             alert(`Failed to create requirement: ${error.message}`);
+            return false;
+        }
+    }
+    createRequirementBtn.addEventListener("click", async (event) => {
+        showLoadingOverlay();
+        event.preventDefault();
+        const formData = new FormData(createRequirementForm);
+        const success = await createRequirement(formData);
+        if(success){
+            addRequirementModal.classList.remove("is-visible");
+            addRequirementModal.setAttribute("aria-hidden", "true");
+            hideLoadingOverlay();
+            await loadRequirements();
+        }else{
+            // keep the modal open for user to fix the errors
+            hideLoadingOverlay();
+        }
+    });
+
+    const createRequirementAndAddAnotherBtn = document.getElementById("create_and_add_another_requirement_button");
+    createRequirementAndAddAnotherBtn.addEventListener("click", async (event) => {
+        showLoadingOverlay();
+        event.preventDefault();
+        const formData = new FormData(createRequirementForm);
+        const success = await createRequirement(formData);
+        if(success){
+            // reset the form for next requirement input
+            createRequirementForm.reset();
+            hideLoadingOverlay();
+            await loadRequirements();
+        }else{
+            // keep the modal open for user to fix the errors
+            hideLoadingOverlay();
         }
     });
 
@@ -96,12 +125,13 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
 
     const buildRequirementTableLine = (requirement) => {
         const tr = document.createElement("tr");
+        console.log(requirement);
         tr.innerHTML = `
-            <td>${requirement.id}</td>
+            <td>${requirement.requirement_code_prefix + "-" + requirement.requirement_code_number}</td>
             <td>${requirement.title}</td>
             <td>${requirement.status}</td>
             <td>${requirement.priority}</td>
-            <td>${requirement.total_effort}</td>
+            <td>${requirement.total_effort ? requirement.total_effort : "None Logged"}</td>
             <td>${requirement.updated_at}</td>
             <td>
                 <button class="button" data-requirement-table-row-details-btn-id-${requirement.id}>Details</button>
