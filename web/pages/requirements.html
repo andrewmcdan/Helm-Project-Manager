@@ -33,16 +33,15 @@
             <h2>Primary actions</h2>
             <p class="meta">Keep requirements moving forward.</p>
             <div class="stack">
-                <button type="button">Create requirement</button>
-                <button type="button" class="button-small">Log effort</button>
+                <button type="button" data-create-requirement-button>Create requirement</button>
+                <button type="button" class="button-small" data-log-effort-button>Log effort</button>
             </div>
             <div class="span-actions">
-                <button type="button" class="button-small">View effort totals</button>
-                <button type="button" class="button-small">Export list</button>
+                <button type="button" class="button-small" data-view-effort-totals-button>View effort totals</button>
+                <button type="button" class="button-small" data-export-list-button>Export list</button>
             </div>
         </section>
     </div>
-
     <section class="card stack">
         <h2>Requirements index</h2>
         <p class="meta">Filter and manage the requirement backlog.</p>
@@ -206,5 +205,22 @@
                 <button type="button" class="button-small">Log effort</button>
             </div>
         </section>
+    </div>
+    <div id="add_requirement_modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close-button" id="close_add_requirement_modal" aria-label="Close">&times;</span>
+            <h2 id="add_requirement_modal_title">Add Requirement</h2>
+            <form id="add_requirement_form">
+                <table>
+                    <tr>
+                        <td><label for="add_requirement__label" id="add_requirement__label"></label></td>
+                        <td id="add_requirement__input"></td>
+                    </tr>
+                </table>
+                <span><p>&nbsp;</p></span>
+                <button type="submit" class="button-primary" id="create_requirement_button">Create and close</button>
+                <button type="button" class="button-secondary" id="create_and_add_another_requirement_button">Create and add another</button>
+            </form>
+        </div>
     </div>
 </section>

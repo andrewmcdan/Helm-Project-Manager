@@ -1,12 +1,17 @@
-import { updateRequirement } from "../../../src/controllers/requirements";
-
 export default async function initRequirements({ showLoadingOverlay, hideLoadingOverlay }) {
     const { fetchWithAuth } = await loadFetchWithAuth();
     const { createInput, createSelect } = await loadDomHelpers();
 
+    const createRequirementButton = document.querySelector("[data-create-requirement-button]");
+    const addRequirementModal = document.getElementById("add_requirement_modal");
+    createRequirementButton.addEventListener("click", async () => {
+        addRequirementModal.classList.add("is-visible");
+        addRequirementModal.setAttribute("aria-hidden", "false");
+    });
+
     const updateRequirementDetailsSection = (requirement) => {
         const detailsSection = document.getElementById("requirement-details-section");
-        
+        // TODO:
     }
 
     const buildRequirementTableLine = (requirement) => {
