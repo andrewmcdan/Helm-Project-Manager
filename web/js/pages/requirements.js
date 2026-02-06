@@ -7,12 +7,92 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
     createRequirementButton.addEventListener("click", async () => {
         addRequirementModal.classList.add("is-visible");
         addRequirementModal.setAttribute("aria-hidden", "false");
+        // TODO: Load requirement code/id prefixes
+        // TODO: Load requirement tags
+    });
+    const addCloseRequirementModalBtn = document.getElementById("close_add_requirement_modal");
+    addCloseRequirementModalBtn.addEventListener("click", () => {
+        addRequirementModal.classList.remove("is-visible");
+        addRequirementModal.setAttribute("aria-hidden", "true");
+    });
+
+    const addRequirementCodeInput = document.getElementById("add_requirement__code");
+    addRequirementCodeInput.addEventListener("input", () => {
+        const code = addRequirementCodeInput.value;
+        addRequirementCodeInput.value = code.replace(/[^a-zA-Z0-9_-]/g, "").toUpperCase();
+        // TODO: show code suggestions based on existing requirement codes and selected project
+    });
+
+    const addRequirementTagsInput = document.getElementById("add_requirement__tags");
+    addRequirementTagsInput.addEventListener("input", () => {
+        const tags = addRequirementTagsInput.value;
+        addRequirementTagsInput.value = tags.replace(/[^a-zA-Z0-9, ]/g, "").toLowerCase();
+        // TODO: show tag suggestions based on existing tags
+    });
+
+    const createRequirementBtn = document.getElementById("create_requirement_button");
+    const createRequirementForm = document.getElementById("add_requirement_form");
+    createRequirementBtn.addEventListener("click", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(createRequirementForm);
+        const requirementTitle = formData.get("requirement_title");
+        const requirementDescription = formData.get("requirement_description");
+        const requirementType = formData.get("requirement_type");
+        const requirementPriority = formData.get("requirement_priority");
+        const requirementTags = formData.get("requirement_tags");
+        const requirementCode = formData.get("requirement_code");
+        if (!requirementTitle || requirementTitle.trim() === "") {
+            alert("Title is required");
+            return;
+        }
+        if (!requirementType || requirementType.trim() === "") {
+            alert("Type is required");
+            return;
+        }
+        if (!requirementPriority || requirementPriority.trim() === "") {
+            alert("Priority is required");
+            return;
+        }
+        if (!requirementCode || requirementCode.trim() === "") {
+            alert("Code is required");
+            return;
+        }
+        if (!requirementTags || requirementTags.trim() === "") {
+            alert("Tags are required");
+            return;
+        }
+        try {
+            showLoadingOverlay("Creating requirement...");
+            const response = await fetchWithAuth("/api/requirements/new", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: requirementTitle,
+                    description: requirementDescription,
+                    requirement_type: requirementType,
+                    priority: requirementPriority,
+                    requirement_code: requirementCode,
+                    tags: requirementTags ? requirementTags.split(",").map((tag) => tag.trim()) : [],
+                }),
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to create requirement");
+            }
+            const newRequirement = await response.json();
+            addRequirementModal.classList.remove("is-visible");
+            addRequirementModal.setAttribute("aria-hidden", "true");
+            hideLoadingOverlay();
+        } catch (error) {
+            hideLoadingOverlay();
+            alert(`Failed to create requirement: ${error.message}`);
+        }
     });
 
     const updateRequirementDetailsSection = (requirement) => {
         const detailsSection = document.getElementById("requirement-details-section");
         // TODO:
-    }
+    };
 
     const buildRequirementTableLine = (requirement) => {
         const tr = document.createElement("tr");
@@ -52,15 +132,18 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             }
         });
         return tr;
-    }
+    };
 
     const loadRequirements = async () => {
         try {
             showLoadingOverlay();
-            const response = await fetchWithAuth("/api/requirements?sortField=updated_at&sortOrder=desc");
-            const requirements = await response.json();
+            const response = await fetchWithAuth("/api/requirements/get-by-filter/0/10?sortField=updated_at&sortOrder=desc");
+            const requirements = await response.json().catch(() => []);
             const tableBody = document.getElementById("requirements-table-body");
             tableBody.innerHTML = "";
+            if (!requirements || !Array.isArray(requirements)) {
+                throw new Error("Invalid response format: expected an array of requirements");
+            }
             requirements.forEach((requirement) => {
                 const tr = buildRequirementTableLine(requirement);
                 tableBody.appendChild(tr);

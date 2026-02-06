@@ -88,59 +88,17 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="requirements-table-body">
                     <tr>
-                        <td>FR-001</td>
-                        <td>Project overview and ownership</td>
+                        <td>Loading...</td>
+                        <td>Loading...</td>
                         <td><span class="badge">Approved</span></td>
-                        <td>High</td>
-                        <td>14.5 hrs</td>
-                        <td>Today</td>
+                        <td>Loading...</td>
+                        <td>Loading...</td>
+                        <td>Loading...</td>
                         <td class="span-actions">
                             <button type="button" class="button-small">Details</button>
                             <button type="button" class="button-small">Effort</button>
-                            <button type="button" class="button-small">Archive</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>FR-011</td>
-                        <td>Effort logging with categories</td>
-                        <td><span class="badge">In Progress</span></td>
-                        <td>High</td>
-                        <td>22.0 hrs</td>
-                        <td>Yesterday</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">Details</button>
-                            <button type="button" class="button-small">Effort</button>
-                            <button type="button" class="button-small">Edit</button>
-                            <button type="button" class="button-small">Archive</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>FR-014</td>
-                        <td>Requirement status workflow</td>
-                        <td><span class="badge">Proposed</span></td>
-                        <td>Medium</td>
-                        <td>0 hrs</td>
-                        <td>2 days ago</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">Details</button>
-                            <button type="button" class="button-small">Effort</button>
-                            <button type="button" class="button-small">Edit</button>
-                            <button type="button" class="button-small">Archive</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>NFR-003</td>
-                        <td>Token-based authentication</td>
-                        <td><span class="badge">Done</span></td>
-                        <td>High</td>
-                        <td>18.0 hrs</td>
-                        <td>4 days ago</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">Details</button>
-                            <button type="button" class="button-small">Effort</button>
-                            <button type="button" class="button-small">Edit</button>
                             <button type="button" class="button-small">Archive</button>
                         </td>
                     </tr>
@@ -160,21 +118,30 @@
                     <span class="span-label">Status</span>
                     <span class="badge">In Progress</span>
                 </p>
-                <p class="meta">Priority: High</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Priority</span>
+                    <span class="badge">High</span>
+                </p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Type</span>
                     <span class="badge">Functional</span>
                 </p>
-                <p class="meta">Tags: effort, logging, validation</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Tags</span>
+                    <span class="badge"> effort, logging, validation</span>
+                </p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Acceptance criteria</span>
                     <span class="badge">3 items</span>
                 </p>
-                <p class="meta">Inline validation and totals must be shown.</p>
             </div>
             <div class="span-actions">
                 <button type="button" class="button-small">View details</button>
@@ -213,8 +180,50 @@
             <form id="add_requirement_form">
                 <table>
                     <tr>
-                        <td><label for="add_requirement__label" id="add_requirement__label"></label></td>
-                        <td id="add_requirement__input"></td>
+                        <td><label for="add_requirement__label" id="add_requirement__label">Title</label></td>
+                        <td id="add_requirement__input">
+                            <input type="text" id="add_requirement__title" name="requirement_title" required />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="add_requirement__code" id="add_requirement__code_label">ID Prefix</label></td>
+                        <td id="add_requirement__input">
+                            <input type="text" id="add_requirement__code" name="requirement_code" required />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="add_requirement__description" id="add_requirement__description_label">Description</label></td>
+                        <td id="add_requirement__description_input">
+                            <textarea id="add_requirement__description" name="requirement_description" required></textarea>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="add_requirement__type" id="add_requirement__type_label">Type</label></td>
+                        <td id="add_requirement__type_input">
+                            <select id="add_requirement__type" name="requirement_type" required>
+                                <option value="">Select type</option>
+                                <option value="Functional">Functional</option>
+                                <option value="Non-functional">Non-functional</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="add_requirement__priority" id="add_requirement__priority_label">Priority</label></td>
+                        <td id="add_requirement__priority_input">
+                            <select id="add_requirement__priority" name="requirement_priority" required>
+                                <option value="">Select priority</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="add_requirement__tags" id="add_requirement__tags_label">Tags (comma-separated)</label></td>
+                        <td id="add_requirement__tags_input">
+                            <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
+                        </td>
                     </tr>
                 </table>
                 <span><p>&nbsp;</p></span>

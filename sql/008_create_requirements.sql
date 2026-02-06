@@ -78,3 +78,9 @@ CREATE TABLE IF NOT EXISTS requirements_tags_junction (
 
 CREATE INDEX IF NOT EXISTS idx_requirements_tags_junction_requirement ON requirements_tags_junction(requirement_id);
 CREATE INDEX IF NOT EXISTS idx_requirements_tags_junction_tag ON requirements_tags_junction(tag_id);
+
+CREATE TABLE IF NOT EXISTS requirements_tags_project_settings_junction (
+    project_settings_id BIGINT NOT NULL REFERENCES project_settings(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES requirements_tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (project_settings_id, tag_id)
+);

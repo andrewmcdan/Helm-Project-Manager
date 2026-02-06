@@ -135,6 +135,10 @@
 - requirement_id: bigint
 - tag_id: bigint
 
+### public.requirements_tags_project_settings_junction
+- project_settings_id: bigint
+- tag_id: bigint
+
 ### public.risk_updates
 - id: bigint
 - risk_id: bigint
