@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS requirements (
     id BIGSERIAL PRIMARY KEY,
-    requirement_code_prefix TEXT NOT NULL UNIQUE,
+    requirement_code_prefix TEXT NOT NULL,
     requirement_code_number INTEGER NOT NULL,
     project_id BIGINT NULL REFERENCES project_settings(id) ON DELETE SET NULL,
     title TEXT NOT NULL,

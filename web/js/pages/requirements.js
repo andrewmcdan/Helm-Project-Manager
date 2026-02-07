@@ -37,6 +37,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         const requirementDescription = formData.get("requirement_description");
         const requirementType = formData.get("requirement_type");
         const requirementPriority = formData.get("requirement_priority");
+        const requirementStatus = formData.get("requirement_status");
         const requirementTags = formData.get("requirement_tags");
         const requirementCode = formData.get("requirement_code");
         if (!requirementTitle || requirementTitle.trim() === "") {
@@ -49,6 +50,10 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         }
         if (!requirementPriority || requirementPriority.trim() === "") {
             alert("Priority is required");
+            return;
+        }
+        if (!requirementStatus || requirementStatus.trim() === "") {
+            alert("Status is required");
             return;
         }
         if (!requirementCode || requirementCode.trim() === "") {
@@ -68,6 +73,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
                     description: requirementDescription,
                     requirement_type: requirementType,
                     priority: requirementPriority,
+                    status: requirementStatus,
                     requirement_code: requirementCode,
                     tags: requirementTags ? requirementTags.split(",").map((tag) => tag.trim()) : [],
                 }),
@@ -94,6 +100,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             addRequirementModal.classList.remove("is-visible");
             addRequirementModal.setAttribute("aria-hidden", "true");
             hideLoadingOverlay();
+            createRequirementForm.reset();
             await loadRequirements();
         }else{
             // keep the modal open for user to fix the errors
@@ -123,16 +130,28 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         // TODO:
     };
 
+    const formatDateTime = (value) => {
+        if (!value) return "—";
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return String(value);
+        return date.toLocaleString(undefined, {
+            year: "numeric",
+            month: "short",
+            day: "2-digit",
+            hour: "numeric",
+            minute: "2-digit",
+        });
+    };
+
     const buildRequirementTableLine = (requirement) => {
         const tr = document.createElement("tr");
-        console.log(requirement);
         tr.innerHTML = `
             <td>${requirement.requirement_code_prefix + "-" + requirement.requirement_code_number}</td>
             <td>${requirement.title}</td>
             <td>${requirement.status}</td>
             <td>${requirement.priority}</td>
             <td>${requirement.total_effort ? requirement.total_effort : "None Logged"}</td>
-            <td>${requirement.updated_at}</td>
+            <td>${formatDateTime(requirement.updated_at)}</td>
             <td>
                 <button class="button" data-requirement-table-row-details-btn-id-${requirement.id}>Details</button>
                 <button class="button" data-requirement-table-row-effort-btn-id-${requirement.id}>Effort</button>
@@ -149,11 +168,17 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         tr.querySelector(`[data-requirement-table-row-archive-btn-id-${requirement.id}]`).addEventListener("click", async () => {
             try {
                 showLoadingOverlay("Archiving requirement...");
-                await fetchWithAuth(`/api/requirements/${requirement.id}`, {
+                let res = await fetchWithAuth(`/api/requirements/${requirement.id}`, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ status: "archived" }),
                 });
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    throw new Error(errorData.error || "Failed to archive requirement");
+                }else{
+                    alert("Requirement archived successfully");
+                }
                 tr.remove();
                 hideLoadingOverlay();
             } catch (error) {

@@ -220,6 +220,16 @@
                         </td>
                     </tr>
                     <tr>
+                        <td><label for="add_requirement__status" id="add_requirement__status_label">Status</label></td>
+                        <td id="add_requirement__status_input">
+                            <select id="add_requirement__status" name="requirement_status" required>
+                                <option value="Proposed" selected>Proposed</option>
+                                <option value="Approved">Approved</option>
+                                <option value="In Development">In Development</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
                         <td><label for="add_requirement__tags" id="add_requirement__tags_label">Tags (comma-separated)</label></td>
                         <td id="add_requirement__tags_input">
                             <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
