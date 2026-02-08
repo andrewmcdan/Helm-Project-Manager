@@ -1,6 +1,14 @@
 export default async function initDashboard({showLoadingOverlay, hideLoadingOverlay}) {
     const { fetchWithAuth } = await loadFetchWithAuth();
     const { createInput, createSelect } = await loadDomHelpers();
+
+    const addRequirementButton = document.querySelector("[data-add-requirement-button]");
+    if (addRequirementButton) {
+        addRequirementButton.addEventListener("click", () => {
+            const requirementsPageUrl = new URL("/#/requirements?add_requirement=true", window.location.origin);
+            window.location.href = requirementsPageUrl.toString();
+        });
+    }
     
     const projectSnapshotEl = document.querySelector("[data-project-snapshot]");
     const projectNameEl = document.querySelector("[data-project-name]");

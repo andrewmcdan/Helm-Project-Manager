@@ -74,6 +74,19 @@ const getAllTags = () => {
         });
 };
 
+const getTagsFiltered = (filter) => {
+    // Look up the tags from the requirements_tags table that start with the filter string and return them as an array of strings
+    const query = `SELECT tag FROM requirements_tags WHERE tag ILIKE $1 ORDER BY tag ASC LIMIT 10`;
+    return db        .query(query, [`${filter}%`])
+        .then((result) => {
+            return result.rows.map((row) => row.tag);
+        })
+        .catch((error) => {
+            log("error", `Failed to get filtered requirement tags with filter "${filter}": ${error.message}`, { filter }, getCallerInfo());
+            return [];
+        });
+};
+
 const getTagsForProjectById = (projectId) => {
     // Look up the tags from the requirements_tags_project_settings_junction table for the given project ID and return them as an array of strings
     const query = `SELECT rt.tag FROM requirements_tags rt
@@ -143,6 +156,19 @@ const getTagsForRequirementById = (requirementId) => {
             log("error", `Failed to get requirement tags for requirement ${requirementId}: ${error.message}`, { requirementId }, getCallerInfo());
             return [];
         });
+};
+
+const getReqCodePrefixes = async (filter) => {
+    const query = (filter && filter.length > 0)
+        ? `SELECT DISTINCT requirement_code_prefix FROM requirements WHERE requirement_code_prefix ILIKE $1 ORDER BY requirement_code_prefix ASC LIMIT 20`
+        : `SELECT DISTINCT requirement_code_prefix FROM requirements ORDER BY requirement_code_prefix ASC LIMIT 20`;
+    try {
+        const result = await db.query(query);
+        return result.rows.map((row) => row.requirement_code_prefix);
+    } catch (error) {
+        log("error", `Failed to get requirement code prefixes: ${error.message}`, {}, getCallerInfo());
+        return [];
+    }
 };
 
 const normalizeQueryValue = (value) => (Array.isArray(value) ? value[0] : value).toString().trim();
@@ -367,4 +393,9 @@ module.exports = {
     updateRequirement,
     getRequirementTotals,
     exportRequirementsToCSV,
+    getAllTags,
+    getTagsFiltered,
+    getTagsForProjectById,
+    getTagsForRequirementById,
+    getReqCodePrefixes,
 };

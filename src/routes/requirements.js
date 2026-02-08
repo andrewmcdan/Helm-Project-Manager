@@ -14,7 +14,7 @@ function loggedInCheck(req, res, next) {
     next();
 }
 
-router.get("/get-by-filter/:offset/:count", loggedInCheck, async (req, res) => {
+router.get("/filter/:offset/:count", loggedInCheck, async (req, res) => {
     log("debug", "Received request for requirements list", { userId: req.user?.id, offset: req.params.offset, count: req.params.count }, getCallerInfo(), req.user?.id);
     const offset = parseInt(req.params.offset, 10) || 0;
     const count = parseInt(req.params.count, 10) || 10;
@@ -164,12 +164,8 @@ router.get("/requirement-codes", loggedInCheck, async (req, res) => {
     const userId = req.user?.id;
     try {
         log("debug", "Fetching requirement codes", { userId }, getCallerInfo(), userId);
-        // TODO: Implement the logic to fetch requirement codes, possibly from a separate table or configuration
-        const requirementCodes = [
-            { code: "FR", description: "Functional Requirement" },
-            { code: "NFR", description: "Non-Functional Requirement" },
-            { code: "BR", description: "Business Requirement" },
-        ];
+        const filter = req.query.filter || "";
+        const requirementCodes = await requirementsController.getReqCodePrefixes(filter);
         res.json(requirementCodes);
     } catch (error) {
         log("error", `Failed to fetch requirement codes: ${error.message}`, { userId }, getCallerInfo(), userId);
@@ -182,13 +178,31 @@ router.get("/requirement-tags/:count", loggedInCheck, async (req, res) => {
     try {
         log("debug", "Fetching requirement tags", { userId }, getCallerInfo(), userId);
         const count = parseInt(req.params.count, 10) || 10;
+        const filter = req.query.filter || "a"; // Default filter to "a" to return all tags if no filter is provided
+        const filterType = req.query.filterType || "startsWith";
         if (isNaN(count) || count <= 0) {
             log("warn", "Invalid count for requirement tags", { userId, count: req.params.count }, getCallerInfo(), userId);
             return res.status(400).json({ error: "Invalid count" });
         }
-        // TODO: call the getRequirementTags() function from requirementsController
-        const tags = [];
-        res.json(tags);
+        let tags = await requirementsController.getTagsFiltered(filter);
+        if(filterType === "startsWith"){
+            tags.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+        } else if(filterType === "contains"){
+            tags.sort((a, b) => {
+                const aIndex = a.toLowerCase().indexOf(filter.toLowerCase());
+                const bIndex = b.toLowerCase().indexOf(filter.toLowerCase());
+                if (aIndex === -1 && bIndex === -1) {
+                    return a.toLowerCase().localeCompare(b.toLowerCase());
+                } else if (aIndex === -1) {
+                    return 1;
+                }else if (bIndex === -1) {
+                    return -1;
+                } else {
+                    return aIndex - bIndex || a.toLowerCase().localeCompare(b.toLowerCase());
+                }
+            });
+        }
+        res.json(tags.slice(0, count));
     } catch (error) {
         log("error", `Failed to fetch requirement tags: ${error.message}`, { userId }, getCallerInfo(), userId);
         res.status(500).json({ error: "Failed to fetch requirement tags" });

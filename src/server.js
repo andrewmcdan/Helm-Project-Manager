@@ -1,3 +1,4 @@
+const compression = require("compression");
 const express = require("express");
 const path = require("path");
 const ejs = require("ejs");
@@ -9,6 +10,7 @@ const { SECURITY_QUESTIONS } = require("./data/security_questions");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(compression());
 app.use(express.json());
 
 app.engine("html", ejs.renderFile);

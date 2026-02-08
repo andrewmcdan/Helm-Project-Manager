@@ -453,6 +453,54 @@ textarea:focus {
     box-shadow: 0 0 0 3px rgba(27, 47, 138, 0.18);
 }
 
+.input-with-suggestions {
+    position: relative;
+    width: 100%;
+}
+
+.suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    z-index: 6;
+    background: var(--surface-strong);
+    border: 1px solid rgba(31, 28, 24, 0.14);
+    border-radius: 12px;
+    box-shadow: 0 14px 22px rgba(21, 17, 11, 0.16);
+    padding: 0.35rem;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestions.is-visible {
+    display: block;
+}
+
+button.suggestion-item {
+    width: 100%;
+    text-align: left;
+    border: none;
+    background: transparent;
+    color: var(--ink);
+    padding: 0.45rem 0.6rem;
+    border-radius: 10px;
+    box-shadow: none;
+    transform: none;
+}
+
+button.suggestion-item:hover {
+    background: rgba(27, 47, 138, 0.12);
+    box-shadow: none;
+    transform: none;
+}
+
+button.suggestion-item.is-active {
+    background: rgba(27, 47, 138, 0.18);
+    color: var(--accent-strong);
+}
+
 button {
     padding: 0.65rem 1.2rem;
     border-radius: 999px;

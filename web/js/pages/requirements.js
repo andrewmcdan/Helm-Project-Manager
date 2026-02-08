@@ -1,38 +1,271 @@
 export default async function initRequirements({ showLoadingOverlay, hideLoadingOverlay }) {
     const { fetchWithAuth } = await loadFetchWithAuth();
     const { createInput, createSelect } = await loadDomHelpers();
+    const getUrlParamFn = await loadUrlParamHelper();
+
+    const addReqUrlParam = getUrlParamFn("add_requirement");
+    if (addReqUrlParam === "true") {
+        // trigger click event on the "Create Requirement" button to open the modal
+        setTimeout(() => {
+            document.querySelector("[data-create-requirement-button]").click();
+        }, 500);
+    }
+
+    const logEffortButton = document.querySelector("[data-log-effort-button]");
+    logEffortButton.addEventListener("click", () => {
+        window.location.href = "/#/effort";
+    });
 
     const createRequirementButton = document.querySelector("[data-create-requirement-button]");
     const addRequirementModal = document.getElementById("add_requirement_modal");
     createRequirementButton.addEventListener("click", async () => {
         addRequirementModal.classList.add("is-visible");
         addRequirementModal.setAttribute("aria-hidden", "false");
-        // TODO: Load requirement code/id prefixes
-        // TODO: Load requirement tags
     });
     const addCloseRequirementModalBtn = document.getElementById("close_add_requirement_modal");
     addCloseRequirementModalBtn.addEventListener("click", () => {
         addRequirementModal.classList.remove("is-visible");
         addRequirementModal.setAttribute("aria-hidden", "true");
+        hideCodeSuggestions();
+        hideTagSuggestions();
     });
 
     const addRequirementCodeInput = document.getElementById("add_requirement__code");
+    const addRequirementCodeSuggestions = document.getElementById("add_requirement__code_suggestions");
+    let activeCodeSuggestionIndex = -1;
+    let requirementCodes = [];
+    const loadRequirementCodes = async () => {
+        try {
+            const response = await fetchWithAuth("/api/requirements/requirement-codes");
+            requirementCodes = await response.json().catch(() => []);
+        } catch (error) {
+            console.error("Failed to load requirement codes:", error);
+            requirementCodes = [];
+        }
+        return requirementCodes;
+    };
+    const hideCodeSuggestions = () => {
+        addRequirementCodeSuggestions.classList.remove("is-visible");
+        addRequirementCodeSuggestions.innerHTML = "";
+        activeCodeSuggestionIndex = -1;
+    };
+    const getCurrentCodeFilter = () => {
+        const value = addRequirementCodeInput.value;
+        const [prefix] = value.split("-");
+        return (prefix || "").trim();
+    };
+    const applyCodeSuggestion = (code) => {
+        const value = addRequirementCodeInput.value;
+        const parts = value.split("-");
+        const suffix = parts.length > 1 ? parts.slice(1).join("-").trim() : "";
+        addRequirementCodeInput.value = suffix ? `${code}-${suffix}` : code;
+        addRequirementCodeInput.focus();
+        hideCodeSuggestions();
+    };
+    const updateActiveCodeSuggestion = (buttons, newIndex) => {
+        buttons.forEach((button, index) => {
+            if (index === newIndex) {
+                button.classList.add("is-active");
+                button.setAttribute("aria-selected", "true");
+                button.scrollIntoView({ block: "nearest" });
+            } else {
+                button.classList.remove("is-active");
+                button.setAttribute("aria-selected", "false");
+            }
+        });
+        activeCodeSuggestionIndex = newIndex;
+    };
+    const renderCodeSuggestions = (items) => {
+        addRequirementCodeSuggestions.innerHTML = "";
+        if (!items || items.length === 0) {
+            hideCodeSuggestions();
+            return;
+        }
+        activeCodeSuggestionIndex = -1;
+        items.forEach((item) => {
+            const code = item.code || item;
+            const description = item.description || "";
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "suggestion-item";
+            button.setAttribute("aria-selected", "false");
+            button.textContent = description ? `${code} — ${description}` : code;
+            button.dataset.codeValue = code;
+            button.addEventListener("click", () => {
+                applyCodeSuggestion(code);
+            });
+            addRequirementCodeSuggestions.appendChild(button);
+        });
+        addRequirementCodeSuggestions.classList.add("is-visible");
+    };
+    loadRequirementCodes();
     addRequirementCodeInput.addEventListener("input", () => {
         const code = addRequirementCodeInput.value;
         addRequirementCodeInput.value = code.replace(/[^a-zA-Z0-9_-]/g, "").toUpperCase();
-        // TODO: show code suggestions based on existing requirement codes and selected project
+        const filter = getCurrentCodeFilter().toUpperCase();
+        if (!filter) {
+            hideCodeSuggestions();
+            return;
+        }
+        const suggestions = requirementCodes.filter((item) => {
+            const value = (item.code || item).toString().toUpperCase();
+            return value.startsWith(filter);
+        });
+        renderCodeSuggestions(suggestions);
+    });
+    addRequirementCodeInput.addEventListener("blur", () => {
+        setTimeout(() => {
+            hideCodeSuggestions();
+        }, 150);
+    });
+    addRequirementCodeInput.addEventListener("keydown", (event) => {
+        if (!addRequirementCodeSuggestions.classList.contains("is-visible")) {
+            return;
+        }
+        const buttons = Array.from(addRequirementCodeSuggestions.querySelectorAll(".suggestion-item"));
+        if (buttons.length === 0) {
+            return;
+        }
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            const nextIndex = activeCodeSuggestionIndex < buttons.length - 1 ? activeCodeSuggestionIndex + 1 : 0;
+            updateActiveCodeSuggestion(buttons, nextIndex);
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            const nextIndex = activeCodeSuggestionIndex > 0 ? activeCodeSuggestionIndex - 1 : buttons.length - 1;
+            updateActiveCodeSuggestion(buttons, nextIndex);
+        } else if (event.key === "Enter") {
+            if (activeCodeSuggestionIndex >= 0) {
+                event.preventDefault();
+                const selected = buttons[activeCodeSuggestionIndex];
+                if (selected) {
+                    applyCodeSuggestion(selected.dataset.codeValue || selected.textContent);
+                }
+            }
+        } else if (event.key === "Escape") {
+            hideCodeSuggestions();
+        }
     });
 
     const addRequirementTagsInput = document.getElementById("add_requirement__tags");
-    addRequirementTagsInput.addEventListener("input", () => {
-        const tags = addRequirementTagsInput.value;
-        addRequirementTagsInput.value = tags.replace(/[^a-zA-Z0-9, ]/g, "").toLowerCase();
-        // TODO: show tag suggestions based on existing tags
+    const addRequirementTagsSuggestions = document.getElementById("add_requirement__tags_suggestions");
+    let activeTagSuggestionIndex = -1;
+    let tags = [];
+    const loadTags = async (filter) => {
+        try {
+            const response = await fetchWithAuth(`/api/requirements/requirement-tags/10?filter=${encodeURIComponent(filter)}`);
+            tags = await response.json().catch(() => []);
+        } catch (error) {
+            console.error("Failed to load requirement tags:", error);
+            tags = [];
+        }
+        return tags;
+    };
+    const hideTagSuggestions = () => {
+        addRequirementTagsSuggestions.classList.remove("is-visible");
+        addRequirementTagsSuggestions.innerHTML = "";
+        activeTagSuggestionIndex = -1;
+    };
+    const getCurrentTagFilter = () => {
+        const value = addRequirementTagsInput.value;
+        const parts = value.split(",");
+        return (parts[parts.length - 1] || "").trim();
+    };
+    const applyTagSuggestion = (tag) => {
+        const parts = addRequirementTagsInput.value.split(",");
+        parts[parts.length - 1] = ` ${tag}`;
+        const normalized = parts
+            .map((part) => part.trim())
+            .filter((part) => part.length > 0)
+            .join(", ");
+        addRequirementTagsInput.value = normalized.length > 0 ? `${normalized}, ` : "";
+        addRequirementTagsInput.focus();
+        hideTagSuggestions();
+    };
+    const updateActiveTagSuggestion = (buttons, newIndex) => {
+        buttons.forEach((button, index) => {
+            if (index === newIndex) {
+                button.classList.add("is-active");
+                button.setAttribute("aria-selected", "true");
+                button.scrollIntoView({ block: "nearest" });
+            } else {
+                button.classList.remove("is-active");
+                button.setAttribute("aria-selected", "false");
+            }
+        });
+        activeTagSuggestionIndex = newIndex;
+    };
+    const renderTagSuggestions = (items) => {
+        addRequirementTagsSuggestions.innerHTML = "";
+        if (!items || items.length === 0) {
+            hideTagSuggestions();
+            return;
+        }
+        activeTagSuggestionIndex = -1;
+        items.forEach((tag) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "suggestion-item";
+            button.setAttribute("aria-selected", "false");
+            button.textContent = tag;
+            button.addEventListener("click", () => {
+                applyTagSuggestion(tag);
+            });
+            addRequirementTagsSuggestions.appendChild(button);
+        });
+        addRequirementTagsSuggestions.classList.add("is-visible");
+    };
+    loadTags("").then((t) => {
+        tags = t;
+    });
+    addRequirementTagsInput.addEventListener("input", async () => {
+        const value = addRequirementTagsInput.value;
+        addRequirementTagsInput.value = value.replace(/[^a-zA-Z0-9, ]/g, "").toLowerCase();
+        const filter = getCurrentTagFilter();
+        if (!filter) {
+            hideTagSuggestions();
+            return;
+        }
+        const suggestions = await loadTags(filter);
+        renderTagSuggestions(suggestions);
+    });
+    addRequirementTagsInput.addEventListener("blur", () => {
+        setTimeout(() => {
+            hideTagSuggestions();
+        }, 150);
+    });
+    addRequirementTagsInput.addEventListener("keydown", (event) => {
+        if (!addRequirementTagsSuggestions.classList.contains("is-visible")) {
+            return;
+        }
+        const buttons = Array.from(addRequirementTagsSuggestions.querySelectorAll(".suggestion-item"));
+        if (buttons.length === 0) {
+            return;
+        }
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            const nextIndex = activeTagSuggestionIndex < buttons.length - 1 ? activeTagSuggestionIndex + 1 : 0;
+            updateActiveTagSuggestion(buttons, nextIndex);
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            const nextIndex = activeTagSuggestionIndex > 0 ? activeTagSuggestionIndex - 1 : buttons.length - 1;
+            updateActiveTagSuggestion(buttons, nextIndex);
+        } else if (event.key === "Enter") {
+            if (activeTagSuggestionIndex >= 0) {
+                event.preventDefault();
+                const selected = buttons[activeTagSuggestionIndex];
+                if (selected) {
+                    applyTagSuggestion(selected.textContent);
+                }
+            }
+        } else if (event.key === "Escape") {
+            hideTagSuggestions();
+        }
     });
 
     const createRequirementBtn = document.getElementById("create_requirement_button");
     const createRequirementForm = document.getElementById("add_requirement_form");
-    const createRequirement = async (formData)=>{
+    const createRequirement = async (formData) => {
         const requirementTitle = formData.get("requirement_title");
         const requirementDescription = formData.get("requirement_description");
         const requirementType = formData.get("requirement_type");
@@ -84,25 +317,24 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             }
             await response.json();
             return true;
-            
         } catch (error) {
             hideLoadingOverlay();
             alert(`Failed to create requirement: ${error.message}`);
             return false;
         }
-    }
+    };
     createRequirementBtn.addEventListener("click", async (event) => {
         showLoadingOverlay();
         event.preventDefault();
         const formData = new FormData(createRequirementForm);
         const success = await createRequirement(formData);
-        if(success){
+        if (success) {
             addRequirementModal.classList.remove("is-visible");
             addRequirementModal.setAttribute("aria-hidden", "true");
             hideLoadingOverlay();
             createRequirementForm.reset();
             await loadRequirements();
-        }else{
+        } else {
             // keep the modal open for user to fix the errors
             hideLoadingOverlay();
         }
@@ -114,12 +346,12 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         event.preventDefault();
         const formData = new FormData(createRequirementForm);
         const success = await createRequirement(formData);
-        if(success){
+        if (success) {
             // reset the form for next requirement input
             createRequirementForm.reset();
             hideLoadingOverlay();
             await loadRequirements();
-        }else{
+        } else {
             // keep the modal open for user to fix the errors
             hideLoadingOverlay();
         }
@@ -176,7 +408,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
                 if (!res.ok) {
                     const errorData = await res.json().catch(() => ({}));
                     throw new Error(errorData.error || "Failed to archive requirement");
-                }else{
+                } else {
                     alert("Requirement archived successfully");
                 }
                 tr.remove();
@@ -192,7 +424,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
     const loadRequirements = async () => {
         try {
             showLoadingOverlay();
-            const response = await fetchWithAuth("/api/requirements/get-by-filter/0/10?sortField=updated_at&sortOrder=desc");
+            const response = await fetchWithAuth("/api/requirements/filter/0/10?sortField=updated_at&sortOrder=desc");
             const requirements = await response.json().catch(() => []);
             const tableBody = document.getElementById("requirements-table-body");
             tableBody.innerHTML = "";
@@ -226,4 +458,11 @@ async function loadFetchWithAuth() {
     const module = await import(moduleUrl);
     const { fetchWithAuth } = module;
     return { fetchWithAuth };
+}
+
+async function loadUrlParamHelper() {
+    // Use an absolute URL so it resolves when the module itself is loaded from a blob URL.
+    const moduleUrl = new URL("/js/utils/url_params.js", window.location.origin).href;
+    const module = await import(moduleUrl);
+    return module.default;
 }

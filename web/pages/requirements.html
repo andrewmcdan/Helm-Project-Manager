@@ -188,7 +188,12 @@
                     <tr>
                         <td><label for="add_requirement__code" id="add_requirement__code_label">ID Prefix</label></td>
                         <td id="add_requirement__input">
-                            <input type="text" id="add_requirement__code" name="requirement_code" required />
+                            <div class="input-with-suggestions">
+                                <input type="text" id="add_requirement__code" name="requirement_code" required />
+                                <div id="add_requirement__code_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                                    <!-- Code suggestions will be dynamically inserted here -->
+                                </div>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -232,7 +237,12 @@
                     <tr>
                         <td><label for="add_requirement__tags" id="add_requirement__tags_label">Tags (comma-separated)</label></td>
                         <td id="add_requirement__tags_input">
-                            <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
+                            <div class="input-with-suggestions">
+                                <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
+                                <div id="add_requirement__tags_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                                    <!-- Tag suggestions will be dynamically inserted here -->
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 </table>
