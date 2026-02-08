@@ -45,14 +45,18 @@
     <section class="card stack">
         <h2>Requirements index</h2>
         <p class="meta">Filter and manage the requirement backlog.</p>
-        <div class="span-actions">
-            <button type="button" class="button-small">Functional</button>
-            <button type="button" class="button-small">Non-functional</button>
-        </div>
         <form class="grid" aria-label="Requirement filters">
             <div class="field">
                 <label for="requirement-search">Search</label>
                 <input id="requirement-search" type="search" placeholder="Search by title or ID" />
+            </div>
+            <div class="field">
+                <label for="requirement-type">Type</label>
+                <select id="requirement-type">
+                    <option value="">All types</option>
+                    <option>Functional</option>
+                    <option>Non-functional</option>
+                </select>
             </div>
             <div class="field">
                 <label for="requirement-status">Status</label>
@@ -75,7 +79,7 @@
                 </select>
             </div>
         </form>
-        <div class="table-scroll">
+        <div class="table-scroll-y hide-scrollbar">
             <table class="table">
                 <thead>
                     <tr>

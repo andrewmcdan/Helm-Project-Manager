@@ -149,7 +149,6 @@ router.get("/export/csv", loggedInCheck, async (req, res) => {
     try {
         log("debug", "Exporting requirements to CSV", { userId }, getCallerInfo(), userId);
         const { filterField, filterValue, filterMin, filterMax, sortField, sortOrder } = req.query;
-        // TODO: call the exportRequirementsToCSV() function from requirementsController
         const csvData = await requirementsController.exportRequirementsToCSV(userId, req.user.token, {
             filterField,
             filterValue,

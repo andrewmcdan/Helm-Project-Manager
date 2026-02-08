@@ -442,7 +442,9 @@ textarea {
     border-radius: 12px;
     border: 1px solid rgba(31, 28, 24, 0.16);
     background: rgba(255, 255, 255, 0.96);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 input:focus,
@@ -543,7 +545,7 @@ button.button-small,
     border-radius: 16px;
     overflow: hidden;
     border: 1px solid rgba(31, 28, 24, 0.12);
-    box-shadow: 0 12px 24px rgba(21, 17, 11, 0.08);
+    /* box-shadow: 0 12px 24px rgba(21, 17, 11, 0.08); */
 }
 
 .table th,
@@ -560,6 +562,10 @@ button.button-small,
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 0.72rem;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    box-shadow: 0 1px 0 rgba(31, 28, 24, 0.12);
 }
 
 .table tr:last-child td {
@@ -569,9 +575,42 @@ button.button-small,
 .table-scroll {
     overflow-x: auto;
     overflow-y: hidden;
-    padding-bottom: 0.25rem;
+    width: 100%;
+    /* padding-bottom: 0.25rem; */
     scrollbar-gutter: stable;
     -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll-y {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface-strong);
+    border-radius: 16px;
+    overflow-y: auto;
+    max-height: 30em;
+    scrollbar-gutter: hide;
+    overflow-x: hidden;
+    border: 1px solid rgba(31, 28, 24, 0.12);
+    position: relative;
+}
+
+.table-scroll-y .table {
+    overflow: visible;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-scroll-y thead th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: linear-gradient(0deg, rgba(27, 47, 138, 0.1), rgba(27, 47, 138, 0.1)), var(--surface-strong);
+    box-shadow: 0 2px 0 rgba(31, 28, 24, 0.12);
+}
+
+.table-scroll-y .table td {
+    position: relative;
+    z-index: 1;
 }
 
 .table--wide {
@@ -588,6 +627,15 @@ button.button-small,
     font-size: 0.9rem;
     color: var(--muted);
     margin-left: 0.75rem;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* Internet Explorer and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari, Opera, and newer Edge */
 }
 
 .notice {
