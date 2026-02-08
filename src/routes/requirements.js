@@ -150,9 +150,16 @@ router.get("/export/csv", loggedInCheck, async (req, res) => {
         log("debug", "Exporting requirements to CSV", { userId }, getCallerInfo(), userId);
         const { filterField, filterValue, filterMin, filterMax, sortField, sortOrder } = req.query;
         // TODO: call the exportRequirementsToCSV() function from requirementsController
-        const csvData = "id,title,description\n"; // Placeholder CSV header
-        res.setHeader("Content-Disposition", "attachment; filename=requirements_export.csv");
+        const csvData = await requirementsController.exportRequirementsToCSV(userId, req.user.token, {
+            filterField,
+            filterValue,
+            filterMin,
+            filterMax,
+            sortField,
+            sortOrder,
+        });
         res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", "attachment; filename=requirements.csv");
         res.send(csvData);
     } catch (error) {
         log("error", `Failed to export requirements to CSV: ${error.message}`, { userId }, getCallerInfo(), userId);
@@ -178,7 +185,7 @@ router.get("/requirement-tags/:count", loggedInCheck, async (req, res) => {
     try {
         log("debug", "Fetching requirement tags", { userId }, getCallerInfo(), userId);
         const count = parseInt(req.params.count, 10) || 10;
-        const filter = req.query.filter || "a"; // Default filter to "a" to return all tags if no filter is provided
+        const filter = req.query.filter || "a";
         const filterType = req.query.filterType || "startsWith";
         if (isNaN(count) || count <= 0) {
             log("warn", "Invalid count for requirement tags", { userId, count: req.params.count }, getCallerInfo(), userId);

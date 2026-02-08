@@ -377,11 +377,54 @@ async function updateRequirement(userId, token, requirementId, updateData) {
 }
 
 async function getRequirementTotals(userId, token, requirementId) {
-    // TODO: Implement the logic to get requirement totals
+    // TODO: Implement the logic to get requirement totals: total effort, total number of linked risks, etc.
 }
 
 async function exportRequirementsToCSV(userId, token, options = {}) {
-    // TODO: Implement the logic to export requirements to CSV
+    let queryParams = [];
+    let filterClause = "";
+    ({ clause: filterClause, queryParams } = buildFilterClause(options.filterField, options.filterValue, options.filterMin, options.filterMax, queryParams));
+    const sortClause = buildSortClause(options.sortField, options.sortOrder);
+    const query = `SELECT * FROM requirements WHERE 1=1 ${filterClause} ${sortClause}`;
+    log("debug", "Exporting requirements to CSV with query", { userId, query, queryParams }, getCallerInfo(), userId);
+    const result = await db.query(query, queryParams);
+    const requirements = result.rows;
+    // Convert user IDs to user names for created_by and updated_by fields
+    const userIds = new Set();
+    requirements.forEach((req) => {
+        if (req.created_by) userIds.add(req.created_by);
+        if (req.updated_by) userIds.add(req.updated_by);
+    });
+    const userIdToNameMap = {};
+    if (userIds.size > 0) {
+        const usersResult = await db.query(`SELECT id, first_name, last_name FROM users WHERE id = ANY($1)`, [Array.from(userIds)]);
+        usersResult.rows.forEach((user) => {
+            userIdToNameMap[user.id] = `${user.first_name} ${user.last_name}`;
+        });
+    }
+    requirements.forEach((req) => {
+        req.created_by = userIdToNameMap[req.created_by] || req.created_by;
+        req.updated_by = userIdToNameMap[req.updated_by] || req.updated_by;
+    });
+    // Convert project IDs to project names
+    const projectIds = new Set(requirements.map((req) => req.project_id));
+    const projectIdToNameMap = {};
+    if (projectIds.size > 0) {
+        const projectsResult = await db.query(`SELECT id, project_name FROM project_settings WHERE id = ANY($1)`, [Array.from(projectIds)]);
+        projectsResult.rows.forEach((project) => {
+            projectIdToNameMap[project.id] = project.project_name;
+        });
+    }
+    requirements.forEach((req) => {
+        req.project_id = projectIdToNameMap[req.project_id] || req.project_id;
+    });
+    // Convert requirements to CSV format
+    const csvHeader = "id,requirement_code_prefix,requirement_code_number,project_name,title,description,requirement_type,priority,status,created_at,updated_at,created_by,updated_by\n";
+    const csvRows = requirements.map((req) => {
+        const escapedDescription = req.description ? `"${req.description.replace(/"/g, '""')}"` : "";
+        return `${req.id},${req.requirement_code_prefix},${req.requirement_code_number},${req.project_id},"${req.title.replace(/"/g, '""')}",${escapedDescription},${req.requirement_type},${req.priority},${req.status},${req.created_at.toISOString()},${req.updated_at.toISOString()},${req.created_by},${req.updated_by}`;
+    });
+    return csvHeader + csvRows.join("\n");
 }
 
 module.exports = {

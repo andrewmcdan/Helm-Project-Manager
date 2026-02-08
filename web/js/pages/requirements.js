@@ -16,6 +16,11 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         window.location.href = "/#/effort";
     });
 
+    const viewEffortTotalsButton = document.querySelector("[data-view-effort-totals-button]");
+    viewEffortTotalsButton.addEventListener("click", () => {
+        window.location.href = "/#/effort?totals=1";
+    });
+
     const createRequirementButton = document.querySelector("[data-create-requirement-button]");
     const addRequirementModal = document.getElementById("add_requirement_modal");
     createRequirementButton.addEventListener("click", async () => {
@@ -441,6 +446,32 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             alert(`Failed to load requirements: ${error.message}`);
         }
     };
+
+    const eportRequirementsButton = document.querySelector("[data-export-list-button]");
+    eportRequirementsButton.addEventListener("click", async () => {
+        try {
+            showLoadingOverlay("Exporting requirements...");
+            const response = await fetchWithAuth("/api/requirements/export/csv?sortField=updated_at&sortOrder=desc");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to export requirements");
+            }
+            const csvData = await response.text();
+            const blob = new Blob([csvData], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "requirements.csv";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            hideLoadingOverlay();
+        } catch (error) {
+            hideLoadingOverlay();
+            alert(`Failed to export requirements: ${error.message}`);
+        }
+    });
 
     // Initial load
     await loadRequirements();
