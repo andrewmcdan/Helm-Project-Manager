@@ -208,6 +208,46 @@ const buildFilterClause = (filterField, filterValue, filterMin, filterMax, query
     return { clause, queryParams };
 };
 
+const buildMultiFilterClause = (filters, queryParams) => {
+    let clause = "";
+    if (!filters) {
+        return { clause, queryParams };
+    }
+    const searchValue = filters.search ? String(filters.search).trim() : "";
+    if (searchValue) {
+        queryParams.push(`%${searchValue}%`);
+        const likeIdx = queryParams.length;
+        const searchTerms = [
+            `title ILIKE $${likeIdx}`,
+            `requirement_code_prefix ILIKE $${likeIdx}`,
+            `requirement_code_number::text ILIKE $${likeIdx}`,
+            `id::text ILIKE $${likeIdx}`,
+        ];
+        const codeMatch = searchValue.match(/^([a-zA-Z0-9]+)[-_ ]+(\d+)$/);
+        if (codeMatch) {
+            queryParams.push(codeMatch[1]);
+            const prefixIdx = queryParams.length;
+            queryParams.push(Number(codeMatch[2]));
+            const numberIdx = queryParams.length;
+            searchTerms.push(`(requirement_code_prefix ILIKE $${prefixIdx} AND requirement_code_number = $${numberIdx})`);
+        }
+        clause += ` AND (${searchTerms.join(" OR ")}) `;
+    }
+    if (filters.type) {
+        queryParams.push(String(filters.type).trim());
+        clause += ` AND requirement_type ILIKE $${queryParams.length} `;
+    }
+    if (filters.status) {
+        queryParams.push(String(filters.status).trim());
+        clause += ` AND status ILIKE $${queryParams.length} `;
+    }
+    if (filters.priority) {
+        queryParams.push(String(filters.priority).trim());
+        clause += ` AND priority ILIKE $${queryParams.length} `;
+    }
+    return { clause, queryParams };
+};
+
 const buildSortClause = (sortField, sortOrder) => {
     if (!sortField || !(sortField in SORT_FIELD_MAP)) {
         return "";
@@ -221,6 +261,9 @@ async function listRequirements(userId, token, offset = 0, count = 10, options =
     let queryParams = [];
     let filterClause = "";
     ({ clause: filterClause, queryParams } = buildFilterClause(options.filterField, options.filterValue, options.filterMin, options.filterMax, queryParams));
+    const multiFilter = buildMultiFilterClause(options, queryParams);
+    filterClause += multiFilter.clause;
+    queryParams = multiFilter.queryParams;
     const sortClause = buildSortClause(options.sortField, options.sortOrder);
     queryParams.push(count);
     queryParams.push(offset);
@@ -243,6 +286,9 @@ async function countRequirements(userId, token, options = {}) {
     let queryParams = [];
     let filterClause = "";
     ({ clause: filterClause, queryParams } = buildFilterClause(options.filterField, options.filterValue, options.filterMin, options.filterMax, queryParams));
+    const multiFilter = buildMultiFilterClause(options, queryParams);
+    filterClause += multiFilter.clause;
+    queryParams = multiFilter.queryParams;
     const query = `
         SELECT COUNT(*) AS total
         FROM requirements

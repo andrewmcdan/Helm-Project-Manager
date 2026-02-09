@@ -25,7 +25,7 @@ router.get("/filter/:offset/:count", loggedInCheck, async (req, res) => {
     }
     try {
         log("debug", "Fetching requirements list", { userId, offset, count }, getCallerInfo(), userId);
-        const { filterField, filterValue, filterMin, filterMax, sortField, sortOrder } = req.query;
+        const { filterField, filterValue, filterMin, filterMax, sortField, sortOrder, search, type, status, priority } = req.query;
         const requirements = await requirementsController.listRequirements(userId, req.user.token, offset, count, {
             filterField,
             filterValue,
@@ -33,6 +33,10 @@ router.get("/filter/:offset/:count", loggedInCheck, async (req, res) => {
             filterMax,
             sortField,
             sortOrder,
+            search,
+            type,
+            status,
+            priority,
         });
         if (!Array.isArray(requirements)) {
             res.json([]);
@@ -49,12 +53,16 @@ router.get("/count", loggedInCheck, async (req, res) => {
     const userId = req.user?.id;
     try {
         log("debug", "Fetching requirements count", { userId }, getCallerInfo(), userId);
-        const { filterField, filterValue, filterMin, filterMax } = req.query;
+        const { filterField, filterValue, filterMin, filterMax, search, type, status, priority } = req.query;
         const count = await requirementsController.countRequirements(userId, req.user.token, {
             filterField,
             filterValue,
             filterMin,
             filterMax,
+            search,
+            type,
+            status,
+            priority,
         });
         res.json({ count });
     } catch (error) {

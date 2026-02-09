@@ -362,6 +362,44 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         }
     });
 
+    let requirementsListFilterParams = {};
+    let requirementsListLength = 20;
+
+    const requirementsListListLength = document.getElementById("list-length");
+    requirementsListListLength.addEventListener("change", () => {
+        const numToShow = parseInt(requirementsListListLength.value, 10);
+        requirementsListLength = numToShow;
+        loadRequirements(requirementsListLength, requirementsListFilterParams);
+    });
+
+    const requirementsListFilterSearchInput = document.getElementById("requirement-search");
+    requirementsListFilterSearchInput.addEventListener("input", () => {
+        const filterValue = requirementsListFilterSearchInput.value.trim();
+        requirementsListFilterParams = { ...requirementsListFilterParams, search: filterValue };
+        loadRequirements(requirementsListLength, requirementsListFilterParams);
+    });
+
+    const requirementsListFiltertypeSelect = document.getElementById("requirement-type");
+    requirementsListFiltertypeSelect.addEventListener("change", () => {
+        const filterValue = requirementsListFiltertypeSelect.value;
+        requirementsListFilterParams = { ...requirementsListFilterParams, type: filterValue };
+        loadRequirements(requirementsListLength, requirementsListFilterParams);
+    });
+
+    const requirementsListFilterPrioritySelect = document.getElementById("requirement-status");
+    requirementsListFilterPrioritySelect.addEventListener("change", () => {
+        const filterValue = requirementsListFilterPrioritySelect.value;
+        requirementsListFilterParams = { ...requirementsListFilterParams, status: filterValue };
+        loadRequirements(requirementsListLength, requirementsListFilterParams);
+    });
+
+    const requirementsListFilterStatusSelect = document.getElementById("requirement-priority");
+    requirementsListFilterStatusSelect.addEventListener("change", () => {
+        const filterValue = requirementsListFilterStatusSelect.value;
+        requirementsListFilterParams = { ...requirementsListFilterParams, priority: filterValue };
+        loadRequirements(requirementsListLength, requirementsListFilterParams);
+    });
+
     const updateRequirementDetailsSection = (requirement) => {
         const detailsSection = document.getElementById("requirement-details-section");
         // TODO:
@@ -426,10 +464,25 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         return tr;
     };
 
-    const loadRequirements = async () => {
+    const loadRequirements = async (numToShow = 20, filter = {}) => {
         try {
             showLoadingOverlay();
-            const response = await fetchWithAuth("/api/requirements/filter/0/10?sortField=updated_at&sortOrder=desc");
+            const params = new URLSearchParams({
+                sortField: "updated_at",
+                sortOrder: "desc",
+            });
+            if (filter && typeof filter === "object") {
+                if (filter.search) params.set("search", filter.search);
+                if (filter.type) params.set("type", filter.type);
+                if (filter.status) params.set("status", filter.status);
+                if (filter.priority) params.set("priority", filter.priority);
+            }
+            const fetchUrl = `/api/requirements/filter/0/${numToShow}?${params.toString()}`;
+            const response = await fetchWithAuth(fetchUrl);
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to fetch requirements");
+            }
             const requirements = await response.json().catch(() => []);
             const tableBody = document.getElementById("requirements-table-body");
             tableBody.innerHTML = "";
@@ -447,8 +500,8 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         }
     };
 
-    const eportRequirementsButton = document.querySelector("[data-export-list-button]");
-    eportRequirementsButton.addEventListener("click", async () => {
+    const exportRequirementsButton = document.querySelector("[data-export-list-button]");
+    exportRequirementsButton.addEventListener("click", async () => {
         try {
             showLoadingOverlay("Exporting requirements...");
             const response = await fetchWithAuth("/api/requirements/export/csv?sortField=updated_at&sortOrder=desc");
