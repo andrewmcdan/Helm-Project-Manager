@@ -6,6 +6,84 @@ A web-based application to manage project tasks, risks, requirements, and effort
 - Node.js 20+ (matches the Docker image)
 - Docker + Docker Compose
 
+## Download the project
+
+### Option 1: Clone with Git (recommended)
+```bash
+git clone <your-repo-url>
+cd Helm-Project-Manager
+```
+
+### Option 2: Download ZIP from Git hosting
+1. Open your repository page.
+2. Click **Code** (or equivalent) → **Download ZIP**.
+3. Extract the archive.
+4. Open a terminal in the extracted `Helm-Project-Manager` folder.
+
+## Install Docker on Linux, Windows, and macOS
+
+> This project uses Docker Compose (`docker compose`) to run the app and PostgreSQL together.
+
+### Linux (Ubuntu/Debian)
+
+Install Docker Engine + Compose plugin:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Optional (run Docker without `sudo`):
+
+```bash
+sudo usermod -aG docker $USER
+newgrp docker
+```
+
+Start and enable Docker:
+
+```bash
+sudo systemctl enable --now docker
+```
+
+### Windows 10/11
+
+1. Install **Docker Desktop for Windows** from Docker's official website.
+2. During installation, allow the installer to enable **WSL 2** integration if prompted.
+3. Reboot if required.
+4. Launch Docker Desktop and wait until it shows "Engine running".
+5. In Docker Desktop settings, ensure **Use WSL 2 based engine** is enabled.
+
+### macOS (Intel or Apple Silicon)
+
+1. Install **Docker Desktop for Mac** from Docker's official website.
+2. Open the downloaded `.dmg` and drag Docker to Applications.
+3. Start Docker Desktop and finish first-run setup.
+4. Wait until Docker shows as running in the menu bar.
+
+### Verify Docker + Compose installation (all OS)
+
+Run:
+
+```bash
+docker --version
+docker compose version
+docker run --rm hello-world
+```
+
+If these commands succeed, Docker is ready for this project.
+
 ## Installation
 1. Install dependencies:
    ```bash
@@ -30,6 +108,29 @@ This brings up the app and Postgres using `docker-compose.yml`.
    docker compose up --build
    ```
 3. Open the app at `http://localhost:3040` (or your `PORT`).
+4. Stop the stack when finished:
+   ```bash
+   docker compose down
+   ```
+
+### Common Docker commands for daily use
+
+```bash
+# Start in background
+docker compose up -d --build
+
+# View logs
+docker compose logs -f
+
+# Restart containers
+docker compose restart
+
+# Stop and remove containers
+docker compose down
+
+# Stop and remove containers + volumes (deletes DB data)
+docker compose down -v
+```
 
 ## Dev mode (Docker DB + local server)
 Run Postgres in Docker and the app on your machine with `npm run dev`.
