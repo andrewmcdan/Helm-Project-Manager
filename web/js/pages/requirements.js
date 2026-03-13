@@ -11,6 +11,45 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         }, 500);
     }
 
+    const requirementsOverviewTotal = document.querySelector("[data-requirements-overview-total]");
+    const requirementsOverviewFunctional = document.querySelector("[data-requirements-overview-functional]");
+    const requirementsOverviewNonFunctional = document.querySelector("[data-requirements-overview-non-functional]");
+    const requirementsOverviewInDevelopment = document.querySelector("[data-requirements-overview-in-development]");
+    const requirementsOverviewSummary = document.querySelector("[data-requirements-overview-summary]");
+
+    const loadRequirementsOverview = async () => {
+        if (!requirementsOverviewTotal || !requirementsOverviewFunctional || !requirementsOverviewNonFunctional || !requirementsOverviewInDevelopment) {
+            return;
+        }
+        try {
+            const response = await fetchWithAuth("/api/requirements/summary");
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to fetch requirements summary");
+            }
+            const summary = await response.json().catch(() => ({}));
+            const byType = summary.requirements_by_type || {};
+            const byStatus = summary.requirements_by_status || {};
+            const totalRequirements = Number(summary.total_requirements || 0);
+            const functionalCount = Number(byType.Functional || 0);
+            const nonFunctionalCount = Number(byType["Non-functional"] || 0);
+            const inDevelopmentCount = Number(byStatus["In Development"] || 0);
+
+            requirementsOverviewTotal.textContent = String(totalRequirements);
+            requirementsOverviewFunctional.textContent = String(functionalCount);
+            requirementsOverviewNonFunctional.textContent = String(nonFunctionalCount);
+            requirementsOverviewInDevelopment.textContent = String(inDevelopmentCount);
+            if (requirementsOverviewSummary) {
+                requirementsOverviewSummary.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+            }
+        } catch (error) {
+            console.error("Failed to load requirements overview:", error);
+            if (requirementsOverviewSummary) {
+                requirementsOverviewSummary.textContent = "Unable to load overview right now.";
+            }
+        }
+    };
+
     const logEffortButton = document.querySelector("[data-log-effort-button]");
     logEffortButton.addEventListener("click", () => {
         window.location.href = "/#/effort";
@@ -339,6 +378,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             hideLoadingOverlay();
             createRequirementForm.reset();
             await loadRequirements();
+            await loadRequirementsOverview();
         } else {
             // keep the modal open for user to fix the errors
             hideLoadingOverlay();
@@ -356,6 +396,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             createRequirementForm.reset();
             hideLoadingOverlay();
             await loadRequirements();
+            await loadRequirementsOverview();
         } else {
             // keep the modal open for user to fix the errors
             hideLoadingOverlay();
@@ -400,9 +441,136 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         loadRequirements(requirementsListLength, requirementsListFilterParams);
     });
 
+    const escapeHtml = (value) =>
+        String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+
+    const formatRequirementCode = (requirement) =>
+        `${requirement.requirement_code_prefix || "REQ"}-${requirement.requirement_code_number || "?"}`;
+
+    const getRequirementEffortUrl = (requirement) => {
+        const params = new URLSearchParams({
+            requirement_id: String(requirement.id || ""),
+            requirement_code: formatRequirementCode(requirement),
+            requirement_title: requirement.title || "",
+        });
+        return `/#/effort?${params.toString()}`;
+    };
+
+    const loadRequirementDetails = async (requirementId) => {
+        const response = await fetchWithAuth(`/api/requirements/byid/${requirementId}`);
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || "Failed to load requirement details");
+        }
+        return response.json();
+    };
+
     const updateRequirementDetailsSection = (requirement) => {
         const detailsSection = document.getElementById("requirement-details-section");
-        // TODO:
+        const effortLinksSection = document.getElementById("requirement-effort-links-section");
+        if (!detailsSection || !effortLinksSection || !requirement) {
+            return;
+        }
+
+        const requirementCode = formatRequirementCode(requirement);
+        const tags = Array.isArray(requirement.tags) ? requirement.tags : [];
+        const acceptanceCriteria = Array.isArray(requirement.acceptance_criteria) ? requirement.acceptance_criteria : [];
+        const tagsLabel = tags.length > 0 ? tags.join(", ") : "None";
+        const totalEffortValue = Number(requirement.total_effort || 0);
+        const effortLabel = totalEffortValue > 0 ? `${totalEffortValue.toFixed(2)} hrs` : "None Logged";
+        const lastEffortDateLabel = formatDateTime(requirement.last_effort_date);
+        const effortUrl = getRequirementEffortUrl(requirement);
+
+        detailsSection.innerHTML = `
+            <h2>Requirement details</h2>
+            <p class="meta">Selected requirement preview.</p>
+            <h3>${escapeHtml(requirementCode)} · ${escapeHtml(requirement.title || "Untitled requirement")}</h3>
+            <p>${escapeHtml(requirement.description || "No description provided.")}</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Status</span>
+                    <span class="badge">${escapeHtml(requirement.status || "Proposed")}</span>
+                </p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Priority</span>
+                    <span class="badge">${escapeHtml(requirement.priority || "None")}</span>
+                </p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Type</span>
+                    <span class="badge">${escapeHtml(requirement.requirement_type || "Unknown")}</span>
+                </p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Tags</span>
+                    <span class="badge">${escapeHtml(tagsLabel)}</span>
+                </p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Acceptance criteria</span>
+                    <span class="badge">${acceptanceCriteria.length}</span>
+                </p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small" data-requirement-detail-refresh="${requirement.id}">Refresh details</button>
+                <button type="button" class="button-small" data-requirement-detail-log-effort="${requirement.id}">Log effort</button>
+            </div>
+        `;
+
+        effortLinksSection.innerHTML = `
+            <h2>Effort links</h2>
+            <p class="meta">Jump to effort details for this requirement.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Total logged hours</span>
+                    <span>${escapeHtml(effortLabel)}</span>
+                </p>
+                <p class="meta">View category breakdown and entries in Effort.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Last entry</span>
+                    <span>${escapeHtml(lastEffortDateLabel)}</span>
+                </p>
+                <p class="meta">Use Effort to review individual entries.</p>
+            </div>
+            <div class="span-actions">
+                <button type="button" class="button-small" data-requirement-detail-view-effort="${requirement.id}">View effort entries</button>
+                <button type="button" class="button-small" data-requirement-detail-log-effort2="${requirement.id}">Log effort</button>
+            </div>
+        `;
+
+        const refreshButton = detailsSection.querySelector(`[data-requirement-detail-refresh="${requirement.id}"]`);
+        refreshButton?.addEventListener("click", async () => {
+            try {
+                showLoadingOverlay("Loading requirement details...");
+                const freshRequirement = await loadRequirementDetails(requirement.id);
+                updateRequirementDetailsSection(freshRequirement);
+                hideLoadingOverlay();
+            } catch (error) {
+                hideLoadingOverlay();
+                alert(`Failed to refresh requirement details: ${error.message}`);
+            }
+        });
+
+        const effortButtons = document.querySelectorAll(
+            `[data-requirement-detail-log-effort="${requirement.id}"], [data-requirement-detail-log-effort2="${requirement.id}"], [data-requirement-detail-view-effort="${requirement.id}"]`,
+        );
+        effortButtons.forEach((button) => {
+            button.addEventListener("click", () => {
+                window.location.href = effortUrl;
+            });
+        });
     };
 
     const formatDateTime = (value) => {
@@ -434,11 +602,19 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             </td>
         `;
 
-        tr.querySelector(`[data-requirement-table-row-details-btn-id-${requirement.id}]`).addEventListener("click", () => {
-            updateRequirementDetailsSection(requirement);
+        tr.querySelector(`[data-requirement-table-row-details-btn-id-${requirement.id}]`).addEventListener("click", async () => {
+            try {
+                showLoadingOverlay("Loading requirement details...");
+                const requirementDetails = await loadRequirementDetails(requirement.id);
+                updateRequirementDetailsSection(requirementDetails);
+                hideLoadingOverlay();
+            } catch (error) {
+                hideLoadingOverlay();
+                alert(`Failed to load requirement details: ${error.message}`);
+            }
         });
         tr.querySelector(`[data-requirement-table-row-effort-btn-id-${requirement.id}]`).addEventListener("click", () => {
-            // TODO: go to effort page and select details for this requirement
+            window.location.href = getRequirementEffortUrl(requirement);
         });
         tr.querySelector(`[data-requirement-table-row-archive-btn-id-${requirement.id}]`).addEventListener("click", async () => {
             try {
@@ -455,6 +631,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
                     alert("Requirement archived successfully");
                 }
                 tr.remove();
+                await loadRequirementsOverview();
                 hideLoadingOverlay();
             } catch (error) {
                 hideLoadingOverlay();
@@ -493,6 +670,9 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
                 const tr = buildRequirementTableLine(requirement);
                 tableBody.appendChild(tr);
             });
+            if (requirements.length > 0) {
+                updateRequirementDetailsSection(requirements[0]);
+            }
             hideLoadingOverlay();
         } catch (error) {
             hideLoadingOverlay();
@@ -528,6 +708,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
 
     // Initial load
     await loadRequirements();
+    await loadRequirementsOverview();
 }
 
 async function loadDomHelpers() {

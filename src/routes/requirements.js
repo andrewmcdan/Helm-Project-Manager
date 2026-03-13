@@ -14,6 +14,17 @@ function loggedInCheck(req, res, next) {
     next();
 }
 
+function getStatusCodeForError(error) {
+    if (error?.statusCode && Number.isInteger(error.statusCode)) {
+        return error.statusCode;
+    }
+    const message = String(error?.message || "").toLowerCase();
+    if (message.includes("invalid")) {
+        return 400;
+    }
+    return 500;
+}
+
 router.get("/filter/:offset/:count", loggedInCheck, async (req, res) => {
     log("debug", "Received request for requirements list", { userId: req.user?.id, offset: req.params.offset, count: req.params.count }, getCallerInfo(), req.user?.id);
     const offset = parseInt(req.params.offset, 10) || 0;
@@ -75,16 +86,11 @@ router.get("/summary", loggedInCheck, async (req, res) => {
     const userId = req.user?.id;
     try {
         log("debug", "Fetching requirements summary", { userId }, getCallerInfo(), userId);
-        // TODO: call the getRequirementsSummary() function from requirementsController
-        const summary = {
-            total_requirements: 0,
-            requirements_by_status: {},
-            requirements_by_priority: {},
-        };
+        const summary = await requirementsController.getRequirementsSummary(userId, req.user.token);
         res.json(summary);
     } catch (error) {
         log("error", `Failed to fetch requirements summary: ${error.message}`, { userId }, getCallerInfo(), userId);
-        res.status(500).json({ error: "Failed to fetch requirements summary" });
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to fetch requirements summary" });
     }
 });
 
@@ -97,7 +103,7 @@ router.post("/new", loggedInCheck, async (req, res) => {
         res.status(201).json(newRequirement);
     } catch (error) {
         log("error", `Failed to create requirement: ${error.message}`, { userId }, getCallerInfo(), userId);
-        res.status(500).json({ error: "Failed to create requirement" });
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to create requirement" });
     }
 });
 
@@ -106,8 +112,7 @@ router.get("/byid/:id", loggedInCheck, async (req, res) => {
     try {
         const requirementId = req.params.id;
         log("debug", "Fetching requirement details", { userId, requirementId }, getCallerInfo(), userId);
-        // TODO: call the getRequirementById() function from requirementsController
-        const requirement = null;
+        const requirement = await requirementsController.getRequirementById(userId, req.user.token, requirementId);
         if (!requirement) {
             log("warn", "Requirement not found", { userId, requirementId }, getCallerInfo(), userId);
             return res.status(404).json({ error: "Requirement not found" });
@@ -115,7 +120,7 @@ router.get("/byid/:id", loggedInCheck, async (req, res) => {
         res.json(requirement);
     } catch (error) {
         log("error", `Failed to fetch requirement: ${error.message}`, { userId }, getCallerInfo(), userId);
-        res.status(500).json({ error: "Failed to fetch requirement" });
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to fetch requirement" });
     }
 });
 
@@ -125,12 +130,15 @@ router.patch("/update/:id", loggedInCheck, async (req, res) => {
         const requirementId = req.params.id;
         log("debug", "Updating requirement", { userId, requirementId }, getCallerInfo(), userId);
         const updateData = req.body;
-        // TODO: call the updateRequirement() function from requirementsController
-        const updatedRequirement = {};
+        const updatedRequirement = await requirementsController.updateRequirement(userId, req.user.token, requirementId, updateData);
+        if (!updatedRequirement) {
+            log("warn", "Requirement not found during update", { userId, requirementId }, getCallerInfo(), userId);
+            return res.status(404).json({ error: "Requirement not found" });
+        }
         res.json(updatedRequirement);
     } catch (error) {
         log("error", `Failed to update requirement: ${error.message}`, { userId }, getCallerInfo(), userId);
-        res.status(500).json({ error: "Failed to update requirement" });
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to update requirement" });
     }
 });
 
@@ -139,16 +147,15 @@ router.get("/totals/:id", loggedInCheck, async (req, res) => {
     try {
         const requirementId = req.params.id;
         log("debug", "Fetching requirement totals", { userId, requirementId }, getCallerInfo(), userId);
-        // TODO: call the getRequirementTotals() function from requirementsController
-        const totals = {
-            total_efforts: 0,
-            last_effort_date: null,
-            total_comments: 0,
-        };
+        const totals = await requirementsController.getRequirementTotals(userId, req.user.token, requirementId);
+        if (!totals) {
+            log("warn", "Requirement not found during totals lookup", { userId, requirementId }, getCallerInfo(), userId);
+            return res.status(404).json({ error: "Requirement not found" });
+        }
         res.json(totals);
     } catch (error) {
         log("error", `Failed to fetch requirement totals: ${error.message}`, { userId }, getCallerInfo(), userId);
-        res.status(500).json({ error: "Failed to fetch requirement totals" });
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to fetch requirement totals" });
     }
 });
 
@@ -220,6 +227,38 @@ router.get("/requirement-tags/:count", loggedInCheck, async (req, res) => {
     } catch (error) {
         log("error", `Failed to fetch requirement tags: ${error.message}`, { userId }, getCallerInfo(), userId);
         res.status(500).json({ error: "Failed to fetch requirement tags" });
+    }
+});
+
+router.get("/:id", loggedInCheck, async (req, res) => {
+    const userId = req.user?.id;
+    try {
+        const requirementId = req.params.id;
+        log("debug", "Fetching requirement details by RESTful route", { userId, requirementId }, getCallerInfo(), userId);
+        const requirement = await requirementsController.getRequirementById(userId, req.user.token, requirementId);
+        if (!requirement) {
+            return res.status(404).json({ error: "Requirement not found" });
+        }
+        res.json(requirement);
+    } catch (error) {
+        log("error", `Failed to fetch requirement by RESTful route: ${error.message}`, { userId }, getCallerInfo(), userId);
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to fetch requirement" });
+    }
+});
+
+router.patch("/:id", loggedInCheck, async (req, res) => {
+    const userId = req.user?.id;
+    try {
+        const requirementId = req.params.id;
+        log("debug", "Updating requirement by RESTful route", { userId, requirementId }, getCallerInfo(), userId);
+        const updatedRequirement = await requirementsController.updateRequirement(userId, req.user.token, requirementId, req.body);
+        if (!updatedRequirement) {
+            return res.status(404).json({ error: "Requirement not found" });
+        }
+        res.json(updatedRequirement);
+    } catch (error) {
+        log("error", `Failed to update requirement by RESTful route: ${error.message}`, { userId }, getCallerInfo(), userId);
+        res.status(getStatusCodeForError(error)).json({ error: error.message || "Failed to update requirement" });
     }
 });
 

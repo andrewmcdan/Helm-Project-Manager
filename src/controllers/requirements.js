@@ -42,6 +42,173 @@ const SORT_FIELD_MAP = {
     updated_by: { column: "updated_by" },
 };
 
+const VALID_REQUIREMENT_TYPES = ["Functional", "Non-functional"];
+const VALID_REQUIREMENT_PRIORITIES = ["Low", "Medium", "High", "Critical"];
+const VALID_REQUIREMENT_STATUSES = ["Proposed", "Approved", "In Development", "Completed", "Rejected"];
+
+function createBadRequestError(message) {
+    const error = new Error(message);
+    error.statusCode = 400;
+    return error;
+}
+
+function hasOwn(obj, key) {
+    return Object.prototype.hasOwnProperty.call(obj, key);
+}
+
+function normalizeRequirementType(value) {
+    if (!value) return null;
+    const normalized = value.toString().trim().toLowerCase();
+    if (normalized === "functional") return "Functional";
+    if (normalized === "non-functional" || normalized === "non functional" || normalized === "nonfunctional") {
+        return "Non-functional";
+    }
+    return value.toString().trim();
+}
+
+function normalizePriority(value) {
+    if (!value) return null;
+    const normalized = value.toString().trim().toLowerCase();
+    if (normalized === "low") return "Low";
+    if (normalized === "medium") return "Medium";
+    if (normalized === "high") return "High";
+    if (normalized === "critical") return "Critical";
+    return value.toString().trim();
+}
+
+function normalizeStatus(value) {
+    if (!value) return "Proposed";
+    const normalized = value.toString().trim().toLowerCase();
+    if (normalized === "proposed") return "Proposed";
+    if (normalized === "approved") return "Approved";
+    if (normalized === "in development" || normalized === "in-development" || normalized === "indevelopment" || normalized === "in progress") {
+        return "In Development";
+    }
+    if (normalized === "completed" || normalized === "done") return "Completed";
+    if (normalized === "rejected" || normalized === "deferred") return "Rejected";
+    return value.toString().trim();
+}
+
+function normalizeTags(tags) {
+    if (!tags) return [];
+    if (Array.isArray(tags)) {
+        return tags.map((tag) => String(tag).trim()).filter((tag) => tag.length > 0);
+    }
+    return String(tags)
+        .split(",")
+        .map((tag) => tag.trim())
+        .filter((tag) => tag.length > 0);
+}
+
+function mapCountRows(rows, keyField = "count_key", valueField = "count_value") {
+    return rows.reduce((acc, row) => {
+        acc[row[keyField]] = Number(row[valueField]);
+        return acc;
+    }, {});
+}
+
+function parseRequirementCode(rawCode) {
+    const requirementCode = String(rawCode || "").trim().toUpperCase();
+    if (!requirementCode) {
+        throw createBadRequestError("Requirement code cannot be empty.");
+    }
+    const parts = requirementCode.split("-");
+    if (parts.length > 2) {
+        throw createBadRequestError("Invalid requirement code format. Use PREFIX or PREFIX-NUMBER.");
+    }
+    const prefix = parts[0]?.trim();
+    if (!prefix) {
+        throw createBadRequestError("Requirement code prefix is required.");
+    }
+    if (parts.length === 1) {
+        return { prefix, number: null };
+    }
+    const parsedNumber = Number(parts[1]);
+    if (!Number.isInteger(parsedNumber) || parsedNumber <= 0) {
+        throw createBadRequestError("Requirement code number must be a positive integer.");
+    }
+    return { prefix, number: parsedNumber };
+}
+
+async function getNextRequirementCodeNumber(prefix, excludeRequirementId = null) {
+    const queryParams = [prefix];
+    let whereExtra = "";
+    if (excludeRequirementId && isNumericId(excludeRequirementId)) {
+        queryParams.push(Number(excludeRequirementId));
+        whereExtra = ` AND id <> $${queryParams.length} `;
+    }
+    const query = `SELECT COALESCE(MAX(requirement_code_number), 0) AS max_number FROM requirements WHERE requirement_code_prefix = $1 ${whereExtra}`;
+    const result = await db.query(query, queryParams);
+    return Number(result.rows[0]?.max_number || 0) + 1;
+}
+
+async function getRequirementTagsMap(requirementIds = []) {
+    if (!Array.isArray(requirementIds) || requirementIds.length === 0) {
+        return new Map();
+    }
+    const query = `
+        SELECT rtj.requirement_id, rt.tag
+        FROM requirements_tags_junction rtj
+        JOIN requirements_tags rt ON rt.id = rtj.tag_id
+        WHERE rtj.requirement_id = ANY($1)
+        ORDER BY rt.tag ASC
+    `;
+    const result = await db.query(query, [requirementIds]);
+    const tagsMap = new Map();
+    for (const row of result.rows) {
+        if (!tagsMap.has(row.requirement_id)) {
+            tagsMap.set(row.requirement_id, []);
+        }
+        tagsMap.get(row.requirement_id).push(row.tag);
+    }
+    return tagsMap;
+}
+
+async function getRequirementEffortMap(requirementIds = []) {
+    if (!Array.isArray(requirementIds) || requirementIds.length === 0) {
+        return new Map();
+    }
+    const query = `
+        SELECT
+            requirement_id,
+            COALESCE(SUM(effort_amount), 0) AS total_effort,
+            MAX(COALESCE(entry_date::timestamptz, week_of::timestamptz, created_at)) AS last_effort_date,
+            COUNT(*)::int AS total_effort_entries
+        FROM effort_entries
+        WHERE archived = FALSE
+          AND requirement_id = ANY($1)
+        GROUP BY requirement_id
+    `;
+    const result = await db.query(query, [requirementIds]);
+    const effortMap = new Map();
+    for (const row of result.rows) {
+        effortMap.set(row.requirement_id, {
+            total_effort: Number(row.total_effort || 0),
+            last_effort_date: row.last_effort_date || null,
+            total_effort_entries: Number(row.total_effort_entries || 0),
+        });
+    }
+    return effortMap;
+}
+
+async function hydrateRequirements(requirements = []) {
+    if (!Array.isArray(requirements) || requirements.length === 0) {
+        return [];
+    }
+    const requirementIds = requirements.map((item) => item.id);
+    const [tagsMap, effortMap] = await Promise.all([getRequirementTagsMap(requirementIds), getRequirementEffortMap(requirementIds)]);
+    return requirements.map((requirement) => {
+        const effort = effortMap.get(requirement.id) || { total_effort: 0, last_effort_date: null, total_effort_entries: 0 };
+        return {
+            ...requirement,
+            tags: tagsMap.get(requirement.id) || [],
+            total_effort: effort.total_effort,
+            last_effort_date: effort.last_effort_date,
+            total_effort_entries: effort.total_effort_entries,
+        };
+    });
+}
+
 const getCurrentProjectId = async () => {
     // Look up the most recently updated active, non-archived project settings record.
     const query = `
@@ -270,16 +437,14 @@ async function listRequirements(userId, token, offset = 0, count = 10, options =
     const query = `
         SELECT id, requirement_code_prefix, requirement_code_number, project_id, title, description, requirement_type, priority, status, created_at, updated_at, created_by, updated_by
         FROM requirements
-        WHERE 1=1
+        WHERE archived = FALSE
         ${filterClause}
         ${sortClause}
         LIMIT $${queryParams.length - 1} OFFSET $${queryParams.length}
     `;
     log("debug", "Listing requirements", { userId, offset, count }, getCallerInfo(), userId);
     const result = await db.query(query, queryParams);
-    // TODO: we also need to look up the tags for each requirement and include them in the result
-    // TODO: we also need to look up the total effort for each requirement and include it in the result
-    return result.rows;
+    return hydrateRequirements(result.rows);
 }
 
 async function countRequirements(userId, token, options = {}) {
@@ -292,7 +457,7 @@ async function countRequirements(userId, token, options = {}) {
     const query = `
         SELECT COUNT(*) AS total
         FROM requirements
-        WHERE 1=1
+        WHERE archived = FALSE
         ${filterClause}
     `;
     log("debug", "Counting requirements", { userId, query, queryParams }, getCallerInfo(), userId);
@@ -301,54 +466,52 @@ async function countRequirements(userId, token, options = {}) {
 }
 
 async function getRequirementsSummary(userId, token) {
-    // TODO: Implement the logic to get requirements summary
+    const [totalResult, statusResult, priorityResult, typeResult] = await Promise.all([
+        db.query(`SELECT COUNT(*)::int AS total FROM requirements WHERE archived = FALSE`),
+        db.query(`
+            SELECT status AS count_key, COUNT(*)::int AS count_value
+            FROM requirements
+            WHERE archived = FALSE
+            GROUP BY status
+            ORDER BY status ASC
+        `),
+        db.query(`
+            SELECT priority AS count_key, COUNT(*)::int AS count_value
+            FROM requirements
+            WHERE archived = FALSE
+            GROUP BY priority
+            ORDER BY priority ASC
+        `),
+        db.query(`
+            SELECT requirement_type AS count_key, COUNT(*)::int AS count_value
+            FROM requirements
+            WHERE archived = FALSE
+            GROUP BY requirement_type
+            ORDER BY requirement_type ASC
+        `),
+    ]);
+    return {
+        total_requirements: Number(totalResult.rows[0]?.total || 0),
+        requirements_by_status: mapCountRows(statusResult.rows),
+        requirements_by_priority: mapCountRows(priorityResult.rows),
+        requirements_by_type: mapCountRows(typeResult.rows),
+    };
 }
 
 async function createRequirement(userId, token, requirementData) {
     let queryParams = [];
-    const normalizeRequirementType = (value) => {
-        if (!value) return null;
-        const normalized = value.toString().trim().toLowerCase();
-        if (normalized === "functional") return "Functional";
-        if (normalized === "non-functional" || normalized === "non functional" || normalized === "nonfunctional") {
-            return "Non-functional";
-        }
-        return value.toString().trim();
-    };
-    const normalizePriority = (value) => {
-        if (!value) return null;
-        const normalized = value.toString().trim().toLowerCase();
-        if (normalized === "low") return "Low";
-        if (normalized === "medium") return "Medium";
-        if (normalized === "high") return "High";
-        if (normalized === "critical") return "Critical";
-        return value.toString().trim();
-    };
-    const normalizeStatus = (value) => {
-        if (!value) return "Proposed";
-        const normalized = value.toString().trim().toLowerCase();
-        if (normalized === "proposed") return "Proposed";
-        if (normalized === "approved") return "Approved";
-        if (normalized === "in development" || normalized === "in-development" || normalized === "indevelopment") {
-            return "In Development";
-        }
-        if (normalized === "completed") return "Completed";
-        if (normalized === "rejected") return "Rejected";
-        return value.toString().trim();
-    };
-    const normalizeTags = (tags) => {
-        if (!tags) return [];
-        if (Array.isArray(tags)) {
-            return tags.map((tag) => String(tag).trim()).filter((tag) => tag.length > 0);
-        }
-        return String(tags)
-            .split(",")
-            .map((tag) => tag.trim())
-            .filter((tag) => tag.length > 0);
-    };
     const requirementType = normalizeRequirementType(requirementData.requirement_type);
     const requirementPriority = normalizePriority(requirementData.priority);
     const requirementStatus = normalizeStatus(requirementData.status);
+    if (!VALID_REQUIREMENT_TYPES.includes(requirementType)) {
+        throw createBadRequestError(`Invalid requirement type. Allowed values: ${VALID_REQUIREMENT_TYPES.join(", ")}`);
+    }
+    if (!VALID_REQUIREMENT_PRIORITIES.includes(requirementPriority)) {
+        throw createBadRequestError(`Invalid requirement priority. Allowed values: ${VALID_REQUIREMENT_PRIORITIES.join(", ")}`);
+    }
+    if (!VALID_REQUIREMENT_STATUSES.includes(requirementStatus)) {
+        throw createBadRequestError(`Invalid requirement status. Allowed values: ${VALID_REQUIREMENT_STATUSES.join(", ")}`);
+    }
     const requirementCode = requirementData.requirement_code ? String(requirementData.requirement_code).trim().toUpperCase() : null;
     let requirementCodePrefix = requirementData.requirement_code_prefix ? String(requirementData.requirement_code_prefix).trim().toUpperCase() : null;
     let requirementCodeNumber = requirementData.requirement_code_number ? Number(requirementData.requirement_code_number) : null;
@@ -362,22 +525,13 @@ async function createRequirement(userId, token, requirementData) {
     }else{
         // Requirement code is either in the format of PREFIX-NUMBER, so we need to split it into prefix and number, OR it is just the prefix. If it is 
         // just the prefix, then we will look up the max number for that prefix and use the next number in sequence. If it is in the format of PREFIX-NUMBER, then we will use the provided prefix and number.
-        const codeParts = requirementCode.split("-");
-        if(codeParts.length === 2){
-            requirementCodePrefix = codeParts[0];
-            requirementCodeNumber = Number(codeParts[1]);
-            if(isNaN(requirementCodeNumber)){
-                throw new Error("Invalid requirement code format. If using PREFIX-NUMBER format, the number part must be a valid integer.");
-            }
-        }else if(codeParts.length === 1){
-            requirementCodePrefix = codeParts[0];
+        const parsedCode = parseRequirementCode(requirementCode);
+        requirementCodePrefix = parsedCode.prefix;
+        if (parsedCode.number !== null) {
+            requirementCodeNumber = parsedCode.number;
+        } else {
             // look up the max number for this prefix and use the next number in sequence
-            const query = `SELECT MAX(requirement_code_number) AS max_number FROM requirements WHERE requirement_code_prefix = $1`;
-            const result = await db.query(query, [requirementCodePrefix]);
-            const maxNumber = result.rows[0].max_number || 0;
-            requirementCodeNumber = maxNumber + 1;
-        }else{
-            throw new Error("Invalid requirement code format. Requirement code should be in the format of PREFIX-NUMBER or just PREFIX.");
+            requirementCodeNumber = await getNextRequirementCodeNumber(requirementCodePrefix);
         }
     }
     const projectId = await getCurrentProjectId();
@@ -411,19 +565,248 @@ async function createRequirement(userId, token, requirementData) {
             await addTagToProject(projectId, tag);
         }
     }
-    return createdRequirement;
+    return getRequirementById(userId, token, createdRequirement.id);
 }
 
 async function getRequirementById(userId, token, requirementId) {
-    // TODO: Implement the logic to get a requirement by ID
+    if (!isNumericId(requirementId)) {
+        throw createBadRequestError("Invalid requirement ID");
+    }
+    const requirementIdNum = Number(requirementId);
+    const query = `
+        SELECT id, requirement_code_prefix, requirement_code_number, project_id, title, description, requirement_type, priority, status, created_at, updated_at, created_by, updated_by
+        FROM requirements
+        WHERE id = $1
+          AND archived = FALSE
+        LIMIT 1
+    `;
+    const result = await db.query(query, [requirementIdNum]);
+    if (result.rows.length === 0) {
+        return null;
+    }
+    const hydrated = await hydrateRequirements(result.rows);
+    const acceptanceCriteriaResult = await db.query(
+        `
+            SELECT id, criteria_text, is_met, created_at, created_by, updated_at, updated_by
+            FROM requirements_acceptance_criteria
+            WHERE requirement_id = $1
+            ORDER BY id ASC
+        `,
+        [requirementIdNum],
+    );
+    return {
+        ...hydrated[0],
+        acceptance_criteria: acceptanceCriteriaResult.rows,
+    };
 }
 
 async function updateRequirement(userId, token, requirementId, updateData) {
-    // TODO: Implement the logic to update a requirement
+    if (!isNumericId(requirementId)) {
+        throw createBadRequestError("Invalid requirement ID");
+    }
+    const requirementIdNum = Number(requirementId);
+    const payload = updateData && typeof updateData === "object" ? updateData : {};
+
+    const existingRequirementResult = await db.query(
+        `SELECT id, project_id FROM requirements WHERE id = $1 AND archived = FALSE LIMIT 1`,
+        [requirementIdNum],
+    );
+    if (existingRequirementResult.rows.length === 0) {
+        return null;
+    }
+    const existingRequirement = existingRequirementResult.rows[0];
+
+    const updateClauses = [];
+    const updateParams = [];
+
+    if (hasOwn(payload, "title")) {
+        const title = String(payload.title || "").trim();
+        if (!title) {
+            throw createBadRequestError("Title cannot be empty.");
+        }
+        updateParams.push(title);
+        updateClauses.push(`title = $${updateParams.length}`);
+    }
+
+    if (hasOwn(payload, "description")) {
+        updateParams.push(payload.description ? String(payload.description).trim() : null);
+        updateClauses.push(`description = $${updateParams.length}`);
+    }
+
+    if (hasOwn(payload, "requirement_type")) {
+        const requirementType = normalizeRequirementType(payload.requirement_type);
+        if (!VALID_REQUIREMENT_TYPES.includes(requirementType)) {
+            throw createBadRequestError(`Invalid requirement type. Allowed values: ${VALID_REQUIREMENT_TYPES.join(", ")}`);
+        }
+        updateParams.push(requirementType);
+        updateClauses.push(`requirement_type = $${updateParams.length}`);
+    }
+
+    if (hasOwn(payload, "priority")) {
+        const priority = normalizePriority(payload.priority);
+        if (!VALID_REQUIREMENT_PRIORITIES.includes(priority)) {
+            throw createBadRequestError(`Invalid requirement priority. Allowed values: ${VALID_REQUIREMENT_PRIORITIES.join(", ")}`);
+        }
+        updateParams.push(priority);
+        updateClauses.push(`priority = $${updateParams.length}`);
+    }
+
+    const wantsArchiveByStatus =
+        hasOwn(payload, "status") &&
+        typeof payload.status === "string" &&
+        payload.status.trim().toLowerCase() === "archived";
+    const wantsArchiveByFlag = hasOwn(payload, "archived") && (payload.archived === true || payload.archived === "true");
+    let isArchiving = wantsArchiveByStatus || wantsArchiveByFlag;
+    if (wantsArchiveByStatus) {
+        updateParams.push(userId);
+        updateClauses.push("archived = TRUE");
+        updateClauses.push("archived_at = now()");
+        updateClauses.push(`archived_by = $${updateParams.length}`);
+    } else if (hasOwn(payload, "status")) {
+        const status = normalizeStatus(payload.status);
+        if (!VALID_REQUIREMENT_STATUSES.includes(status)) {
+            throw createBadRequestError(`Invalid requirement status. Allowed values: ${VALID_REQUIREMENT_STATUSES.join(", ")}`);
+        }
+        updateParams.push(status);
+        updateClauses.push(`status = $${updateParams.length}`);
+    }
+
+    if (hasOwn(payload, "archived")) {
+        const shouldArchive = wantsArchiveByFlag;
+        if (shouldArchive) {
+            updateParams.push(userId);
+            updateClauses.push("archived = TRUE");
+            updateClauses.push("archived_at = now()");
+            updateClauses.push(`archived_by = $${updateParams.length}`);
+        } else {
+            updateClauses.push("archived = FALSE");
+            updateClauses.push("archived_at = NULL");
+            updateClauses.push("archived_by = NULL");
+        }
+        isArchiving = shouldArchive;
+    }
+
+    if (hasOwn(payload, "requirement_code")) {
+        const parsedCode = parseRequirementCode(payload.requirement_code);
+        const codePrefix = parsedCode.prefix;
+        const codeNumber = parsedCode.number !== null ? parsedCode.number : await getNextRequirementCodeNumber(parsedCode.prefix, requirementIdNum);
+        updateParams.push(codePrefix);
+        updateClauses.push(`requirement_code_prefix = $${updateParams.length}`);
+        updateParams.push(codeNumber);
+        updateClauses.push(`requirement_code_number = $${updateParams.length}`);
+    } else if (hasOwn(payload, "requirement_code_prefix") || hasOwn(payload, "requirement_code_number")) {
+        const codePrefix = hasOwn(payload, "requirement_code_prefix")
+            ? String(payload.requirement_code_prefix || "").trim().toUpperCase()
+            : null;
+        const codeNumberRaw = payload.requirement_code_number;
+        if (!codePrefix || !Number.isInteger(Number(codeNumberRaw)) || Number(codeNumberRaw) <= 0) {
+            throw createBadRequestError("Both requirement_code_prefix and a positive requirement_code_number are required.");
+        }
+        updateParams.push(codePrefix);
+        updateClauses.push(`requirement_code_prefix = $${updateParams.length}`);
+        updateParams.push(Number(codeNumberRaw));
+        updateClauses.push(`requirement_code_number = $${updateParams.length}`);
+    }
+
+    if (updateClauses.length > 0) {
+        updateParams.push(userId);
+        updateClauses.push(`updated_by = $${updateParams.length}`);
+        updateParams.push(requirementIdNum);
+        await db.query(
+            `
+                UPDATE requirements
+                SET ${updateClauses.join(", ")}
+                WHERE id = $${updateParams.length}
+            `,
+            updateParams,
+        );
+    }
+
+    if (hasOwn(payload, "tags")) {
+        const tags = normalizeTags(payload.tags);
+        await db.query(`DELETE FROM requirements_tags_junction WHERE requirement_id = $1`, [requirementIdNum]);
+        for (const tag of tags) {
+            await addTagToRequirement(requirementIdNum, tag);
+            if (existingRequirement.project_id) {
+                await addTagToProject(existingRequirement.project_id, tag);
+            }
+        }
+    }
+
+    if (hasOwn(payload, "acceptance_criteria")) {
+        const acceptanceCriteria = Array.isArray(payload.acceptance_criteria) ? payload.acceptance_criteria : [];
+        await db.query(`DELETE FROM requirements_acceptance_criteria WHERE requirement_id = $1`, [requirementIdNum]);
+        for (const criterion of acceptanceCriteria) {
+            const criterionText = typeof criterion === "string" ? criterion.trim() : String(criterion?.criteria_text || "").trim();
+            if (!criterionText) {
+                continue;
+            }
+            const criterionMet = typeof criterion === "object" && criterion ? Boolean(criterion.is_met) : false;
+            await db.query(
+                `
+                    INSERT INTO requirements_acceptance_criteria (requirement_id, criteria_text, is_met, created_by, updated_by)
+                    VALUES ($1, $2, $3, $4, $4)
+                `,
+                [requirementIdNum, criterionText, criterionMet, userId],
+            );
+        }
+    }
+
+    if (isArchiving) {
+        return { id: requirementIdNum, archived: true };
+    }
+
+    return getRequirementById(userId, token, requirementIdNum);
 }
 
 async function getRequirementTotals(userId, token, requirementId) {
-    // TODO: Implement the logic to get requirement totals: total effort, total number of linked risks, etc.
+    if (!isNumericId(requirementId)) {
+        throw createBadRequestError("Invalid requirement ID");
+    }
+    const requirementIdNum = Number(requirementId);
+    const requirementResult = await db.query(`SELECT id FROM requirements WHERE id = $1 AND archived = FALSE LIMIT 1`, [requirementIdNum]);
+    if (requirementResult.rows.length === 0) {
+        return null;
+    }
+    const [effortResult, tagsResult, criteriaResult] = await Promise.all([
+        db.query(
+            `
+                SELECT
+                    COALESCE(SUM(effort_amount), 0) AS total_effort,
+                    MAX(COALESCE(entry_date::timestamptz, week_of::timestamptz, created_at)) AS last_effort_date,
+                    COUNT(*)::int AS total_effort_entries
+                FROM effort_entries
+                WHERE requirement_id = $1
+                  AND archived = FALSE
+            `,
+            [requirementIdNum],
+        ),
+        db.query(`SELECT COUNT(*)::int AS total_tags FROM requirements_tags_junction WHERE requirement_id = $1`, [requirementIdNum]),
+        db.query(
+            `
+                SELECT
+                    COUNT(*)::int AS total_acceptance_criteria,
+                    COUNT(*) FILTER (WHERE is_met = TRUE)::int AS total_met_acceptance_criteria
+                FROM requirements_acceptance_criteria
+                WHERE requirement_id = $1
+            `,
+            [requirementIdNum],
+        ),
+    ]);
+
+    const totalEffort = Number(effortResult.rows[0]?.total_effort || 0);
+    return {
+        requirement_id: requirementIdNum,
+        total_effort: totalEffort,
+        total_efforts: totalEffort,
+        total_effort_entries: Number(effortResult.rows[0]?.total_effort_entries || 0),
+        last_effort_date: effortResult.rows[0]?.last_effort_date || null,
+        total_tags: Number(tagsResult.rows[0]?.total_tags || 0),
+        total_acceptance_criteria: Number(criteriaResult.rows[0]?.total_acceptance_criteria || 0),
+        total_met_acceptance_criteria: Number(criteriaResult.rows[0]?.total_met_acceptance_criteria || 0),
+        total_comments: 0,
+        linked_risks: 0,
+    };
 }
 
 async function exportRequirementsToCSV(userId, token, options = {}) {
@@ -431,7 +814,7 @@ async function exportRequirementsToCSV(userId, token, options = {}) {
     let filterClause = "";
     ({ clause: filterClause, queryParams } = buildFilterClause(options.filterField, options.filterValue, options.filterMin, options.filterMax, queryParams));
     const sortClause = buildSortClause(options.sortField, options.sortOrder);
-    const query = `SELECT * FROM requirements WHERE 1=1 ${filterClause} ${sortClause}`;
+    const query = `SELECT * FROM requirements WHERE archived = FALSE ${filterClause} ${sortClause}`;
     log("debug", "Exporting requirements to CSV with query", { userId, query, queryParams }, getCallerInfo(), userId);
     const result = await db.query(query, queryParams);
     const requirements = result.rows;

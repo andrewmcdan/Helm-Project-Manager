@@ -5,28 +5,28 @@
     </header>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" data-requirements-overview>
             <h2>Overview</h2>
             <p class="meta">Current requirement health.</p>
             <div class="data-row data-row--columns">
                 <div class="data-column">
                     <p class="meta">Total</p>
-                    <p class="value">28</p>
+                    <p class="value" data-requirements-overview-total>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Functional</p>
-                    <p class="value">20</p>
+                    <p class="value" data-requirements-overview-functional>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Non-functional</p>
-                    <p class="value">8</p>
+                    <p class="value" data-requirements-overview-non-functional>—</p>
                 </div>
                 <div class="data-column">
-                    <p class="meta">In progress</p>
-                    <p class="value">6</p>
+                    <p class="meta">In development</p>
+                    <p class="value" data-requirements-overview-in-development>—</p>
                 </div>
             </div>
-            <p class="meta">Focus on logging effort once work begins.</p>
+            <p class="meta" data-requirements-overview-summary>Focus on logging effort once work begins.</p>
         </section>
 
         <section class="card stack">
@@ -64,9 +64,9 @@
                     <option value="">All statuses</option>
                     <option>Proposed</option>
                     <option>Approved</option>
-                    <option>In Progress</option>
-                    <option>Done</option>
-                    <option>Deferred</option>
+                    <option>In Development</option>
+                    <option>Completed</option>
+                    <option>Rejected</option>
                 </select>
             </div>
             <div class="field">
@@ -123,7 +123,7 @@
     </section>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" id="requirement-details-section">
             <h2>Requirement details</h2>
             <p class="meta">Selected requirement preview.</p>
             <h3>FR-011 · Effort logging with categories</h3>
@@ -131,7 +131,7 @@
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Status</span>
-                    <span class="badge">In Progress</span>
+                    <span class="badge">In Development</span>
                 </p>
             </div>
             <div class="data-row">
@@ -165,7 +165,7 @@
             </div>
         </section>
 
-        <section class="card stack">
+        <section class="card stack" id="requirement-effort-links-section">
             <h2>Effort links</h2>
             <p class="meta">Jump to effort details for this requirement.</p>
             <div class="data-row">
