@@ -2,6 +2,7 @@
     <header class="page-header">
         <h1>Project Settings</h1>
         <p>Maintain global project info, defaults, and ownership.</p>
+        <p class="meta" id="ps-admin-notice" style="display: none">You are viewing settings as a non-admin. Only administrators can make changes.</p>
     </header>
 
     <div class="grid">
@@ -11,15 +12,15 @@
             <div class="data-row data-row--columns">
                 <div class="data-column">
                     <p class="meta">Project</p>
-                    <p class="value">Helm</p>
+                    <p class="value" id="ps-summary-name">—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Owner / PM</p>
-                    <p class="value">Andrew McDaniel</p>
+                    <p class="value" id="ps-summary-owner">—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Team size</p>
-                    <p class="value">5</p>
+                    <p class="value" id="ps-summary-team-size">—</p>
                 </div>
             </div>
             <p class="meta">Changes apply to all authenticated users.</p>
@@ -29,12 +30,12 @@
             <h2>Primary actions</h2>
             <p class="meta">Save updates or review dashboard.</p>
             <div class="stack">
-                <button type="button">Save project settings</button>
-                <button type="button" class="button-small">View dashboard</button>
+                <button type="button" id="ps-save-btn">Save project settings</button>
+                <button type="button" class="button-small" id="ps-view-dashboard-btn">View dashboard</button>
             </div>
             <div class="span-actions">
-                <button type="button" class="button-small">View team</button>
-                <button type="button" class="button-small">Reset changes</button>
+                <button type="button" class="button-small" id="ps-view-team-btn">View team</button>
+                <button type="button" class="button-small" id="ps-reset-btn">Reset changes</button>
             </div>
         </section>
     </div>
@@ -42,33 +43,34 @@
     <section class="card stack">
         <h2>Project information</h2>
         <p class="meta">Update the project description and ownership.</p>
-        <form class="stack" data-project-settings>
+        <form class="stack" id="ps-form">
             <div class="grid">
                 <div class="field">
-                    <label for="project-name">Project name</label>
-                    <input id="project-name" name="project_name" type="text" value="Helm" />
+                    <label for="ps-project-name">Project name</label>
+                    <input id="ps-project-name" name="project_name" type="text" />
                 </div>
                 <div class="field">
-                    <label for="project-owner">Owner / PM</label>
-                    <input id="project-owner" name="project_owner" type="text" value="Andrew McDaniel" />
+                    <label for="ps-project-owner">Owner / PM</label>
+                    <input id="ps-project-owner" name="project_owner_name" type="text" />
                 </div>
             </div>
             <div class="field">
-                <label for="project-description">Project description</label>
-                <textarea id="project-description" name="project_description" rows="4">Helm is a web-based project management system for tracking requirements, effort, and risks.</textarea>
+                <label for="ps-project-description">Project description</label>
+                <textarea id="ps-project-description" name="project_description" rows="4"></textarea>
             </div>
             <div class="grid">
                 <div class="field">
-                    <label for="project-email">Project contact email</label>
-                    <input id="project-email" name="project_email" type="email" placeholder="project@helm.com" />
+                    <label for="ps-project-email">Project contact email</label>
+                    <input id="ps-project-email" name="project_owner_email" type="email" placeholder="project@example.com" />
                 </div>
                 <div class="field">
-                    <label for="project-status">Project status</label>
-                    <select id="project-status" name="project_status">
-                        <option>Planning</option>
-                        <option selected>Active</option>
-                        <option>Stabilizing</option>
-                        <option>Complete</option>
+                    <label for="ps-project-status">Project status</label>
+                    <select id="ps-project-status" name="project_status">
+                        <option value="Planning">Planning</option>
+                        <option value="Active">Active</option>
+                        <option value="Stabilizing">Stabilizing</option>
+                        <option value="Complete">Complete</option>
+                        <option value="Archived">Archived</option>
                     </select>
                 </div>
             </div>
@@ -80,26 +82,31 @@
             <h2>Effort defaults</h2>
             <p class="meta">Set the baseline for new effort entries.</p>
             <div class="field">
-                <label for="effort-default-mode">Default entry mode</label>
-                <select id="effort-default-mode" name="effort_default_mode">
-                    <option>Daily</option>
-                    <option>Weekly</option>
+                <label for="ps-effort-mode">Default entry mode</label>
+                <select id="ps-effort-mode" name="effort_default_mode">
+                    <option value="Hourly">Hourly</option>
+                    <option value="Daily">Daily</option>
+                    <option value="Weekly">Weekly</option>
                 </select>
             </div>
             <div class="field">
-                <label for="week-start-day">Week start day</label>
-                <select id="week-start-day" name="week_start_day">
-                    <option>Sunday</option>
-                    <option selected>Monday</option>
-                    <option>Saturday</option>
+                <label for="ps-week-start-day">Week start day</label>
+                <select id="ps-week-start-day" name="week_start_day">
+                    <option value="Sunday">Sunday</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
                 </select>
             </div>
             <div class="field">
-                <label for="effort-rounding">Rounding increment</label>
-                <select id="effort-rounding" name="effort_rounding">
-                    <option>0.25 hours</option>
-                    <option>0.5 hours</option>
-                    <option>1.0 hour</option>
+                <label for="ps-effort-rounding">Rounding increment</label>
+                <select id="ps-effort-rounding" name="effort_rounding">
+                    <option value="0.25">0.25 hours</option>
+                    <option value="0.5">0.5 hours</option>
+                    <option value="1">1.0 hour</option>
                 </select>
             </div>
         </section>
@@ -143,24 +150,15 @@
                         <th>User</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="ps-change-log-body">
                     <tr>
-                        <td>Today</td>
-                        <td>Updated default effort mode to Daily.</td>
-                        <td>Andrew</td>
-                    </tr>
-                    <tr>
-                        <td>Yesterday</td>
-                        <td>Edited project description.</td>
-                        <td>Kevin</td>
-                    </tr>
-                    <tr>
-                        <td>4 days ago</td>
-                        <td>Changed project status to Active.</td>
-                        <td>Andrew</td>
+                        <td colspan="3">Loading...</td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div class="span-actions">
+            <button type="button" class="button-small" id="ps-load-more-btn" style="display: none">Load more</button>
         </div>
     </section>
 </section>
