@@ -449,8 +449,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             .replace(/"/g, "&quot;")
             .replace(/'/g, "&#39;");
 
-    const formatRequirementCode = (requirement) =>
-        `${requirement.requirement_code_prefix || "REQ"}-${requirement.requirement_code_number || "?"}`;
+    const formatRequirementCode = (requirement) => `${requirement.requirement_code_prefix || "REQ"}-${requirement.requirement_code_number || "?"}`;
 
     const getRequirementEffortUrl = (requirement) => {
         const params = new URLSearchParams({
@@ -470,6 +469,77 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         return response.json();
     };
 
+    const saveRequirementDetails = async (requirementId) => {
+        const detailsSection = document.getElementById("requirement-details-section");
+        if (!detailsSection) return;
+
+        const titleInput = detailsSection.querySelector("[data-edit-title]");
+        const descInput = detailsSection.querySelector("[data-edit-description]");
+        const statusSelect = detailsSection.querySelector("[data-edit-status]");
+        const prioritySelect = detailsSection.querySelector("[data-edit-priority]");
+        const typeSelect = detailsSection.querySelector("[data-edit-type]");
+        const tagsInput = detailsSection.querySelector("[data-edit-tags]");
+
+        const title = titleInput?.value?.trim();
+        if (!title) {
+            alert("Title is required");
+            return;
+        }
+
+        const payload = {
+            title,
+            description: descInput?.value?.trim() || "",
+            status: statusSelect?.value || "Proposed",
+            priority: prioritySelect?.value || "Medium",
+            requirement_type: typeSelect?.value || "Functional",
+            tags: tagsInput?.value
+                ? tagsInput.value
+                      .split(",")
+                      .map((t) => t.trim())
+                      .filter((t) => t.length > 0)
+                : [],
+        };
+
+        try {
+            showLoadingOverlay("Saving changes...");
+            const response = await fetchWithAuth(`/api/requirements/update/${requirementId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.error || "Failed to save requirement");
+            }
+            const updated = await response.json();
+            updateRequirementDetailsSection(updated);
+            await loadRequirements(requirementsListLength, requirementsListFilterParams);
+            await loadRequirementsOverview();
+            hideLoadingOverlay();
+        } catch (error) {
+            hideLoadingOverlay();
+            alert(`Failed to save requirement: ${error.message}`);
+        }
+    };
+
+    const statusOptions = [
+        { value: "Proposed", label: "Proposed" },
+        { value: "Approved", label: "Approved" },
+        { value: "In Development", label: "In Development" },
+        { value: "Completed", label: "Completed" },
+        { value: "Rejected", label: "Rejected" },
+    ];
+    const priorityOptions = [
+        { value: "Low", label: "Low" },
+        { value: "Medium", label: "Medium" },
+        { value: "High", label: "High" },
+        { value: "Critical", label: "Critical" },
+    ];
+    const typeOptions = [
+        { value: "Functional", label: "Functional" },
+        { value: "Non-functional", label: "Non-functional" },
+    ];
+
     const updateRequirementDetailsSection = (requirement) => {
         const detailsSection = document.getElementById("requirement-details-section");
         const effortLinksSection = document.getElementById("requirement-effort-links-section");
@@ -480,53 +550,146 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         const requirementCode = formatRequirementCode(requirement);
         const tags = Array.isArray(requirement.tags) ? requirement.tags : [];
         const acceptanceCriteria = Array.isArray(requirement.acceptance_criteria) ? requirement.acceptance_criteria : [];
-        const tagsLabel = tags.length > 0 ? tags.join(", ") : "None";
+        const tagsValue = tags.join(", ");
         const totalEffortValue = Number(requirement.total_effort || 0);
         const effortLabel = totalEffortValue > 0 ? `${totalEffortValue.toFixed(2)} hrs` : "None Logged";
         const lastEffortDateLabel = formatDateTime(requirement.last_effort_date);
         const effortUrl = getRequirementEffortUrl(requirement);
 
-        detailsSection.innerHTML = `
-            <h2>Requirement details</h2>
-            <p class="meta">Selected requirement preview.</p>
-            <h3>${escapeHtml(requirementCode)} · ${escapeHtml(requirement.title || "Untitled requirement")}</h3>
-            <p>${escapeHtml(requirement.description || "No description provided.")}</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Status</span>
-                    <span class="badge">${escapeHtml(requirement.status || "Proposed")}</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Priority</span>
-                    <span class="badge">${escapeHtml(requirement.priority || "None")}</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Type</span>
-                    <span class="badge">${escapeHtml(requirement.requirement_type || "Unknown")}</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Tags</span>
-                    <span class="badge">${escapeHtml(tagsLabel)}</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Acceptance criteria</span>
-                    <span class="badge">${acceptanceCriteria.length}</span>
-                </p>
-            </div>
-            <div class="span-actions">
-                <button type="button" class="button-small" data-requirement-detail-refresh="${requirement.id}">Refresh details</button>
-                <button type="button" class="button-small" data-requirement-detail-log-effort="${requirement.id}">Log effort</button>
-            </div>
-        `;
+        detailsSection.innerHTML = "";
 
+        const heading = document.createElement("h2");
+        heading.textContent = "Requirement details";
+        detailsSection.appendChild(heading);
+
+        const meta = document.createElement("p");
+        meta.className = "meta";
+        meta.textContent = `Editing ${escapeHtml(requirementCode)}`;
+        detailsSection.appendChild(meta);
+
+        // Title
+        const titleRow = document.createElement("div");
+        titleRow.className = "field";
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Title";
+        titleLabel.setAttribute("for", "edit-req-title");
+        const titleInput = createInput("text", requirement.title || "", "data-edit-title");
+        titleInput.id = "edit-req-title";
+        titleInput.required = true;
+        titleRow.appendChild(titleLabel);
+        titleRow.appendChild(titleInput);
+        detailsSection.appendChild(titleRow);
+
+        // Description
+        const descRow = document.createElement("div");
+        descRow.className = "field";
+        const descLabel = document.createElement("label");
+        descLabel.textContent = "Description";
+        descLabel.setAttribute("for", "edit-req-desc");
+        const descTextarea = document.createElement("textarea");
+        descTextarea.id = "edit-req-desc";
+        descTextarea.setAttribute("data-edit-description", "");
+        descTextarea.rows = 3;
+        descTextarea.value = requirement.description || "";
+        descRow.appendChild(descLabel);
+        descRow.appendChild(descTextarea);
+        detailsSection.appendChild(descRow);
+
+        // Status
+        const statusRow = document.createElement("div");
+        statusRow.className = "field";
+        const statusLabel = document.createElement("label");
+        statusLabel.textContent = "Status";
+        statusLabel.setAttribute("for", "edit-req-status");
+        const statusSelect = createSelect(statusOptions, requirement.status || "Proposed", "data-edit-status");
+        statusSelect.id = "edit-req-status";
+        statusRow.appendChild(statusLabel);
+        statusRow.appendChild(statusSelect);
+        detailsSection.appendChild(statusRow);
+
+        // Priority
+        const priorityRow = document.createElement("div");
+        priorityRow.className = "field";
+        const priorityLabel = document.createElement("label");
+        priorityLabel.textContent = "Priority";
+        priorityLabel.setAttribute("for", "edit-req-priority");
+        const prioritySelectEl = createSelect(priorityOptions, requirement.priority || "Medium", "data-edit-priority");
+        prioritySelectEl.id = "edit-req-priority";
+        priorityRow.appendChild(priorityLabel);
+        priorityRow.appendChild(prioritySelectEl);
+        detailsSection.appendChild(priorityRow);
+
+        // Type
+        const typeRow = document.createElement("div");
+        typeRow.className = "field";
+        const typeLabel = document.createElement("label");
+        typeLabel.textContent = "Type";
+        typeLabel.setAttribute("for", "edit-req-type");
+        const typeSelectEl = createSelect(typeOptions, requirement.requirement_type || "Functional", "data-edit-type");
+        typeSelectEl.id = "edit-req-type";
+        typeRow.appendChild(typeLabel);
+        typeRow.appendChild(typeSelectEl);
+        detailsSection.appendChild(typeRow);
+
+        // Tags
+        const tagsRow = document.createElement("div");
+        tagsRow.className = "field";
+        const tagsLabel = document.createElement("label");
+        tagsLabel.textContent = "Tags (comma-separated)";
+        tagsLabel.setAttribute("for", "edit-req-tags");
+        const tagsInput = createInput("text", tagsValue, "data-edit-tags");
+        tagsInput.id = "edit-req-tags";
+        tagsInput.placeholder = "e.g. login, security, performance";
+        tagsRow.appendChild(tagsLabel);
+        tagsRow.appendChild(tagsInput);
+        detailsSection.appendChild(tagsRow);
+
+        // Acceptance criteria (read-only count)
+        const acRow = document.createElement("div");
+        acRow.className = "data-row";
+        acRow.innerHTML = `<p class="value"><span class="span-label">Acceptance criteria</span><span class="badge">${acceptanceCriteria.length}</span></p>`;
+        detailsSection.appendChild(acRow);
+
+        // Action buttons
+        const actions = document.createElement("div");
+        actions.className = "span-actions";
+
+        const saveBtn = document.createElement("button");
+        saveBtn.type = "button";
+        saveBtn.className = "button-small";
+        saveBtn.textContent = "Save changes";
+        saveBtn.addEventListener("click", () => saveRequirementDetails(requirement.id));
+        actions.appendChild(saveBtn);
+
+        const refreshBtn = document.createElement("button");
+        refreshBtn.type = "button";
+        refreshBtn.className = "button-small";
+        refreshBtn.textContent = "Discard changes";
+        refreshBtn.addEventListener("click", async () => {
+            try {
+                showLoadingOverlay("Reloading requirement...");
+                const freshRequirement = await loadRequirementDetails(requirement.id);
+                updateRequirementDetailsSection(freshRequirement);
+                hideLoadingOverlay();
+            } catch (error) {
+                hideLoadingOverlay();
+                alert(`Failed to refresh requirement details: ${error.message}`);
+            }
+        });
+        actions.appendChild(refreshBtn);
+
+        const effortBtn = document.createElement("button");
+        effortBtn.type = "button";
+        effortBtn.className = "button-small";
+        effortBtn.textContent = "Log effort";
+        effortBtn.addEventListener("click", () => {
+            window.location.href = effortUrl;
+        });
+        actions.appendChild(effortBtn);
+
+        detailsSection.appendChild(actions);
+
+        // Effort links section (unchanged)
         effortLinksSection.innerHTML = `
             <h2>Effort links</h2>
             <p class="meta">Jump to effort details for this requirement.</p>
@@ -550,22 +713,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             </div>
         `;
 
-        const refreshButton = detailsSection.querySelector(`[data-requirement-detail-refresh="${requirement.id}"]`);
-        refreshButton?.addEventListener("click", async () => {
-            try {
-                showLoadingOverlay("Loading requirement details...");
-                const freshRequirement = await loadRequirementDetails(requirement.id);
-                updateRequirementDetailsSection(freshRequirement);
-                hideLoadingOverlay();
-            } catch (error) {
-                hideLoadingOverlay();
-                alert(`Failed to refresh requirement details: ${error.message}`);
-            }
-        });
-
-        const effortButtons = document.querySelectorAll(
-            `[data-requirement-detail-log-effort="${requirement.id}"], [data-requirement-detail-log-effort2="${requirement.id}"], [data-requirement-detail-view-effort="${requirement.id}"]`,
-        );
+        const effortButtons = document.querySelectorAll(`[data-requirement-detail-log-effort2="${requirement.id}"], [data-requirement-detail-view-effort="${requirement.id}"]`);
         effortButtons.forEach((button) => {
             button.addEventListener("click", () => {
                 window.location.href = effortUrl;
