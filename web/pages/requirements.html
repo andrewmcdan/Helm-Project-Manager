@@ -136,80 +136,74 @@
     </div>
     <div id="add_requirement_modal" class="modal" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button" id="close_add_requirement_modal" aria-label="Close">&times;</span>
-            <h2 id="add_requirement_modal_title">Add Requirement</h2>
-            <form id="add_requirement_form">
-                <table>
-                    <tr>
-                        <td><label for="add_requirement__label" id="add_requirement__label">Title</label></td>
-                        <td id="add_requirement__input">
-                            <input type="text" id="add_requirement__title" name="requirement_title" required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__code" id="add_requirement__code_label">ID Prefix</label></td>
-                        <td id="add_requirement__input">
-                            <div class="input-with-suggestions">
-                                <input type="text" id="add_requirement__code" name="requirement_code" required />
-                                <div id="add_requirement__code_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
-                                    <!-- Code suggestions will be dynamically inserted here -->
-                                </div>
+            <div class="modal-header">
+                <div>
+                    <h2 id="add_requirement_modal_title">Add Requirement</h2>
+                    <p class="meta">Use the same requirement structure you see in the backlog and details panel.</p>
+                </div>
+                <button type="button" class="close-button" id="close_add_requirement_modal" aria-label="Close">&times;</button>
+            </div>
+            <form id="add_requirement_form" class="stack">
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_requirement__title">Title</label>
+                        <input type="text" id="add_requirement__title" name="requirement_title" required />
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__code">Requirement code or prefix</label>
+                        <div class="input-with-suggestions">
+                            <input type="text" id="add_requirement__code" name="requirement_code" required />
+                            <div id="add_requirement__code_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                                <!-- Code suggestions will be dynamically inserted here -->
                             </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__description" id="add_requirement__description_label">Description</label></td>
-                        <td id="add_requirement__description_input">
-                            <textarea id="add_requirement__description" name="requirement_description" required></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__type" id="add_requirement__type_label">Type</label></td>
-                        <td id="add_requirement__type_input">
-                            <select id="add_requirement__type" name="requirement_type" required>
-                                <option value="">Select type</option>
-                                <option value="Functional">Functional</option>
-                                <option value="Non-functional">Non-functional</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__priority" id="add_requirement__priority_label">Priority</label></td>
-                        <td id="add_requirement__priority_input">
-                            <select id="add_requirement__priority" name="requirement_priority" required>
-                                <option value="">Select priority</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__status" id="add_requirement__status_label">Status</label></td>
-                        <td id="add_requirement__status_input">
-                            <select id="add_requirement__status" name="requirement_status" required>
-                                <option value="Proposed" selected>Proposed</option>
-                                <option value="Approved">Approved</option>
-                                <option value="In Development">In Development</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__tags" id="add_requirement__tags_label">Tags (comma-separated)</label></td>
-                        <td id="add_requirement__tags_input">
-                            <div class="input-with-suggestions">
-                                <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
-                                <div id="add_requirement__tags_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
-                                    <!-- Tag suggestions will be dynamically inserted here -->
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-                <span><p>&nbsp;</p></span>
-                <button type="submit" class="button-primary" id="create_requirement_button">Create and close</button>
-                <button type="button" class="button-secondary" id="create_and_add_another_requirement_button">Create and add another</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_requirement__description">Description</label>
+                    <textarea id="add_requirement__description" name="requirement_description" rows="4" required></textarea>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_requirement__type">Type</label>
+                        <select id="add_requirement__type" name="requirement_type" required>
+                            <option value="">Select type</option>
+                            <option value="Functional">Functional</option>
+                            <option value="Non-functional">Non-functional</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__priority">Priority</label>
+                        <select id="add_requirement__priority" name="requirement_priority" required>
+                            <option value="">Select priority</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__status">Status</label>
+                        <select id="add_requirement__status" name="requirement_status" required>
+                            <option value="Proposed" selected>Proposed</option>
+                            <option value="Approved">Approved</option>
+                            <option value="In Development">In Development</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_requirement__tags">Tags (comma-separated)</label>
+                    <div class="input-with-suggestions">
+                        <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
+                        <div id="add_requirement__tags_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                            <!-- Tag suggestions will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary" id="create_requirement_button">Create and close</button>
+                    <button type="button" class="button-secondary" id="create_and_add_another_requirement_button">Create and add another</button>
+                </div>
             </form>
         </div>
     </div>

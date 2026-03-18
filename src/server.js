@@ -95,6 +95,7 @@ app.use("/api/requirements", require("./routes/requirements"));
 app.use("/api/effort", require("./routes/effort"));
 app.use("/api/project-settings", require("./routes/project_settings"));
 app.use("/api/risks", require("./routes/risks"));
+app.use("/api/team", require("./routes/team"));
 
 // This if statement ensures the server only starts if this file is run directly.
 // This allows the server to be imported without starting it, which is useful for testing.

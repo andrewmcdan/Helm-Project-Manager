@@ -148,72 +148,74 @@
 
     <div id="add_risk_modal" class="modal" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button" id="close_add_risk_modal" aria-label="Close">&times;</span>
-            <h2>Add Risk</h2>
-            <form id="add_risk_form">
-                <table>
-                    <tr>
-                        <td><label for="add_risk__title">Title</label></td>
-                        <td><input type="text" id="add_risk__title" name="risk_title" required /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__code">Risk Code</label></td>
-                        <td><input type="text" id="add_risk__code" name="risk_code" required placeholder="e.g. R-01" /></td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__description">Description</label></td>
-                        <td><textarea id="add_risk__description" name="risk_description"></textarea></td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__likelihood">Likelihood</label></td>
-                        <td>
-                            <select id="add_risk__likelihood" name="risk_likelihood" required>
-                                <option value="">Select likelihood</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__impact">Impact</label></td>
-                        <td>
-                            <select id="add_risk__impact" name="risk_impact" required>
-                                <option value="">Select impact</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__status">Status</label></td>
-                        <td>
-                            <select id="add_risk__status" name="risk_status" required>
-                                <option value="Identified" selected>Identified</option>
-                                <option value="Analyzed">Analyzed</option>
-                                <option value="Mitigated">Mitigated</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__owner">Owner</label></td>
-                        <td>
-                            <select id="add_risk__owner" name="owner_id">
-                                <option value="">Unassigned</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_risk__mitigation">Mitigation plan</label></td>
-                        <td><textarea id="add_risk__mitigation" name="mitigation_plan"></textarea></td>
-                    </tr>
-                </table>
-                <span><p>&nbsp;</p></span>
-                <button type="submit" class="button-primary" id="create_risk_button">Create and close</button>
-                <button type="button" class="button-secondary" id="create_and_add_another_risk_button">Create and add another</button>
+            <div class="modal-header">
+                <div>
+                    <h2>Add Risk</h2>
+                    <p class="meta">Create risks with the same structure used in the register and detail panels.</p>
+                </div>
+                <button type="button" class="close-button" id="close_add_risk_modal" aria-label="Close">&times;</button>
+            </div>
+            <form id="add_risk_form" class="stack">
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_risk__title">Title</label>
+                        <input type="text" id="add_risk__title" name="risk_title" required />
+                    </div>
+                    <div class="field">
+                        <label for="add_risk__code">Risk code</label>
+                        <input type="text" id="add_risk__code" name="risk_code" required placeholder="e.g. R-01" />
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_risk__description">Description</label>
+                    <textarea id="add_risk__description" name="risk_description" rows="4"></textarea>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_risk__likelihood">Likelihood</label>
+                        <select id="add_risk__likelihood" name="risk_likelihood" required>
+                            <option value="">Select likelihood</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_risk__impact">Impact</label>
+                        <select id="add_risk__impact" name="risk_impact" required>
+                            <option value="">Select impact</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_risk__status">Status</label>
+                        <select id="add_risk__status" name="risk_status" required>
+                            <option value="Identified" selected>Identified</option>
+                            <option value="Analyzed">Analyzed</option>
+                            <option value="Mitigated">Mitigated</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_risk__owner">Owner</label>
+                        <select id="add_risk__owner" name="owner_id">
+                            <option value="">Unassigned</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_risk__mitigation">Mitigation plan</label>
+                        <textarea id="add_risk__mitigation" name="mitigation_plan" rows="4"></textarea>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary" id="create_risk_button">Create and close</button>
+                    <button type="button" class="button-secondary" id="create_and_add_another_risk_button">Create and add another</button>
+                </div>
             </form>
         </div>
     </div>

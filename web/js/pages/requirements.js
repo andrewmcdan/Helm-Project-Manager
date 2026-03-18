@@ -307,7 +307,6 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
         }
     });
 
-    const createRequirementBtn = document.getElementById("create_requirement_button");
     const createRequirementForm = document.getElementById("add_requirement_form");
     const createRequirement = async (formData) => {
         const requirementTitle = formData.get("requirement_title");
@@ -367,7 +366,7 @@ export default async function initRequirements({ showLoadingOverlay, hideLoading
             return false;
         }
     };
-    createRequirementBtn.addEventListener("click", async (event) => {
+    createRequirementForm.addEventListener("submit", async (event) => {
         showLoadingOverlay();
         event.preventDefault();
         const formData = new FormData(createRequirementForm);

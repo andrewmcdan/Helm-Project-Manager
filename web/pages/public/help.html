@@ -1,417 +1,419 @@
 <section class="page stack">
     <header class="page-header">
         <h1>Help</h1>
-        <p>Guides for every major workflow in Helm.</p>
+        <p>How Helm works today: account access, day-to-day workflows, and administrator tools.</p>
+        <p class="meta">This guide is aligned with the current screens, routes, and available actions in the app.</p>
     </header>
 
     <section class="card stack">
-        <h2>What Helm is</h2>
-        <p>Helm is a single shared project workspace for tracking requirements, effort, and risks for small teams.</p>
+        <h2>What Helm Is</h2>
+        <p>Helm is a single shared project workspace for tracking requirements, effort, risks, team members, and project settings.</p>
         <div class="data-row data-row--columns">
             <div class="data-column">
                 <p class="meta">Project model</p>
-                <p class="value">One global project</p>
+                <p class="value">One shared project</p>
             </div>
             <div class="data-column">
-                <p class="meta">Core areas</p>
-                <p class="value">Requirements · Effort · Risks</p>
+                <p class="meta">Core work areas</p>
+                <p class="value">Requirements, Effort, Risks</p>
             </div>
             <div class="data-column">
                 <p class="meta">Access</p>
-                <p class="value">Authenticated users only</p>
+                <p class="value">Signed-in users</p>
             </div>
         </div>
     </section>
 
     <section class="card stack">
-        <h2>Quick start</h2>
+        <h2>Account Access</h2>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">1. Review the Dashboard</span>
-                <span class="badge">Start here</span>
+                <span class="span-label">Register a new account</span>
+                <span class="badge">From Login</span>
             </p>
-            <p class="meta">Get an overview of requirements, effort, and risk status.</p>
+            <p class="meta">Use the New User button on the login page, complete your profile details, choose a role, and set three security questions. New accounts stay pending until an administrator approves them.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">2. Add requirements</span>
-                <span class="badge">Requirements</span>
+                <span class="span-label">Sign in with your username</span>
+                <span class="badge">Not email</span>
             </p>
-            <p class="meta">Create functional or non-functional requirements and assign priority.</p>
+            <p class="meta">Helm sign-in uses username plus password. Your generated username is included in the approval email after an administrator activates your account.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">3. Log effort</span>
-                <span class="badge">Effort</span>
+                <span class="span-label">Reset a forgotten password</span>
+                <span class="badge">Email + username</span>
             </p>
-            <p class="meta">Record hours by requirement and activity category.</p>
+            <p class="meta">Use Forgot Password, enter your email and username, then follow the emailed reset link. The reset form asks for your three security answers before you set a new password.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">4. Track risks</span>
-                <span class="badge">Risks</span>
+                <span class="span-label">Password rules</span>
+                <span class="badge">Security</span>
             </p>
-            <p class="meta">Keep risk likelihood, impact, and mitigation plans up to date.</p>
+            <p class="meta">Passwords must be at least 8 characters and include an uppercase letter, lowercase letter, number, and special character.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Temporary passwords and lockouts</span>
+                <span class="badge">Admin support</span>
+            </p>
+            <p class="meta">Administrator-created or administrator-reset accounts may receive a temporary password by email. Three failed sign-in attempts or an expired password can leave the account suspended until an administrator reinstates it.</p>
         </div>
     </section>
 
     <div class="grid">
         <section class="card stack">
-            <h2>Navigation map</h2>
+            <h2>Navigation Map</h2>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Dashboard</span>
                     <span class="badge">Overview</span>
                 </p>
-                <p class="meta">Key metrics, recent updates, and attention needed.</p>
+                <p class="meta">Shows the current project snapshot. Administrators also get the full user-management area here.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Requirements</span>
-                    <span class="badge">Define</span>
+                    <span class="badge">Plan work</span>
                 </p>
-                <p class="meta">Manage requirement lists, details, and statuses.</p>
+                <p class="meta">Create requirements, filter the backlog, export the list, edit details inline, and jump to effort logging.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Effort</span>
-                    <span class="badge">Log</span>
+                    <span class="badge">Log time</span>
                 </p>
-                <p class="meta">Enter effort, review totals, and export.</p>
+                <p class="meta">Save daily or weekly effort entries, review totals, filter results, export CSV, and delete recent entries.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Risks</span>
-                    <span class="badge">Monitor</span>
+                    <span class="badge">Monitor exposure</span>
                 </p>
-                <p class="meta">Track likelihood, impact, and mitigation updates.</p>
+                <p class="meta">Track the risk register, update owners and mitigation plans, add update notes, and export the register.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Team</span>
                     <span class="badge">People</span>
                 </p>
-                <p class="meta">View members, roles, and access status.</p>
+                <p class="meta">Search the member directory, view member details, and use administrator membership actions.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Project Settings</span>
-                    <span class="badge">Config</span>
+                    <span class="badge">Project metadata</span>
                 </p>
-                <p class="meta">Edit project info and effort defaults.</p>
+                <p class="meta">View the current project record. Administrators can update it and review the change log.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Profile</span>
+                    <span class="badge">Your account</span>
+                </p>
+                <p class="meta">Update your profile, profile image, password, and security questions.</p>
             </div>
         </section>
 
         <section class="card stack">
-            <h2>Dashboard help</h2>
-            <p class="meta">Use the dashboard for a quick state check.</p>
+            <h2>Typical Flow</h2>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Quick actions</span>
-                    <span class="badge">Add / Log</span>
+                    <span class="span-label">1. Create or review requirements</span>
+                    <span class="badge">Requirements</span>
                 </p>
-                <p class="meta">Buttons to add requirements, log effort, or add risks.</p>
+                <p class="meta">Add the requirement, assign its type, priority, status, and tags, then keep the details current as work moves forward.</p>
             </div>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Key metrics</span>
-                    <span class="badge">Totals</span>
+                    <span class="span-label">2. Log effort against active work</span>
+                    <span class="badge">Effort</span>
                 </p>
-                <p class="meta">Shows requirement counts, effort totals, and open risks.</p>
+                <p class="meta">Log hours from the Effort page or jump there directly from a requirement so the correct requirement is already selected.</p>
             </div>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Recently updated</span>
-                    <span class="badge">Changes</span>
+                    <span class="span-label">3. Maintain the risk register</span>
+                    <span class="badge">Risks</span>
                 </p>
-                <p class="meta">Latest requirement, effort, and risk updates.</p>
+                <p class="meta">Capture new risks, update impact or likelihood, record mitigation plans, and add update notes as the project changes.</p>
             </div>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Attention needed</span>
-                    <span class="badge">Review</span>
+                    <span class="span-label">4. Review people and project setup</span>
+                    <span class="badge">Admin tasks</span>
                 </p>
-                <p class="meta">Highlights requirements with no effort and high risks.</p>
+                <p class="meta">Use Team for roster management and Project Settings for shared project details. Use Dashboard when you need the full account-administration toolset.</p>
             </div>
         </section>
     </div>
 
     <section class="card stack">
         <h2>Requirements</h2>
-        <p class="meta">Create and manage functional or non-functional requirements.</p>
+        <p class="meta">The requirements area is the main planning surface for functional and non-functional work.</p>
         <div class="data-row">
             <p class="value">
                 <span class="span-label">Create requirement</span>
-                <span class="badge">Primary action</span>
+                <span class="badge">Modal form</span>
             </p>
-            <p class="meta">Add title, description, acceptance criteria, status, and priority.</p>
+            <p class="meta">The create form collects title, requirement code or code prefix, description, type, priority, status, and comma-separated tags. You can create one item or create and immediately add another.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Filter and search</span>
-                <span class="badge">Find fast</span>
+                <span class="span-label">Search, filter, and export</span>
+                <span class="badge">Backlog tools</span>
             </p>
-            <p class="meta">Filter by status or priority and search by title or ID.</p>
+            <p class="meta">Search by title or identifier, filter by type, status, and priority, change how many rows are shown, and export the current requirements list to CSV.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Row actions</span>
-                <span class="badge">Details</span>
+                <span class="span-label">Inline detail editing</span>
+                <span class="badge">Details panel</span>
             </p>
-            <p class="meta">Use Details, Edit, Archive, or Effort for a specific requirement.</p>
+            <p class="meta">Each requirement can be edited in the details card on the right. Current editing covers title, description, status, priority, type, and tags.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Effort link</span>
+                <span class="span-label">Effort and archive actions</span>
+                <span class="badge">Per row</span>
+            </p>
+            <p class="meta">Use Details to load the item, Effort to jump to logging, and Archive to remove it from active lists and effort dropdowns.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Acceptance criteria display</span>
+                <span class="badge">Read-only summary</span>
+            </p>
+            <p class="meta">The details card currently shows how many acceptance-criteria items exist for the requirement, but those items are not edited directly from this page.</p>
+        </div>
+    </section>
+
+    <section class="card stack">
+        <h2>Effort</h2>
+        <p class="meta">Use Effort to save time entries and review totals across the project.</p>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Daily or weekly entries</span>
+                <span class="badge">Two modes</span>
+            </p>
+            <p class="meta">The form supports Daily and Weekly entries. Every entry requires a requirement, a category, and a positive number of hours. Notes are optional.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Context from requirements</span>
                 <span class="badge">Fast path</span>
             </p>
-            <p class="meta">Use the Effort button to jump to effort logging for that requirement.</p>
-        </div>
-    </section>
-
-    <section class="card stack">
-        <h2>Requirement details</h2>
-        <p class="meta">Each requirement includes status, priority, and acceptance criteria.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Status workflow</span>
-                <span class="badge">Proposed to Rejected</span>
-            </p>
-            <p class="meta">Track progress using Proposed, Approved, In Development, Completed, or Rejected.</p>
+            <p class="meta">When you jump to Effort from a requirement, Helm carries the requirement into the effort form and shows a banner so you know which item you are logging against.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Quick actions</span>
-                <span class="badge">Log effort</span>
+                <span class="span-label">Overview filters</span>
+                <span class="badge">Review totals</span>
             </p>
-            <p class="meta">Log effort directly from the requirement or jump to Effort.</p>
-        </div>
-    </section>
-
-    <section class="card stack">
-        <h2>Effort logging</h2>
-        <p class="meta">Effort entries always map to a requirement and a category.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Daily vs weekly</span>
-                <span class="badge">Entry mode</span>
-            </p>
-            <p class="meta">Choose a daily date or a week-of date for weekly totals.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Required fields</span>
-                <span class="badge">Validate</span>
-            </p>
-            <p class="meta">Requirement, category, and hours must be filled in.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Log from Effort or Requirements</span>
-                <span class="badge">Two paths</span>
-            </p>
-            <p class="meta">Use Log effort buttons in both places to stay in flow.</p>
-        </div>
-    </section>
-
-    <section class="card stack">
-        <h2>Effort overview</h2>
-        <p class="meta">Review totals and drill into requirements.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Filters</span>
-                <span class="badge">Range / User</span>
-            </p>
-            <p class="meta">Filter by date range, user, or category for reports.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Totals by requirement</span>
-                <span class="badge">Drill in</span>
-            </p>
-            <p class="meta">Use View requirement to jump back to details.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Totals by category</span>
-                <span class="badge">Activity mix</span>
-            </p>
-            <p class="meta">See how time is spent across activities.</p>
+            <p class="meta">The overview supports All time, This week, Last week, and This month, plus user and category filters. Results are shown as totals by requirement and totals by category.</p>
         </div>
         <div class="data-row">
             <p class="value">
                 <span class="span-label">Recent entries</span>
-                <span class="badge">Latest</span>
+                <span class="badge">Cleanup</span>
             </p>
-            <p class="meta">Review who logged effort most recently.</p>
+            <p class="meta">The recent-entry table shows the newest effort records and supports deleting entries that should not stay in the log.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Built-in categories</span>
+                <span class="badge">Reporting</span>
+            </p>
+            <p class="meta">Current categories are Requirements Analysis, Design, Coding, Testing, and Project Management.</p>
         </div>
     </section>
 
     <section class="card stack">
         <h2>Risks</h2>
-        <p class="meta">Use the risk register to track potential issues.</p>
+        <p class="meta">The risk register tracks active concerns, ownership, mitigation, and update notes.</p>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Core fields</span>
-                <span class="badge">Likelihood / Impact</span>
+                <span class="span-label">Create risk</span>
+                <span class="badge">Modal form</span>
             </p>
-            <p class="meta">Rate likelihood and impact as Low, Medium, or High.</p>
+            <p class="meta">A new risk includes risk code, title, description, likelihood, impact, status, optional owner, and mitigation plan.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Statuses</span>
-                <span class="badge">Open to Closed</span>
+                <span class="span-label">Statuses and levels</span>
+                <span class="badge">Current values</span>
             </p>
-            <p class="meta">Move risks through Open, Monitoring, Mitigating, or Closed.</p>
+            <p class="meta">Risk status values are Identified, Analyzed, Mitigated, and Closed. Likelihood and impact values are Low, Medium, High, and Critical.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Mitigation plan</span>
-                <span class="badge">Action</span>
+                <span class="span-label">Details and mitigation</span>
+                <span class="badge">Inline editing</span>
             </p>
-            <p class="meta">Record how the team will address the risk.</p>
-        </div>
-    </section>
-
-    <section class="card stack">
-        <h2>Team</h2>
-        <p class="meta">Manage membership and access roles.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Add or invite members</span>
-                <span class="badge">Access</span>
-            </p>
-            <p class="meta">Invite if supported, or keep as a read-only roster.</p>
+            <p class="meta">The details panel edits title, description, status, likelihood, impact, and owner. The mitigation panel stores the mitigation plan separately so it can be updated without changing the rest of the record.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Roles</span>
-                <span class="badge">Permissions</span>
+                <span class="span-label">Update notes and history</span>
+                <span class="badge">Timeline</span>
             </p>
-            <p class="meta">Administrator, Project Manager, Contributor, or Viewer.</p>
+            <p class="meta">Use Add update to record a note and update type. Use View history to review the recent update log for that risk.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Status</span>
-                <span class="badge">Active</span>
+                <span class="span-label">Filter, archive, export</span>
+                <span class="badge">Register tools</span>
             </p>
-            <p class="meta">Track Active, Inactive, or Pending members.</p>
+            <p class="meta">Filter by search, status, likelihood, or impact, archive items that should leave the active register, and export the register to CSV.</p>
         </div>
     </section>
 
-    <section class="card stack">
-        <h2>Project settings</h2>
-        <p class="meta">Update global project information and defaults.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Project info</span>
-                <span class="badge">Description</span>
-            </p>
-            <p class="meta">Edit the project name, owner, and description.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Effort defaults</span>
-                <span class="badge">Daily / Weekly</span>
-            </p>
-            <p class="meta">Set default entry mode, week start day, and rounding.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Access model</span>
-                <span class="badge">Single project</span>
-            </p>
-            <p class="meta">All users work in the same project workspace.</p>
-        </div>
-    </section>
+    <div class="grid">
+        <section class="card stack">
+            <h2>Team</h2>
+            <p class="meta">Team focuses on the roster, member lookup, and administrator actions.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Directory and filters</span>
+                    <span class="badge">Search</span>
+                </p>
+                <p class="meta">Search by name or email, filter by role and status, and open any member into the details card.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Administrator actions</span>
+                    <span class="badge">Team page</span>
+                </p>
+                <p class="meta">Administrators can add members, change a member role, approve or reject pending members, suspend active members, reinstate suspended members, and export the roster.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Role list</span>
+                    <span class="badge">Available roles</span>
+                </p>
+                <p class="meta">Current roles are Administrator, Manager, Coder, and Viewer. Administrator-only actions are enforced for account management and project settings.</p>
+            </div>
+        </section>
 
-    <section class="card stack">
-        <h2>Account and profile</h2>
-        <p class="meta">Manage sign-in, profile, and security info.</p>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Register and sign in</span>
-                <span class="badge">Access</span>
-            </p>
-            <p class="meta">Create an account and sign in to access project data.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Profile updates</span>
-                <span class="badge">Profile</span>
-            </p>
-            <p class="meta">Update name, email, address, and profile image.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Security</span>
-                <span class="badge">Password</span>
-            </p>
-            <p class="meta">Change your password and security questions in Profile.</p>
-        </div>
-    </section>
+        <section class="card stack">
+            <h2>Dashboard Admin Tools</h2>
+            <p class="meta">The Dashboard contains the deeper user-management workflows that are not all surfaced on Team.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Approvals and reinstatement</span>
+                    <span class="badge">Administrator</span>
+                </p>
+                <p class="meta">Approve or reject new accounts, review suspended users, and reinstate them directly from the dashboard.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Full account administration</span>
+                    <span class="badge">Administrator</span>
+                </p>
+                <p class="meta">Create users, edit user fields in the account table, suspend accounts with dates, reset passwords, delete users, and send direct emails.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Project snapshot</span>
+                    <span class="badge">All signed-in users</span>
+                </p>
+                <p class="meta">Outside the administrator section, Dashboard is primarily a project snapshot page rather than the main place for day-to-day work entry.</p>
+            </div>
+        </section>
+    </div>
 
-    <section class="card stack">
-        <h2>Definitions</h2>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Functional requirement</span>
-                <span class="badge">What it does</span>
-            </p>
-            <p class="meta">A feature or behavior the system must provide.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Non-functional requirement</span>
-                <span class="badge">How it behaves</span>
-            </p>
-            <p class="meta">Performance, security, usability, and other quality constraints.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Effort categories</span>
-                <span class="badge">Activities</span>
-            </p>
-            <p class="meta">Requirements Analysis, Design, Coding, Testing, Project Management.</p>
-        </div>
-        <div class="data-row">
-            <p class="value">
-                <span class="span-label">Risk likelihood vs impact</span>
-                <span class="badge">Probability vs damage</span>
-            </p>
-            <p class="meta">Likelihood is how likely the risk is; impact is how severe it is.</p>
-        </div>
-    </section>
+    <div class="grid">
+        <section class="card stack">
+            <h2>Project Settings</h2>
+            <p class="meta">Project Settings stores the shared project record used across Helm.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Administrator-only edits</span>
+                    <span class="badge">Protected</span>
+                </p>
+                <p class="meta">Only administrators can save project changes. Non-admins can still open the page and review the current values.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Shared fields</span>
+                    <span class="badge">Project record</span>
+                </p>
+                <p class="meta">The editable project record includes project name, owner or PM name, description, contact email, project status, and stored effort defaults.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Change log</span>
+                    <span class="badge">History</span>
+                </p>
+                <p class="meta">Every saved settings change is added to the change log so administrators can review what changed and who changed it.</p>
+            </div>
+        </section>
+
+        <section class="card stack">
+            <h2>Profile and Security</h2>
+            <p class="meta">Profile controls your own account details.</p>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Personal information</span>
+                    <span class="badge">Profile</span>
+                </p>
+                <p class="meta">Update your first name, last name, email, address, and profile image from the profile form.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Change password</span>
+                    <span class="badge">Current password required</span>
+                </p>
+                <p class="meta">The password form requires your current password, then validates the new password against Helm's complexity rules.</p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Security questions</span>
+                    <span class="badge">Three required</span>
+                </p>
+                <p class="meta">Profile lets you replace all three security questions and answers, but the update requires your current password.</p>
+            </div>
+        </section>
+    </div>
 
     <section class="card stack">
         <h2>Troubleshooting</h2>
         <div class="data-row">
             <p class="value">
                 <span class="span-label">Cannot sign in</span>
-                <span class="badge">Auth</span>
+                <span class="badge">Authentication</span>
             </p>
-            <p class="meta">Confirm your account is active and password is correct.</p>
+            <p class="meta">Use your username, not your email address. If you just registered, wait for administrator approval. If you have failed sign-in several times, your account may need administrator reinstatement.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Missing requirement in Effort dropdown</span>
-                <span class="badge">Requirement</span>
+                <span class="span-label">Password reset is not working</span>
+                <span class="badge">Recovery</span>
             </p>
-            <p class="meta">Ensure the requirement exists and is not archived.</p>
+            <p class="meta">The reset request needs both your email and username. The reset link then requires the correct answers to all three of your security questions.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Unable to save effort</span>
-                <span class="badge">Validation</span>
+                <span class="span-label">Requirement is missing from Effort</span>
+                <span class="badge">Effort</span>
             </p>
-            <p class="meta">Requirement, category, and hours are required and must be valid.</p>
+            <p class="meta">Effort only lists active requirements. Archived requirements do not appear in the requirement dropdown.</p>
         </div>
         <div class="data-row">
             <p class="value">
-                <span class="span-label">Totals not updating</span>
-                <span class="badge">Refresh</span>
+                <span class="span-label">Cannot change Team or Project Settings</span>
+                <span class="badge">Permissions</span>
             </p>
-            <p class="meta">Reload the page or check filters for the selected range.</p>
+            <p class="meta">Administrator-only actions are enforced for project settings changes and most user-management actions.</p>
+        </div>
+        <div class="data-row">
+            <p class="value">
+                <span class="span-label">Password expired</span>
+                <span class="badge">Administrator needed</span>
+            </p>
+            <p class="meta">Expired passwords can suspend the account. Contact an administrator to reset or reinstate access if you can no longer sign in.</p>
         </div>
     </section>
 </section>

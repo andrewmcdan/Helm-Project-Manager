@@ -20,7 +20,6 @@ if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
 }
 
-
 /**
  * Log an event. Depending on configuration, logs to console, file, and/or database.
  * @param {*} level One of: trace, debug, info, warn, error, fatal
@@ -83,7 +82,7 @@ const logAudit = async (event_type, user_id = null, entity_type = null, entity_i
     const timestamp = new Date().toISOString();
     try {
         const query = `
-            INSERT INTO audit_logs (event_type, user_id, entity_type, entity_id, changes, metadata)
+            INSERT INTO audit_logs (event_type, user_id, entity_type, entity_id, change_details, metadata)
             VALUES ($1, $2, $3, $4, $5, $6)
         `;
         const values = [event_type, user_id, entity_type, entity_id, changes, metadata];

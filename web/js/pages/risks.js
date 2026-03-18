@@ -1,6 +1,8 @@
 export default async function initRisks({ showLoadingOverlay, hideLoadingOverlay }) {
     const { fetchWithAuth } = await loadFetchWithAuth();
     const { createInput, createSelect } = await loadDomHelpers();
+    const getUrlParam = await loadUrlParamHelper();
+    const shouldAutoOpenAddRisk = getUrlParam("add_risk") === "true";
 
     // ── Snapshot overview ──────────────────────────────────────────────
     const overviewTotal = document.querySelector("[data-risks-overview-total]");
@@ -131,7 +133,7 @@ export default async function initRisks({ showLoadingOverlay, hideLoadingOverlay
         }
     };
 
-    document.getElementById("create_risk_button").addEventListener("click", async (event) => {
+    addRiskForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         showLoadingOverlay();
         const success = await createRisk(new FormData(addRiskForm));
@@ -678,6 +680,11 @@ export default async function initRisks({ showLoadingOverlay, hideLoadingOverlay
     await loadRisks();
     await loadRisksOverview();
     await loadRecentUpdates();
+    if (shouldAutoOpenAddRisk) {
+        setTimeout(() => {
+            addRiskButton?.click();
+        }, 300);
+    }
 }
 
 // ── Module loaders (same pattern as requirements.js) ───────────────────
@@ -693,4 +700,10 @@ async function loadFetchWithAuth() {
     const module = await import(moduleUrl);
     const { fetchWithAuth } = module;
     return { fetchWithAuth };
+}
+
+async function loadUrlParamHelper() {
+    const moduleUrl = new URL("/js/utils/url_params.js", window.location.origin).href;
+    const module = await import(moduleUrl);
+    return module.default;
 }
