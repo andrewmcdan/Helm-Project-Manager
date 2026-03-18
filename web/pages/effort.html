@@ -2,33 +2,34 @@
     <header class="page-header">
         <h1>Effort</h1>
         <p>Log effort quickly and review totals by requirement and category.</p>
+        <p class="meta" id="effort-context-banner" style="display: none"></p>
     </header>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" id="effort-form-section">
             <h2>Log effort entry</h2>
             <p class="meta">Daily or weekly entries tied to a requirement.</p>
-            <form class="stack" data-effort-entry>
+            <form class="stack" id="effort-entry-form">
                 <div class="field">
                     <label>Entry mode</label>
                     <div class="span-actions">
                         <label>
-                            <input type="radio" name="effort_mode" value="daily" checked />
+                            <input type="radio" name="effort_mode" value="Daily" checked />
                             Daily
                         </label>
                         <label>
-                            <input type="radio" name="effort_mode" value="weekly" />
+                            <input type="radio" name="effort_mode" value="Weekly" />
                             Weekly
                         </label>
                     </div>
                     <p class="meta">Use Date for daily entries or Week of for weekly totals.</p>
                 </div>
                 <div class="grid">
-                    <div class="field">
+                    <div class="field" id="effort-date-field">
                         <label for="effort-date">Date</label>
                         <input id="effort-date" name="date" type="date" />
                     </div>
-                    <div class="field">
+                    <div class="field" id="effort-week-field" style="display: none">
                         <label for="effort-week">Week of</label>
                         <input id="effort-week" name="week_of" type="date" />
                     </div>
@@ -37,10 +38,6 @@
                     <label for="effort-requirement">Requirement</label>
                     <select id="effort-requirement" name="requirement" required>
                         <option value="">Select requirement</option>
-                        <option>FR-001 · Project overview and ownership</option>
-                        <option>FR-011 · Effort logging with categories</option>
-                        <option>FR-014 · Requirement status workflow</option>
-                        <option>NFR-003 · Token-based authentication</option>
                     </select>
                 </div>
                 <div class="grid">
@@ -48,11 +45,6 @@
                         <label for="effort-category">Category</label>
                         <select id="effort-category" name="category" required>
                             <option value="">Select category</option>
-                            <option>Requirements Analysis</option>
-                            <option>Design</option>
-                            <option>Coding</option>
-                            <option>Testing</option>
-                            <option>Project Management</option>
                         </select>
                     </div>
                     <div class="field">
@@ -65,8 +57,8 @@
                     <textarea id="effort-notes" name="notes" rows="3" placeholder="What did you work on?"></textarea>
                 </div>
                 <div class="span-actions">
-                    <button type="submit">Save effort entry</button>
-                    <button type="button" class="button-small">Save and log another</button>
+                    <button type="submit" id="effort-save-btn">Save effort entry</button>
+                    <button type="button" class="button-small" id="effort-save-another-btn">Save and log another</button>
                 </div>
             </form>
         </section>
@@ -95,63 +87,49 @@
                 </p>
                 <p class="meta">Needed for reporting by activity.</p>
             </div>
-            <div class="data-row">
+            <div class="data-row" id="effort-recent-entry-safeguard">
                 <p class="value">
                     <span class="span-label">Recent entry</span>
-                    <span>8.0 hrs · Coding</span>
+                    <span id="effort-recent-entry-label">—</span>
                 </p>
-                <p class="meta">FR-011 logged yesterday by Jay.</p>
-            </div>
-            <div class="span-actions">
-                <button type="button" class="button-small">View requirement</button>
-                <button type="button" class="button-small">Log effort</button>
+                <p class="meta" id="effort-recent-entry-detail">No entries yet.</p>
             </div>
         </section>
     </div>
 
-    <section class="card stack">
+    <section class="card stack" id="effort-overview-section">
         <h2>Effort overview</h2>
         <p class="meta">Review totals across the project.</p>
-        <form class="grid" aria-label="Effort filters">
+        <form class="grid" aria-label="Effort filters" id="effort-filter-form">
             <div class="field">
                 <label for="effort-range">Date range</label>
                 <select id="effort-range" name="range">
-                    <option>This week</option>
-                    <option>Last week</option>
-                    <option>This month</option>
-                    <option>Custom</option>
+                    <option value="">All time</option>
+                    <option value="this_week">This week</option>
+                    <option value="last_week">Last week</option>
+                    <option value="this_month">This month</option>
                 </select>
             </div>
             <div class="field">
                 <label for="effort-user">User</label>
                 <select id="effort-user" name="user">
-                    <option>All users</option>
-                    <option>Andrew</option>
-                    <option>Dylan</option>
-                    <option>Jay</option>
-                    <option>Kevin</option>
-                    <option>Daija</option>
+                    <option value="">All users</option>
                 </select>
             </div>
             <div class="field">
                 <label for="effort-filter-category">Category</label>
                 <select id="effort-filter-category" name="filter_category">
-                    <option>All categories</option>
-                    <option>Requirements Analysis</option>
-                    <option>Design</option>
-                    <option>Coding</option>
-                    <option>Testing</option>
-                    <option>Project Management</option>
+                    <option value="">All categories</option>
                 </select>
             </div>
         </form>
         <div class="span-actions">
-            <button type="button" class="button-small">Apply filters</button>
-            <button type="button" class="button-small">Download CSV</button>
+            <button type="button" class="button-small" id="effort-apply-filters-btn">Apply filters</button>
+            <button type="button" class="button-small" id="effort-download-csv-btn">Download CSV</button>
         </div>
     </section>
 
-    <div class="grid">
+    <div class="grid" id="effort-totals-section">
         <section class="card stack">
             <h2>Totals by requirement</h2>
             <p class="meta">Jump to requirement details and log effort.</p>
@@ -166,46 +144,9 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="effort-by-requirement-body">
                         <tr>
-                            <td>FR-001</td>
-                            <td>Project overview and ownership</td>
-                            <td>14.5</td>
-                            <td>Today</td>
-                            <td class="span-actions">
-                                <button type="button" class="button-small">View requirement</button>
-                                <button type="button" class="button-small">Log effort</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>FR-011</td>
-                            <td>Effort logging with categories</td>
-                            <td>22.0</td>
-                            <td>Yesterday</td>
-                            <td class="span-actions">
-                                <button type="button" class="button-small">View requirement</button>
-                                <button type="button" class="button-small">Log effort</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>NFR-003</td>
-                            <td>Token-based authentication</td>
-                            <td>18.0</td>
-                            <td>4 days ago</td>
-                            <td class="span-actions">
-                                <button type="button" class="button-small">View requirement</button>
-                                <button type="button" class="button-small">Log effort</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>FR-014</td>
-                            <td>Requirement status workflow</td>
-                            <td>0</td>
-                            <td>2 days ago</td>
-                            <td class="span-actions">
-                                <button type="button" class="button-small">View requirement</button>
-                                <button type="button" class="button-small">Log effort</button>
-                            </td>
+                            <td colspan="5">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -224,31 +165,9 @@
                             <th>Share</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="effort-by-category-body">
                         <tr>
-                            <td>Requirements Analysis</td>
-                            <td>38.0</td>
-                            <td><span class="badge">18%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Design</td>
-                            <td>44.5</td>
-                            <td><span class="badge">21%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Coding</td>
-                            <td>86.0</td>
-                            <td><span class="badge">40%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Testing</td>
-                            <td>28.5</td>
-                            <td><span class="badge">13%</span></td>
-                        </tr>
-                        <tr>
-                            <td>Project Management</td>
-                            <td>17.0</td>
-                            <td><span class="badge">8%</span></td>
+                            <td colspan="3">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -271,50 +190,9 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="effort-recent-body">
                     <tr>
-                        <td>Today</td>
-                        <td>FR-001</td>
-                        <td>Design</td>
-                        <td>3.0</td>
-                        <td>Andrew</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View requirement</button>
-                            <button type="button" class="button-small">Log effort</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Yesterday</td>
-                        <td>FR-011</td>
-                        <td>Coding</td>
-                        <td>8.0</td>
-                        <td>Jay</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View requirement</button>
-                            <button type="button" class="button-small">Log effort</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Yesterday</td>
-                        <td>NFR-003</td>
-                        <td>Testing</td>
-                        <td>2.5</td>
-                        <td>Dylan</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View requirement</button>
-                            <button type="button" class="button-small">Log effort</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>2 days ago</td>
-                        <td>FR-014</td>
-                        <td>Requirements Analysis</td>
-                        <td>1.5</td>
-                        <td>Daija</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View requirement</button>
-                            <button type="button" class="button-small">Log effort</button>
-                        </td>
+                        <td colspan="6">Loading...</td>
                     </tr>
                 </tbody>
             </table>

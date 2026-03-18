@@ -242,7 +242,7 @@ async function loadModule(moduleName) {
         const module = await import(moduleUrl);
         URL.revokeObjectURL(moduleUrl);
         if (typeof module.default === "function") {
-            module.default({ showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl });
+            await module.default({ showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl });
         }
     } catch (error) {
         console.error(`Failed to load module ${moduleName}`, error);
