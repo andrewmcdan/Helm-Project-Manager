@@ -5,40 +5,38 @@
     </header>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" data-team-overview>
             <h2>Team snapshot</h2>
             <p class="meta">Current membership for the Helm project.</p>
             <div class="data-row data-row--columns">
                 <div class="data-column">
                     <p class="meta">Total members</p>
-                    <p class="value">5</p>
+                    <p class="value" data-team-overview-total>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Active</p>
-                    <p class="value">5</p>
+                    <p class="value" data-team-overview-active>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Admins</p>
-                    <p class="value">1</p>
+                    <p class="value" data-team-overview-admins>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Pending</p>
-                    <p class="value">0</p>
+                    <p class="value" data-team-overview-pending>—</p>
                 </div>
             </div>
-            <p class="meta">If invites are disabled, this list is read-only.</p>
+            <p class="meta" data-team-overview-summary></p>
         </section>
 
         <section class="card stack">
             <h2>Primary actions</h2>
             <p class="meta">Keep access and roles up to date.</p>
             <div class="stack">
-                <button type="button">Add member</button>
-                <button type="button" class="button-small">Invite member</button>
+                <button type="button" data-add-member-button style="display: none">Add member</button>
             </div>
             <div class="span-actions">
-                <button type="button" class="button-small">Export roster</button>
-                <button type="button" class="button-small">View roles</button>
+                <button type="button" data-export-roster-button>Export roster</button>
             </div>
         </section>
     </div>
@@ -55,19 +53,30 @@
                 <label for="team-role">Role</label>
                 <select id="team-role">
                     <option value="">All roles</option>
-                    <option>Administrator</option>
-                    <option>Project Manager</option>
-                    <option>Contributor</option>
-                    <option>Viewer</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="manager">Manager</option>
+                    <option value="coder">Coder</option>
+                    <option value="viewer">Viewer</option>
                 </select>
             </div>
             <div class="field">
                 <label for="team-status">Status</label>
                 <select id="team-status">
                     <option value="">All statuses</option>
-                    <option>Active</option>
-                    <option>Inactive</option>
-                    <option>Pending</option>
+                    <option value="active">Active</option>
+                    <option value="pending">Pending</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="deactivated">Deactivated</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="team-list-length">Show</label>
+                <select id="team-list-length">
+                    <option value="10">10</option>
+                    <option value="20" selected>20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
                 </select>
             </div>
         </form>
@@ -83,61 +92,9 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="team-table-body">
                     <tr>
-                        <td>Andrew McDaniel</td>
-                        <td>andrew@example.com</td>
-                        <td>Administrator</td>
-                        <td><span class="badge">Active</span></td>
-                        <td>Today</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View</button>
-                            <button type="button" class="button-small">Edit role</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Kevin Lara</td>
-                        <td>kevin@example.com</td>
-                        <td>Project Manager</td>
-                        <td><span class="badge">Active</span></td>
-                        <td>Yesterday</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View</button>
-                            <button type="button" class="button-small">Edit role</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Jay Lee</td>
-                        <td>jay@example.com</td>
-                        <td>Contributor</td>
-                        <td><span class="badge">Active</span></td>
-                        <td>Yesterday</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View</button>
-                            <button type="button" class="button-small">Edit role</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Dylan McKee</td>
-                        <td>dylan@example.com</td>
-                        <td>Contributor</td>
-                        <td><span class="badge">Active</span></td>
-                        <td>2 days ago</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View</button>
-                            <button type="button" class="button-small">Edit role</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Daija McLee</td>
-                        <td>daija@example.com</td>
-                        <td>Viewer</td>
-                        <td><span class="badge">Active</span></td>
-                        <td>4 days ago</td>
-                        <td class="span-actions">
-                            <button type="button" class="button-small">View</button>
-                            <button type="button" class="button-small">Edit role</button>
-                        </td>
+                        <td colspan="6">Loading…</td>
                     </tr>
                 </tbody>
             </table>
@@ -145,29 +102,9 @@
     </section>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" id="member-details-section">
             <h2>Member details</h2>
-            <p class="meta">Selected member overview.</p>
-            <h3>Kevin Lara</h3>
-            <p>Responsible for tracking risks and coordinating weekly updates.</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Role</span>
-                    <span class="badge">Project Manager</span>
-                </p>
-                <p class="meta">Status: Active</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Focus area</span>
-                    <span>Risk tracking</span>
-                </p>
-                <p class="meta">Last active yesterday.</p>
-            </div>
-            <div class="span-actions">
-                <button type="button" class="button-small">Message</button>
-                <button type="button" class="button-small">Change role</button>
-            </div>
+            <p class="meta">Select a member from the directory to view details.</p>
         </section>
 
         <section class="card stack">
@@ -178,29 +115,90 @@
                     <span class="span-label">Administrator</span>
                     <span class="badge">Full access</span>
                 </p>
-                <p class="meta">Manage settings, members, and data.</p>
+                <p class="meta">Manages members, account actions, and project settings.</p>
             </div>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Project Manager</span>
-                    <span class="badge">Lead</span>
+                    <span class="span-label">Manager</span>
+                    <span class="badge">Roster role</span>
                 </p>
-                <p class="meta">Plan work, review risks, approve requirements.</p>
+                <p class="meta">Shown in the roster and member detail views.</p>
             </div>
             <div class="data-row">
                 <p class="value">
-                    <span class="span-label">Contributor</span>
-                    <span class="badge">Build</span>
+                    <span class="span-label">Coder</span>
+                    <span class="badge">Roster role</span>
                 </p>
-                <p class="meta">Create requirements, log effort, update risks.</p>
+                <p class="meta">Shown in the roster and member detail views.</p>
             </div>
             <div class="data-row">
                 <p class="value">
                     <span class="span-label">Viewer</span>
-                    <span class="badge">Read</span>
+                    <span class="badge">Roster role</span>
                 </p>
-                <p class="meta">Read-only access to project data.</p>
+                <p class="meta">Shown in the roster and member detail views.</p>
             </div>
         </section>
+    </div>
+
+    <div id="add_member_modal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h2>Add Member</h2>
+                    <p class="meta">Assign an existing user to the active project or create a new account.</p>
+                </div>
+                <button type="button" class="close-button" id="close_add_member_modal" aria-label="Close">&times;</button>
+            </div>
+            <form id="assign_existing_member_form" class="stack">
+                <h3>Add Existing User</h3>
+                <div class="field">
+                    <label for="assign_existing_member__user_id">Available users</label>
+                    <select id="assign_existing_member__user_id" name="user_id" required>
+                        <option value="" disabled selected>Loading users...</option>
+                    </select>
+                    <p class="meta" id="assign_existing_member__help">Choose a user account that is not already assigned to this project.</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-secondary" id="assign_existing_member_button">Add existing user</button>
+                </div>
+            </form>
+            <form id="add_member_form" class="stack">
+                <h3>Create New User</h3>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_member__first_name">First name</label>
+                        <input type="text" id="add_member__first_name" name="first_name" required />
+                    </div>
+                    <div class="field">
+                        <label for="add_member__last_name">Last name</label>
+                        <input type="text" id="add_member__last_name" name="last_name" required />
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_member__email">Email</label>
+                        <input type="email" id="add_member__email" name="email" required />
+                    </div>
+                    <div class="field">
+                        <label for="add_member__role">Role</label>
+                        <select id="add_member__role" name="role" required>
+                            <option value="coder">Coder</option>
+                            <option value="viewer">Viewer</option>
+                            <option value="manager">Manager</option>
+                            <option value="administrator">Administrator</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_member__password">Password</label>
+                    <input type="password" id="add_member__password" name="password" placeholder="Enter a starting password" />
+                    <p class="meta">If you add an account here, use a real starting password so the creation flow matches the rest of the member-management UI.</p>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary" id="create_member_button">Create member</button>
+                </div>
+            </form>
+        </div>
     </div>
 </section>

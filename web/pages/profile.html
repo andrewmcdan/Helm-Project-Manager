@@ -1,96 +1,142 @@
-<!--
-This page displays the user's profile information and allows them to update their details.
--->
-<section class="page">
+<section class="page stack">
     <header class="page-header">
-        <h1>User Profile</h1>
-        <p class="meta">View and update your profile information.</p>
+        <h1>Profile</h1>
+        <p>Manage your account details, password, and security questions.</p>
     </header>
+
     <div class="grid">
-        <div class="card stack">
+        <section class="card stack">
+            <h2>Account Snapshot</h2>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Role</span>
+                    <span class="badge"><%= user.role %></span>
+                </p>
+                <p class="meta">Signed in as <%= user.email %></p>
+            </div>
+            <div class="data-row">
+                <p class="value">
+                    <span class="span-label">Password expiry</span>
+                    <span><%= user.password_expires_at ? user.password_expires_at.toDateString() : "N/A" %></span>
+                </p>
+                <p class="meta">Update your password before it expires to avoid account suspension.</p>
+            </div>
+        </section>
+
+        <section class="card stack">
             <h2>Profile Image</h2>
             <div class="profile-image-container">
                 <img data-profile-user-icon alt="Profile image" />
             </div>
-            <p class="meta">Use the "Personal Information" form to change your profile image.</p>
-        </div>
-        <div class="card stack">
+            <p class="meta">Upload a new image from the personal-information form to keep the same account identity across the app.</p>
+        </section>
+    </div>
+
+    <div class="grid">
+        <section class="card stack">
             <h2>Personal Information</h2>
-            <p class="meta">Your role: <strong><%= user.role %></strong></p>
+            <p class="meta">Use the same field layout you see on the other account and project forms.</p>
             <form id="profile-form" class="stack">
-                <label for="first_name">First Name:</label>
-                <input type="text" id="first_name" name="first_name" value="<%= user.first_name %>" required />
-
-                <label for="last_name">Last Name:</label>
-                <input type="text" id="last_name" name="last_name" value="<%= user.last_name %>" required />
-
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" value="<%= user.email %>" required />
-
-                <label for="address">Address:</label>
-                <input type="text" id="address" name="address" value="<%= user.address %>" />
-
-                <label for="profile_image">Profile Image:</label>
-                <input type="file" id="profile_image" name="profile_image" accept="image/*" />
-
-                <button type="submit">Update Profile</button>
-            </form>
-        </div>
-        <div class="card stack">
-            <h2>Change Password</h2>
-            <p class="meta">Password expires on: <%= user.password_expires_at ? user.password_expires_at.toDateString() : 'N/A' %></p>
-            <form id="change-password-form" class="stack">
-                <label for="current_password">Current Password:</label>
-                <input type="password" id="current_password" name="current_password" required />
-
-                <label for="new_password">New Password:</label>
-                <input type="password" id="new_password" name="new_password" required />
-
-                <label for="confirm_new_password">Confirm New Password:</label>
-                <input type="password" id="confirm_new_password" name="confirm_new_password" required />
-
-                <button type="submit">Change Password</button>
-            </form>
-        </div>
-        <div class="card stack">
-            <h2>Security Questions</h2>
-            <form id="security-questions-form" class="stack">
+                <div class="grid">
+                    <div class="field">
+                        <label for="first_name">First name</label>
+                        <input type="text" id="first_name" name="first_name" value="<%= user.first_name %>" required />
+                    </div>
+                    <div class="field">
+                        <label for="last_name">Last name</label>
+                        <input type="text" id="last_name" name="last_name" value="<%= user.last_name %>" required />
+                    </div>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" value="<%= user.email %>" required />
+                    </div>
+                    <div class="field">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address" value="<%= user.address %>" />
+                    </div>
+                </div>
                 <div class="field">
-                    <label for="security_question_1">Security Question 1</label>
+                    <label for="profile_image">Profile image</label>
+                    <input type="file" id="profile_image" name="profile_image" accept="image/*" />
+                </div>
+                <div class="span-actions">
+                    <button type="submit">Save profile changes</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="card stack">
+            <h2>Change Password</h2>
+            <p class="meta">Your current password is required before Helm saves a new one.</p>
+            <form id="change-password-form" class="stack">
+                <div class="field">
+                    <label for="current_password">Current password</label>
+                    <input type="password" id="current_password" name="current_password" required />
+                </div>
+                <div class="field">
+                    <label for="new_password">New password</label>
+                    <input type="password" id="new_password" name="new_password" required />
+                </div>
+                <div class="field">
+                    <label for="confirm_new_password">Confirm new password</label>
+                    <input type="password" id="confirm_new_password" name="confirm_new_password" required />
+                </div>
+                <div class="span-actions">
+                    <button type="submit">Change password</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <section class="card stack">
+        <h2>Security Questions</h2>
+        <p class="meta">Replace all three questions together, then confirm with your current password.</p>
+        <form id="security-questions-form" class="stack">
+            <div class="grid">
+                <div class="field">
+                    <label for="security_question_1">Security question 1</label>
                     <select id="security_question_1" name="security_question_1" required>
                         <option value="" disabled selected>Select a security question</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label for="security_answer_1">Security Answer 1</label>
+                    <label for="security_answer_1">Security answer 1</label>
                     <input id="security_answer_1" name="security_answer_1" type="text" required />
                 </div>
+            </div>
+            <div class="grid">
                 <div class="field">
-                    <label for="security_question_2">Security Question 2</label>
+                    <label for="security_question_2">Security question 2</label>
                     <select id="security_question_2" name="security_question_2" required>
                         <option value="" disabled selected>Select a security question</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label for="security_answer_2">Security Answer 2</label>
+                    <label for="security_answer_2">Security answer 2</label>
                     <input id="security_answer_2" name="security_answer_2" type="text" required />
                 </div>
+            </div>
+            <div class="grid">
                 <div class="field">
-                    <label for="security_question_3">Security Question 3</label>
+                    <label for="security_question_3">Security question 3</label>
                     <select id="security_question_3" name="security_question_3" required>
                         <option value="" disabled selected>Select a security question</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label for="security_answer_3">Security Answer 3</label>
+                    <label for="security_answer_3">Security answer 3</label>
                     <input id="security_answer_3" name="security_answer_3" type="text" required />
                 </div>
-
-                <label for="security_current_password">Current Password:</label>
+            </div>
+            <div class="field">
+                <label for="security_current_password">Current password</label>
                 <input type="password" id="security_current_password" name="current_password" required />
-
-                <button type="submit">Update Security Questions</button>
-            </form>
-        </div>
-    </div>
+            </div>
+            <div class="span-actions">
+                <button type="submit">Update security questions</button>
+            </div>
+        </form>
+    </section>
 </section>

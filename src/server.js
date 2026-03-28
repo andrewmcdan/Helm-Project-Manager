@@ -1,3 +1,4 @@
+const compression = require("compression");
 const express = require("express");
 const path = require("path");
 const ejs = require("ejs");
@@ -9,6 +10,7 @@ const { SECURITY_QUESTIONS } = require("./data/security_questions");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.use(compression());
 app.use(express.json());
 
 app.engine("html", ejs.renderFile);
@@ -59,10 +61,10 @@ app.get("/pages/public/forgot-password_submit.html", async (req, res, next) => {
         const securityQuestions = await usersController.getSecurityQuestionsForUser(userData.id);
         const resolvedQuestions = securityQuestions
             ? {
-                security_question_1: questionLabelMap[securityQuestions.security_question_1] || securityQuestions.security_question_1 || "",
-                security_question_2: questionLabelMap[securityQuestions.security_question_2] || securityQuestions.security_question_2 || "",
-                security_question_3: questionLabelMap[securityQuestions.security_question_3] || securityQuestions.security_question_3 || "",
-            }
+                  security_question_1: questionLabelMap[securityQuestions.security_question_1] || securityQuestions.security_question_1 || "",
+                  security_question_2: questionLabelMap[securityQuestions.security_question_2] || securityQuestions.security_question_2 || "",
+                  security_question_3: questionLabelMap[securityQuestions.security_question_3] || securityQuestions.security_question_3 || "",
+              }
             : emptyQuestions;
         return res.render("public/forgot-password_submit", {
             security_questions: resolvedQuestions,
@@ -90,6 +92,10 @@ app.use("/api/users", require("./routes/users"));
 app.use("/images", require("./routes/images"));
 app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/requirements", require("./routes/requirements"));
+app.use("/api/effort", require("./routes/effort"));
+app.use("/api/project-settings", require("./routes/project_settings"));
+app.use("/api/risks", require("./routes/risks"));
+app.use("/api/team", require("./routes/team"));
 
 // This if statement ensures the server only starts if this file is run directly.
 // This allows the server to be imported without starting it, which is useful for testing.

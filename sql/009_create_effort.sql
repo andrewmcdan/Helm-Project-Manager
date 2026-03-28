@@ -45,3 +45,11 @@ CREATE TABLE IF NOT EXISTS effort_categories (
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_effort_categories_name ON effort_categories(category_name);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_effort_categories_sort_order ON effort_categories(sort_order);
+
+INSERT INTO effort_categories (category_name, sort_order) VALUES
+    ('Requirements Analysis', 1),
+    ('Design', 2),
+    ('Coding', 3),
+    ('Testing', 4),
+    ('Project Management', 5)
+ON CONFLICT (category_name) DO NOTHING;

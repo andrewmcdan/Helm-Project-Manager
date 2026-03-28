@@ -4,25 +4,57 @@ const { log } = require("../utils/logger");
 const { getCallerInfo } = require("../utils/utilities");
 const dashboardController = require("../controllers/dashboard");
 
-router.get("/summary", async (req, res) => {
+function loggedInCheck(req, res, next) {
+    const userId = req.user?.id;
+    const loggedIn = req.user?.loggedIn;
+    if (!userId || !loggedIn) {
+        log("warn", "Unauthorized access to dashboard route", {}, getCallerInfo());
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+    next();
+}
+
+router.get("/summary", loggedInCheck, async (req, res) => {
     try {
         log("debug", "Fetching dashboard summary data", { userId: req.user?.id }, getCallerInfo(), req.user?.id);
-        const projData = await dashboardController.getActiveProjectSnapshot();
-        if (!projData) {
-            log("warn", "No active project data found for dashboard summary", { userId: req.user?.id }, getCallerInfo(), req.user?.id);
-            return res.status(404).json({ error: "No active project data found" });
-        }
-        // TODO: Get totals for requirements, efforts, risks, team size, etc.
-        const summaryData = {
-            project_name: projData.project_name,
-            project_owner: projData.project_owner,
-            team_size: projData.team_size,
-            project_summary: projData.project_summary
-        };
+        const summaryData = await dashboardController.getDashboardSummary();
         res.json(summaryData);
     } catch (error) {
         log("error", `Failed to fetch dashboard summary data: ${error.message}`, { userId: req.user?.id }, getCallerInfo(), req.user?.id);
         res.status(500).json({ error: "Failed to fetch dashboard summary data" });
+    }
+});
+
+router.get("/effort-by-category", loggedInCheck, async (req, res) => {
+    try {
+        log("debug", "Fetching dashboard effort by category", { userId: req.user?.id, range: req.query.range }, getCallerInfo(), req.user?.id);
+        const categories = await dashboardController.getEffortByCategory(req.query.range);
+        res.json({ items: categories });
+    } catch (error) {
+        log("error", `Failed to fetch dashboard effort by category: ${error.message}`, { userId: req.user?.id }, getCallerInfo(), req.user?.id);
+        res.status(500).json({ error: "Failed to fetch dashboard effort by category" });
+    }
+});
+
+router.get("/recent-activity", loggedInCheck, async (req, res) => {
+    try {
+        log("debug", "Fetching dashboard recent activity", { userId: req.user?.id, limit: req.query.limit }, getCallerInfo(), req.user?.id);
+        const items = await dashboardController.getRecentActivity(req.query.limit);
+        res.json({ items });
+    } catch (error) {
+        log("error", `Failed to fetch dashboard recent activity: ${error.message}`, { userId: req.user?.id }, getCallerInfo(), req.user?.id);
+        res.status(500).json({ error: "Failed to fetch dashboard recent activity" });
+    }
+});
+
+router.get("/attention-needed", loggedInCheck, async (req, res) => {
+    try {
+        log("debug", "Fetching dashboard attention-needed items", { userId: req.user?.id, limit: req.query.limit }, getCallerInfo(), req.user?.id);
+        const items = await dashboardController.getAttentionNeeded(req.query.limit);
+        res.json({ items });
+    } catch (error) {
+        log("error", `Failed to fetch dashboard attention-needed items: ${error.message}`, { userId: req.user?.id }, getCallerInfo(), req.user?.id);
+        res.status(500).json({ error: "Failed to fetch dashboard attention-needed items" });
     }
 });
 

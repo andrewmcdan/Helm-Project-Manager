@@ -20,7 +20,6 @@ if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
 }
 
-
 /**
  * Log an event. Depending on configuration, logs to console, file, and/or database.
  * @param {*} level One of: trace, debug, info, warn, error, fatal
@@ -78,21 +77,6 @@ const log = async (level, message, context = null, source = "", user_id = null, 
     }
 };
 
-// Audit log function
-const logAudit = async (event_type, user_id = null, entity_type = null, entity_id = null, changes = {}, metadata = {}) => {
-    const timestamp = new Date().toISOString();
-    try {
-        const query = `
-            INSERT INTO audit_logs (event_type, user_id, entity_type, entity_id, changes, metadata)
-            VALUES ($1, $2, $3, $4, $5, $6)
-        `;
-        const values = [event_type, user_id, entity_type, entity_id, changes, metadata];
-        await db.query(query, values);
-    } catch (error) {
-        console.error("Failed to log audit event:", error);
-    }
-};
-
 const queryAppLogs = async (filters = {}) => {
     // Build dynamic query based on filters
     let query = "SELECT * FROM app_logs WHERE 1=1";
@@ -119,36 +103,8 @@ const queryAppLogs = async (filters = {}) => {
     return result.rows;
 };
 
-const queryAuditLogs = async (filters = {}) => {
-    // Build dynamic query based on filters
-    let query = "SELECT * FROM audit_logs WHERE 1=1";
-    const values = [];
-    let index = 1;
-    if (filters.event_type) {
-        query += ` AND event_type = $${index++}`;
-        values.push(filters.event_type);
-    }
-    if (filters.user_id) {
-        query += ` AND user_id = $${index++}`;
-        values.push(filters.user_id);
-    }
-    if (filters.startDate) {
-        query += ` AND created_at >= $${index++}`;
-        values.push(filters.startDate);
-    }
-    if (filters.endDate) {
-        query += ` AND created_at <= $${index++}`;
-        values.push(filters.endDate);
-    }
-    query += " ORDER BY created_at DESC LIMIT 100"; // limit to 100 results
-    const result = await db.query(query, values);
-    return result.rows;
-};
-
 // Export log function
 module.exports = {
     log,
-    logAudit,
     queryAppLogs,
-    queryAuditLogs,
 };

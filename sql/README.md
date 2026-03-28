@@ -1,8 +1,7 @@
-
-
 ## DB-Structure
 
 ### public.app_logs
+
 - id: bigint
 - user_id: bigint
 - level: text
@@ -11,22 +10,14 @@
 - source: text
 - created_at: timestamp with time zone
 
-### public.audit_logs
-- id: bigint
-- event_type: text
-- user_id: bigint
-- entity_type: text
-- entity_id: bigint
-- change_details: jsonb
-- metadata: jsonb
-- created_at: timestamp with time zone
-
 ### public.effort_categories
+
 - id: bigint
 - category_name: text
 - sort_order: integer
 
 ### public.effort_entries
+
 - id: bigint
 - project_id: bigint
 - requirement_id: bigint
@@ -46,6 +37,7 @@
 - archived: boolean
 
 ### public.logged_in_users
+
 - id: bigint
 - user_id: bigint
 - token: text
@@ -53,6 +45,7 @@
 - logout_at: timestamp with time zone
 
 ### public.password_expiry_email_tracking
+
 - id: bigint
 - user_id: bigint
 - email_sent_at: timestamp with time zone
@@ -60,12 +53,14 @@
 - password_expires_at: timestamp with time zone
 
 ### public.password_history
+
 - id: bigint
 - user_id: bigint
 - password_hash: text
 - changed_at: timestamp with time zone
 
 ### public.project_settings
+
 - id: bigint
 - project_name: text
 - project_owner_name: text
@@ -83,6 +78,7 @@
 - archived_by: bigint
 
 ### public.project_settings_change_log
+
 - id: bigint
 - project_settings_id: bigint
 - changed_at: timestamp with time zone
@@ -91,6 +87,7 @@
 - changes: jsonb
 
 ### public.project_team_members
+
 - id: bigint
 - project_settings_id: bigint
 - user_id: bigint
@@ -99,6 +96,7 @@
 - added_by: bigint
 
 ### public.requirements
+
 - id: bigint
 - requirement_code_prefix: text
 - requirement_code_number: integer
@@ -117,6 +115,7 @@
 - archived: boolean
 
 ### public.requirements_acceptance_criteria
+
 - id: bigint
 - requirement_id: bigint
 - criteria_text: text
@@ -127,20 +126,24 @@
 - updated_by: bigint
 
 ### public.requirements_tags
+
 - id: bigint
 - tag: text
 - created_at: timestamp with time zone
 - created_by: bigint
 
 ### public.requirements_tags_junction
+
 - requirement_id: bigint
 - tag_id: bigint
 
 ### public.requirements_tags_project_settings_junction
+
 - project_settings_id: bigint
 - tag_id: bigint
 
 ### public.risk_updates
+
 - id: bigint
 - risk_id: bigint
 - update_type: text
@@ -150,6 +153,7 @@
 - updated_by: bigint
 
 ### public.risks
+
 - id: bigint
 - risk_code: text
 - risk_title: text
@@ -168,11 +172,13 @@
 - archived: boolean
 
 ### public.schema_migrations
+
 - id: bigint
 - filename: text
 - applied_at: timestamp with time zone
 
 ### public.users
+
 - id: bigint
 - username: text
 - email: text

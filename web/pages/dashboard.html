@@ -2,6 +2,7 @@
     <header class="page-header">
         <h1>Dashboard</h1>
         <p>One screen that answers what should I do next and what's happening.</p>
+        <p class="meta">Last updated <span data-last-updated>Loading...</span></p>
     </header>
 
     <div class="grid">
@@ -31,13 +32,13 @@
             <h2>Quick Actions</h2>
             <p class="meta">Jump straight into the most common tasks.</p>
             <div class="stack">
-                <button type="button">Add requirement</button>
-                <button type="button">Log effort</button>
-                <button type="button">Add risk</button>
+                <button type="button" data-add-requirement-button>Add requirement</button>
+                <button type="button" data-log-effort-button>Log effort</button>
+                <button type="button" data-add-risk-button>Add risk</button>
             </div>
             <div class="span-actions">
-                <button type="button" class="button-small">View all requirements</button>
-                <button type="button" class="button-small">View effort report</button>
+                <button type="button" class="button-small button-secondary" data-view-requirements-button>View all requirements</button>
+                <button type="button" class="button-small button-secondary" data-view-effort-report-button>View effort report</button>
             </div>
         </section>
     </div>
@@ -47,23 +48,23 @@
         <div class="grid">
             <article class="card stack">
                 <h3>Total requirements</h3>
-                <p class="value" data-metric-total-requirements>28</p>
-                <p class="meta" data-metric-requirements-breakdown>20 functional · 8 non-functional</p>
+                <p class="value" data-metric-total-requirements>Loading...</p>
+                <p class="meta" data-metric-requirements-breakdown>Loading...</p>
             </article>
             <article class="card stack">
                 <h3>Effort logged (week)</h3>
-                <p class="value" data-metric-effort-week>32.5 hrs</p>
-                <p class="meta" data-metric-effort-week-meta>Across 11 entries</p>
+                <p class="value" data-metric-effort-week>Loading...</p>
+                <p class="meta" data-metric-effort-week-meta>Loading...</p>
             </article>
             <article class="card stack">
                 <h3>Effort logged (total)</h3>
-                <p class="value" data-metric-effort-total>214 hrs</p>
-                <p class="meta" data-metric-effort-total-meta>Project lifetime</p>
+                <p class="value" data-metric-effort-total>Loading...</p>
+                <p class="meta" data-metric-effort-total-meta>Loading...</p>
             </article>
             <article class="card stack">
                 <h3>Open risks</h3>
-                <p class="value" data-metric-open-risks>6</p>
-                <p class="meta" data-metric-open-risks-meta>2 high · 3 medium · 1 low</p>
+                <p class="value" data-metric-open-risks>Loading...</p>
+                <p class="meta" data-metric-open-risks-meta>Loading...</p>
             </article>
         </div>
     </section>
@@ -82,29 +83,7 @@
                 </thead>
                 <tbody data-effort-by-category-body>
                     <tr>
-                        <td>Requirements Analysis</td>
-                        <td>6.0</td>
-                        <td><span class="badge">Steady</span></td>
-                    </tr>
-                    <tr>
-                        <td>Design</td>
-                        <td>7.5</td>
-                        <td><span class="badge">Rising</span></td>
-                    </tr>
-                    <tr>
-                        <td>Coding</td>
-                        <td>12.0</td>
-                        <td><span class="badge">Peak</span></td>
-                    </tr>
-                    <tr>
-                        <td>Testing</td>
-                        <td>4.5</td>
-                        <td><span class="badge">Starting</span></td>
-                    </tr>
-                    <tr>
-                        <td>Project Management</td>
-                        <td>2.5</td>
-                        <td><span class="badge">Light</span></td>
+                        <td colspan="3" class="meta">Loading effort categories...</td>
                     </tr>
                 </tbody>
             </table>
@@ -116,27 +95,7 @@
             <h2>Recently updated</h2>
             <p class="meta">Latest changes across requirements, effort, and risks.</p>
             <div class="stack" data-recent-activity-list>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">FR-014 · Effort logging validation</span>
-                        <span class="badge">Requirement</span>
-                    </p>
-                    <p class="meta">Updated 2 hours ago by Dylan</p>
-                </div>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">8 hrs · Coding on FR-011</span>
-                        <span class="badge">Effort</span>
-                    </p>
-                    <p class="meta">Logged yesterday by Jay</p>
-                </div>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">R-03 · Scope creep risk moved to High</span>
-                        <span class="badge">Risk</span>
-                    </p>
-                    <p class="meta">Updated yesterday by Andrew</p>
-                </div>
+                <p class="meta">Loading recent activity...</p>
             </div>
         </section>
 
@@ -144,27 +103,7 @@
             <h2>Attention needed</h2>
             <p class="meta">Items that could use a follow-up this week.</p>
             <div class="stack" data-attention-needed-list>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">5 requirements with no effort logged</span>
-                        <span class="badge">Review</span>
-                    </p>
-                    <p class="meta">Start logging once implementation begins.</p>
-                </div>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">R-02 · Uneven contribution risk</span>
-                        <span class="badge">High</span>
-                    </p>
-                    <p class="meta">Assign owners and check in mid-week.</p>
-                </div>
-                <div class="data-row">
-                    <p class="value">
-                        <span class="span-label">R-01 · Time constraints risk</span>
-                        <span class="badge">High</span>
-                    </p>
-                    <p class="meta">Confirm availability before next sprint.</p>
-                </div>
+                <p class="meta">Loading follow-up items...</p>
             </div>
         </section>
     </div>
@@ -216,11 +155,22 @@
                     <p class="meta" data-expired-passwords-empty>No users with expired passwords</p>
                     <% } %>
                     <% usersWithExpiredPasswords.forEach(user => { %>
-                    <article class="data-row">
+                    <article class="data-row" data-expired-password-row-<%= user.id %>>
                         <p class="value">
-                            <span><%= user.username %></span>
-                            <span class="meta"> (Full name: <%= user.first_name %> <%= user.last_name %>)</span>
-                            <button type="button" class="button-small">Suspend user</button>
+                            <span class="span-label">
+                                <span><%= user.username %></span>
+                                <span class="meta"> (Full name: <%= user.first_name %> <%= user.last_name %>)</span>
+                            </span>
+                            <span class="span-actions">
+                                <button
+                                    type="button"
+                                    class="button-small button-secondary"
+                                    data-user-action="reset-password"
+                                    data-user-id="<%= user.id %>"
+                                >
+                                    Reset password
+                                </button>
+                            </span>
                         </p>
                         <p class="meta">Password expired on <%= user.password_expires_at %></p>
                     </article>

@@ -5,28 +5,28 @@
     </header>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" data-requirements-overview>
             <h2>Overview</h2>
             <p class="meta">Current requirement health.</p>
             <div class="data-row data-row--columns">
                 <div class="data-column">
                     <p class="meta">Total</p>
-                    <p class="value">28</p>
+                    <p class="value" data-requirements-overview-total>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Functional</p>
-                    <p class="value">20</p>
+                    <p class="value" data-requirements-overview-functional>—</p>
                 </div>
                 <div class="data-column">
                     <p class="meta">Non-functional</p>
-                    <p class="value">8</p>
+                    <p class="value" data-requirements-overview-non-functional>—</p>
                 </div>
                 <div class="data-column">
-                    <p class="meta">In progress</p>
-                    <p class="value">6</p>
+                    <p class="meta">In development</p>
+                    <p class="value" data-requirements-overview-in-development>—</p>
                 </div>
             </div>
-            <p class="meta">Focus on logging effort once work begins.</p>
+            <p class="meta" data-requirements-overview-summary>Focus on logging effort once work begins.</p>
         </section>
 
         <section class="card stack">
@@ -38,21 +38,25 @@
             </div>
             <div class="span-actions">
                 <button type="button" class="button-small" data-view-effort-totals-button>View effort totals</button>
-                <button type="button" class="button-small" data-export-list-button>Export list</button>
+                <button type="button" class="button-small" data-export-list-button>Export Requirements</button>
             </div>
         </section>
     </div>
     <section class="card stack">
         <h2>Requirements index</h2>
         <p class="meta">Filter and manage the requirement backlog.</p>
-        <div class="span-actions">
-            <button type="button" class="button-small">Functional</button>
-            <button type="button" class="button-small">Non-functional</button>
-        </div>
         <form class="grid" aria-label="Requirement filters">
             <div class="field">
                 <label for="requirement-search">Search</label>
                 <input id="requirement-search" type="search" placeholder="Search by title or ID" />
+            </div>
+            <div class="field">
+                <label for="requirement-type">Type</label>
+                <select id="requirement-type">
+                    <option value="">All types</option>
+                    <option>Functional</option>
+                    <option>Non-functional</option>
+                </select>
             </div>
             <div class="field">
                 <label for="requirement-status">Status</label>
@@ -60,9 +64,9 @@
                     <option value="">All statuses</option>
                     <option>Proposed</option>
                     <option>Approved</option>
-                    <option>In Progress</option>
-                    <option>Done</option>
-                    <option>Deferred</option>
+                    <option>In Development</option>
+                    <option>Completed</option>
+                    <option>Rejected</option>
                 </select>
             </div>
             <div class="field">
@@ -72,10 +76,21 @@
                     <option>Low</option>
                     <option>Medium</option>
                     <option>High</option>
+                    <option>Critical</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="list-length">Number to show</label>
+                <select id="list-length">
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="0">All</option>
                 </select>
             </div>
         </form>
-        <div class="table-scroll">
+        <div class="table-scroll-y hide-scrollbar">
             <table class="table">
                 <thead>
                     <tr>
@@ -108,137 +123,87 @@
     </section>
 
     <div class="grid">
-        <section class="card stack">
+        <section class="card stack" id="requirement-details-section">
             <h2>Requirement details</h2>
-            <p class="meta">Selected requirement preview.</p>
-            <h3>FR-011 · Effort logging with categories</h3>
-            <p>Allow users to record effort entries tied to a requirement with category selection.</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Status</span>
-                    <span class="badge">In Progress</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Priority</span>
-                    <span class="badge">High</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Type</span>
-                    <span class="badge">Functional</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Tags</span>
-                    <span class="badge"> effort, logging, validation</span>
-                </p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Acceptance criteria</span>
-                    <span class="badge">3 items</span>
-                </p>
-            </div>
-            <div class="span-actions">
-                <button type="button" class="button-small">View details</button>
-                <button type="button" class="button-small">Edit requirement</button>
-                <button type="button" class="button-small">Log effort</button>
-            </div>
+            <p class="meta">Select a requirement to view and edit.</p>
+            <p>Click "Details" on a requirement row above to load it here.</p>
         </section>
 
-        <section class="card stack">
+        <section class="card stack" id="requirement-effort-links-section">
             <h2>Effort links</h2>
-            <p class="meta">Jump to effort details for this requirement.</p>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Total logged hours</span>
-                    <span>22.0</span>
-                </p>
-                <p class="meta">View category breakdown and entries in Effort.</p>
-            </div>
-            <div class="data-row">
-                <p class="value">
-                    <span class="span-label">Last entry</span>
-                    <span>Yesterday</span>
-                </p>
-                <p class="meta">8.0 hrs · Coding · Jay</p>
-            </div>
-            <div class="span-actions">
-                <button type="button" class="button-small">View effort entries</button>
-                <button type="button" class="button-small">Log effort</button>
-            </div>
+            <p class="meta">Select a requirement to see effort details.</p>
         </section>
     </div>
     <div id="add_requirement_modal" class="modal" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button" id="close_add_requirement_modal" aria-label="Close">&times;</span>
-            <h2 id="add_requirement_modal_title">Add Requirement</h2>
-            <form id="add_requirement_form">
-                <table>
-                    <tr>
-                        <td><label for="add_requirement__label" id="add_requirement__label">Title</label></td>
-                        <td id="add_requirement__input">
-                            <input type="text" id="add_requirement__title" name="requirement_title" required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__code" id="add_requirement__code_label">ID Prefix</label></td>
-                        <td id="add_requirement__input">
+            <div class="modal-header">
+                <div>
+                    <h2 id="add_requirement_modal_title">Add Requirement</h2>
+                    <p class="meta">Use the same requirement structure you see in the backlog and details panel.</p>
+                </div>
+                <button type="button" class="close-button" id="close_add_requirement_modal" aria-label="Close">&times;</button>
+            </div>
+            <form id="add_requirement_form" class="stack">
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_requirement__title">Title</label>
+                        <input type="text" id="add_requirement__title" name="requirement_title" required />
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__code">Requirement code or prefix</label>
+                        <div class="input-with-suggestions">
                             <input type="text" id="add_requirement__code" name="requirement_code" required />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__description" id="add_requirement__description_label">Description</label></td>
-                        <td id="add_requirement__description_input">
-                            <textarea id="add_requirement__description" name="requirement_description" required></textarea>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__type" id="add_requirement__type_label">Type</label></td>
-                        <td id="add_requirement__type_input">
-                            <select id="add_requirement__type" name="requirement_type" required>
-                                <option value="">Select type</option>
-                                <option value="Functional">Functional</option>
-                                <option value="Non-functional">Non-functional</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__priority" id="add_requirement__priority_label">Priority</label></td>
-                        <td id="add_requirement__priority_input">
-                            <select id="add_requirement__priority" name="requirement_priority" required>
-                                <option value="">Select priority</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__status" id="add_requirement__status_label">Status</label></td>
-                        <td id="add_requirement__status_input">
-                            <select id="add_requirement__status" name="requirement_status" required>
-                                <option value="Proposed" selected>Proposed</option>
-                                <option value="Approved">Approved</option>
-                                <option value="In Development">In Development</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="add_requirement__tags" id="add_requirement__tags_label">Tags (comma-separated)</label></td>
-                        <td id="add_requirement__tags_input">
-                            <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
-                        </td>
-                    </tr>
-                </table>
-                <span><p>&nbsp;</p></span>
-                <button type="submit" class="button-primary" id="create_requirement_button">Create and close</button>
-                <button type="button" class="button-secondary" id="create_and_add_another_requirement_button">Create and add another</button>
+                            <div id="add_requirement__code_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                                <!-- Code suggestions will be dynamically inserted here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_requirement__description">Description</label>
+                    <textarea id="add_requirement__description" name="requirement_description" rows="4" required></textarea>
+                </div>
+                <div class="grid">
+                    <div class="field">
+                        <label for="add_requirement__type">Type</label>
+                        <select id="add_requirement__type" name="requirement_type" required>
+                            <option value="">Select type</option>
+                            <option value="Functional">Functional</option>
+                            <option value="Non-functional">Non-functional</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__priority">Priority</label>
+                        <select id="add_requirement__priority" name="requirement_priority" required>
+                            <option value="">Select priority</option>
+                            <option value="Low">Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                            <option value="Critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="add_requirement__status">Status</label>
+                        <select id="add_requirement__status" name="requirement_status" required>
+                            <option value="Proposed" selected>Proposed</option>
+                            <option value="Approved">Approved</option>
+                            <option value="In Development">In Development</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="add_requirement__tags">Tags (comma-separated)</label>
+                    <div class="input-with-suggestions">
+                        <input type="text" id="add_requirement__tags" name="requirement_tags" placeholder="e.g. login, security, performance" />
+                        <div id="add_requirement__tags_suggestions" class="suggestions" aria-live="polite" aria-atomic="true">
+                            <!-- Tag suggestions will be dynamically inserted here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="button-primary" id="create_requirement_button">Create and close</button>
+                    <button type="button" class="button-secondary" id="create_and_add_another_requirement_button">Create and add another</button>
+                </div>
             </form>
         </div>
     </div>

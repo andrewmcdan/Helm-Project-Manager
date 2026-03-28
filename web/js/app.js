@@ -13,7 +13,6 @@ const routes = {
     not_authorized: { title: "Not Authorized", page: "pages/public/not_authorized", module: null },
     profile: { title: "Profile", page: "pages/profile", module: "js/pages/profile" },
     force_password_change: { title: "Change Password", page: "pages/force_password_change", module: "js/pages/force_password_change" },
-    accounts_list: { title: "Accounts List", page: "pages/accounts_list", module: "js/pages/accounts_list" },
 };
 
 const DEFAULT_ROUTE = "dashboard";
@@ -242,7 +241,7 @@ async function loadModule(moduleName) {
         const module = await import(moduleUrl);
         URL.revokeObjectURL(moduleUrl);
         if (typeof module.default === "function") {
-            module.default({ showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl });
+            await module.default({ showLoadingOverlay, hideLoadingOverlay, userIconBlobUrl });
         }
     } catch (error) {
         console.error(`Failed to load module ${moduleName}`, error);
