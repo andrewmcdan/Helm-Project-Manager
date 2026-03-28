@@ -53,7 +53,10 @@ describe("team controller", () => {
             await addProjectMember(coder, project, "coder");
 
             const admins = await team.listMembers(0, 100, { role: "administrator" });
-            assert.deepStrictEqual(admins.map((member) => member.id), [admin.id]);
+            assert.deepStrictEqual(
+                admins.map((member) => member.id),
+                [admin.id],
+            );
         });
 
         it("filters by status within the active project", async () => {
@@ -64,7 +67,10 @@ describe("team controller", () => {
             await addProjectMember(pending, project);
 
             const pendingMembers = await team.listMembers(0, 100, { status: "pending" });
-            assert.deepStrictEqual(pendingMembers.map((member) => member.id), [pending.id]);
+            assert.deepStrictEqual(
+                pendingMembers.map((member) => member.id),
+                [pending.id],
+            );
         });
 
         it("filters by search term within the active project", async () => {
@@ -75,7 +81,10 @@ describe("team controller", () => {
             await addProjectMember(other, project);
 
             const results = await team.listMembers(0, 100, { search: "UniqueAbc" });
-            assert.deepStrictEqual(results.map((member) => member.id), [matching.id]);
+            assert.deepStrictEqual(
+                results.map((member) => member.id),
+                [matching.id],
+            );
         });
 
         it("sorts by name ASC within the active project", async () => {
@@ -264,11 +273,29 @@ describe("team controller", () => {
             assert.strictEqual(assignment.user_id, member.id);
             assert.strictEqual(assignment.role, "administrator");
 
-            const result = await db.query(
-                "SELECT role FROM project_team_members WHERE project_settings_id = $1 AND user_id = $2 LIMIT 1",
-                [project.id, member.id],
-            );
+            const result = await db.query("SELECT role FROM project_team_members WHERE project_settings_id = $1 AND user_id = $2 LIMIT 1", [project.id, member.id]);
             assert.strictEqual(result.rows[0].role, "administrator");
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  getCurrentUserRole                                                 */
+    /* ------------------------------------------------------------------ */
+
+    describe("getCurrentUserRole", () => {
+        it("returns the role for an existing user", async () => {
+            const user = await createTestUser({ role: "manager" });
+            const role = await team.getCurrentUserRole(user.id);
+            assert.strictEqual(role, "manager");
+        });
+
+        it("returns null for a non-existent user", async () => {
+            const role = await team.getCurrentUserRole(999999);
+            assert.strictEqual(role, null);
+        });
+
+        it("rejects non-numeric user ID", async () => {
+            await assert.rejects(() => team.getCurrentUserRole("abc"), /Invalid user ID/);
         });
     });
 });

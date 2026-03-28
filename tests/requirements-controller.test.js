@@ -308,6 +308,44 @@ describe("requirements controller", () => {
             assert.ok(Array.isArray(tags));
             assert.ok(tags.includes("gamma"));
         });
+
+        it("getTagsForProjectById returns tags linked to a project", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Project Tag Test",
+                requirement_type: "Functional",
+                priority: "Low",
+                status: "Proposed",
+                requirement_code: "PTAG-1",
+                tags: ["delta"],
+            });
+            // Link the tag to the project via the junction table
+            const tagResult = await db.query("SELECT id FROM requirements_tags WHERE tag = 'delta'");
+            await db.query("INSERT INTO requirements_tags_project_settings_junction (tag_id, project_settings_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [tagResult.rows[0].id, project.id]);
+            const tags = await req.getTagsForProjectById(project.id);
+            assert.ok(Array.isArray(tags));
+            assert.ok(tags.includes("delta"));
+        });
+
+        it("getTagsForProjectById returns empty array for unknown project", async () => {
+            const tags = await req.getTagsForProjectById(999999);
+            assert.ok(Array.isArray(tags));
+            assert.strictEqual(tags.length, 0);
+        });
+
+        it("getTagsFiltered returns tags matching a prefix", async () => {
+            await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Filter Tag Test",
+                requirement_type: "Functional",
+                priority: "Low",
+                status: "Proposed",
+                requirement_code: "FTAG-1",
+                tags: ["frontend", "backend"],
+            });
+            const tags = await req.getTagsFiltered("front");
+            assert.ok(Array.isArray(tags));
+            assert.ok(tags.includes("frontend"));
+            assert.ok(!tags.includes("backend"));
+        });
     });
 
     /* ------------------------------------------------------------------ */

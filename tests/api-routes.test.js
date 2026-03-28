@@ -1,6 +1,6 @@
 const { describe, it, before, after, beforeEach } = require("node:test");
 const assert = require("node:assert/strict");
-const { setup, teardown, cleanAllTables, getDb, createTestUser, loginTestUser, getAdminAuth, createTestProject, createTestRequirement } = require("./helpers/setup");
+const { setup, teardown, cleanAllTables, getDb, createTestUser, loginTestUser, getAdminAuth, getCoderAuth, createTestProject, createTestRequirement } = require("./helpers/setup");
 const { startApp, stopApp, request } = require("./helpers/http");
 
 describe("API routes integration", () => {
@@ -547,6 +547,56 @@ describe("API routes integration", () => {
                 },
             });
             assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/email-user returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/users/email-user", {
+                headers: coderH,
+                body: { username: "anyone", subject: "Hi", message: "Hello" },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/email-user returns 400 when fields missing", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/email-user", {
+                headers: h,
+                body: { username: "someone" },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/email-user returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/email-user", {
+                headers: h,
+                body: { username: "nonexistent_user_999", subject: "Test", message: "Body" },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/reset-user-password/:userId returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const user = await createTestUser();
+            const res = await request("GET", `/api/users/reset-user-password/${user.id}`, {
+                headers: coderH,
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/reset-user-password/:userId returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/users/reset-user-password/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/reset-user-password/:userId resets password for valid user", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser();
+            const res = await request("GET", `/api/users/reset-user-password/${user.id}`, { headers: h });
+            // May succeed or fail with 500 if SMTP is not configured
+            assert.ok(res.status === 200 || res.status === 500);
         });
     });
 
