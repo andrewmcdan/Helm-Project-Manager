@@ -480,12 +480,13 @@ describe("API routes integration", () => {
             const res = await request("POST", "/api/users/update-security-questions", {
                 headers: userHeaders,
                 body: {
-                    currentPassword: "Password1!",
-                    securityQuestions: [
-                        { question: "fav_color", answer: "Red" },
-                        { question: "pet_name", answer: "Whiskers" },
-                        { question: "birth_city", answer: "Austin" },
-                    ],
+                    current_password: "Test1!Pass",
+                    security_question_1: "fav_color",
+                    security_answer_1: "Red",
+                    security_question_2: "pet_name",
+                    security_answer_2: "Whiskers",
+                    security_question_3: "birth_city",
+                    security_answer_3: "Austin",
                 },
             });
             assert.strictEqual(res.status, 200);
@@ -495,7 +496,7 @@ describe("API routes integration", () => {
             const h = await adminHeaders();
             const user = await createTestUser();
             const resetToken = "test-token-" + Date.now();
-            await db.query("UPDATE users SET reset_token = $1, reset_token_expires_at = $2, security_question_1 = 'fav_color', security_question_2 = 'pet_name', security_question_3 = 'birth_city' WHERE id = $4", [resetToken, new Date(Date.now() + 3600000).toISOString(), user.id]);
+            await db.query("UPDATE users SET reset_token = $1, reset_token_expires_at = $2, security_question_1 = 'fav_color', security_question_2 = 'pet_name', security_question_3 = 'birth_city' WHERE id = $3", [resetToken, new Date(Date.now() + 3600000).toISOString(), user.id]);
             const res = await request("GET", `/api/users/security-questions/${resetToken}`, { headers: h });
             assert.strictEqual(res.status, 200);
         });

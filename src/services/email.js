@@ -46,13 +46,15 @@ async function sendAccountApprovedEmail(data) {
     });
     const text = buildAccountApprovedText(data);
     return sendEmail(data.userEmail, subject, html, text);
-
 }
 
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: true, // true for 465, false for other ports
+    connectionTimeout: 5000,
+    greetingTimeout: 5000,
+    socketTimeout: 10000,
     auth: {
         user: process.env.SMTP_USERNAME,
         pass: process.env.SMTP_PASSWORD,
