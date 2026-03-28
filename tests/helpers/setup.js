@@ -32,7 +32,6 @@ async function cleanAllTables() {
     await db.query("DELETE FROM project_settings");
     await db.query("DELETE FROM password_history");
     await db.query("DELETE FROM logged_in_users");
-    await db.query("DELETE FROM audit_logs");
     await db.query("DELETE FROM app_logs");
     await db.query("DELETE FROM users");
 }

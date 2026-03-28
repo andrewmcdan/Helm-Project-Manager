@@ -19,6 +19,40 @@ describe("users controller", () => {
     /*  checkPasswordComplexity (tested indirectly through changePassword) */
     /* ------------------------------------------------------------------ */
 
+    describe("password complexity (via changePassword)", () => {
+        it("rejects password shorter than 8 characters", async () => {
+            const user = await createTestUser();
+            await assert.rejects(() => users.changePassword(user.id, "Ab1!xyz"), /complexity/);
+        });
+
+        it("rejects password missing uppercase letter", async () => {
+            const user = await createTestUser();
+            await assert.rejects(() => users.changePassword(user.id, "abcdefg1!"), /complexity/);
+        });
+
+        it("rejects password missing lowercase letter", async () => {
+            const user = await createTestUser();
+            await assert.rejects(() => users.changePassword(user.id, "ABCDEFG1!"), /complexity/);
+        });
+
+        it("rejects password missing digit", async () => {
+            const user = await createTestUser();
+            await assert.rejects(() => users.changePassword(user.id, "Abcdefgh!"), /complexity/);
+        });
+
+        it("rejects password missing special character", async () => {
+            const user = await createTestUser();
+            await assert.rejects(() => users.changePassword(user.id, "Abcdefg1A"), /complexity/);
+        });
+
+        it("accepts password meeting all complexity requirements", async () => {
+            const user = await createTestUser();
+            await users.changePassword(user.id, "Aa1!xyzw");
+            const result = await db.query("SELECT 1 FROM users WHERE id = $1 AND password_hash = crypt($2, password_hash)", [user.id, "Aa1!xyzw"]);
+            assert.strictEqual(result.rowCount, 1);
+        });
+    });
+
     describe("getUserLoggedInStatus", () => {
         it("returns false when no session exists", async () => {
             const user = await createTestUser();
