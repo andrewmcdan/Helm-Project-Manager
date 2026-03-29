@@ -398,10 +398,14 @@ router.post("/register_new_user", async (req, res) => {
         log("info", "Register new user request received", { email, role }, utilities.getCallerInfo());
         const newUser = await createUser(first_name, last_name, email, password, role, address, date_of_birth, null);
         log("info", `New user registered with ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
-        const emailResult = await sendEmail(email, "Welcome to HELM - Registration Successful", `Dear ${first_name},\n\nThank you for registering with HELM. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe HELM Team\n\n`);
-        log("info", `Registration email sent to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
-        if (!emailResult.accepted || emailResult.accepted.length === 0) {
-            log("warn", `Failed to send registration email to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+        try {
+            const emailResult = await sendEmail(email, "Welcome to HELM - Registration Successful", `Dear ${first_name},\n\nThank you for registering with HELM. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe HELM Team\n\n`);
+            log("info", `Registration email sent to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+            if (!emailResult.accepted || emailResult.accepted.length === 0) {
+                log("warn", `Failed to send registration email to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+            }
+        } catch (emailError) {
+            log("error", `Error sending registration email to ${email}: ${emailError}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
         }
         await updateSecurityQuestions(newUser.id, [
             { question: security_question_1, answer: security_answer_1 },

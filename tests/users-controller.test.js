@@ -477,4 +477,39 @@ describe("users controller", () => {
             assert.strictEqual(after.status, "suspended");
         });
     });
+
+    /* ------------------------------------------------------------------ */
+    /*  updateUserProfile – edge cases                                     */
+    /* ------------------------------------------------------------------ */
+
+    describe("updateUserProfile (edges)", () => {
+        it("returns null when no updates provided", async () => {
+            const user = await createTestUser();
+            const result = await users.updateUserProfile(user.id, {});
+            assert.strictEqual(result, null);
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  getSecurityQuestionsForUser – missing user                         */
+    /* ------------------------------------------------------------------ */
+
+    describe("getSecurityQuestionsForUser (missing)", () => {
+        it("returns empty for non-existent user", async () => {
+            const result = await users.getSecurityQuestionsForUser(999999);
+            assert.ok(!result || (Array.isArray(result) && result.length === 0));
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  changePassword – password reuse                                    */
+    /* ------------------------------------------------------------------ */
+
+    describe("changePassword (reuse)", () => {
+        it("rejects re-using the same password", async () => {
+            const user = await createTestUser();
+            await users.changePassword(user.id, "NewStr0ng!Pass99");
+            await assert.rejects(() => users.changePassword(user.id, "NewStr0ng!Pass99"), /same as any past/i);
+        });
+    });
 });

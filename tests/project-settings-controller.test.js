@@ -166,4 +166,44 @@ describe("project_settings controller", () => {
             assert.ok(typeof entry.changed_by_name === "string");
         });
     });
+
+    /* ------------------------------------------------------------------ */
+    /*  updateSettings – additional field branches                         */
+    /* ------------------------------------------------------------------ */
+
+    describe("updateSettings (fields)", () => {
+        it("updates project_owner_email", async () => {
+            const user = await createTestUser({ role: "administrator" });
+            await createTestProject({ project_name: "EmailTest" });
+            const result = await settings.updateSettings(user.id, { project_owner_email: "new@email.com" });
+            assert.strictEqual(result.settings.project_owner_email, "new@email.com");
+        });
+
+        it("updates project_description", async () => {
+            const user = await createTestUser({ role: "administrator" });
+            await createTestProject({ project_name: "DescTest" });
+            const result = await settings.updateSettings(user.id, { project_description: "A new description" });
+            assert.strictEqual(result.settings.project_description, "A new description");
+        });
+
+        it("updates project_owner_name", async () => {
+            const user = await createTestUser({ role: "administrator" });
+            await createTestProject({ project_name: "OwnerTest" });
+            const result = await settings.updateSettings(user.id, { project_owner_name: "New Owner" });
+            assert.strictEqual(result.settings.project_owner_name, "New Owner");
+        });
+
+        it("updates multiple fields and logs all changes", async () => {
+            const user = await createTestUser({ role: "administrator" });
+            const proj = await createTestProject({ project_name: "MultiTest", project_status: "Active" });
+            const result = await settings.updateSettings(user.id, {
+                project_name: "MultiUpdated",
+                effort_default_mode: "Weekly",
+            });
+            assert.strictEqual(result.settings.project_name, "MultiUpdated");
+            assert.strictEqual(result.settings.effort_default_mode, "Weekly");
+            const log = await settings.getChangeLog(proj.id);
+            assert.ok(log.length >= 1, "Should have logged changes");
+        });
+    });
 });

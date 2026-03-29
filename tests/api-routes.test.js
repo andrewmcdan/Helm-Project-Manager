@@ -602,6 +602,403 @@ describe("API routes integration", () => {
     });
 
     /* ================================================================ */
+    /*  Users – permission & error branches                              */
+    /* ================================================================ */
+
+    describe("users (permissions)", () => {
+        it("GET /api/users/get-user/:id returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const user = await createTestUser();
+            const res = await request("GET", `/api/users/get-user/${user.id}`, { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/get-user/:id returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/users/get-user/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/list-users returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("GET", "/api/users/list-users", { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/get-logged-in-users returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("GET", "/api/users/get-logged-in-users", { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/approve-user/:id returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const user = await createTestUser({ status: "pending" });
+            const res = await request("GET", `/api/users/approve-user/${user.id}`, { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/approve-user/:id returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/users/approve-user/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/approve-user/:id returns 400 for non-pending user", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser({ status: "active" });
+            const res = await request("GET", `/api/users/approve-user/${user.id}`, { headers: h });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("GET /api/users/reject-user/:id returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const user = await createTestUser({ status: "pending" });
+            const res = await request("GET", `/api/users/reject-user/${user.id}`, { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/reject-user/:id returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/users/reject-user/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/reject-user/:id returns 400 for non-pending user", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser({ status: "active" });
+            const res = await request("GET", `/api/users/reject-user/${user.id}`, { headers: h });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/suspend-user returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/users/suspend-user", {
+                headers: coderH,
+                body: { userIdToSuspend: 1 },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/suspend-user returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/suspend-user", {
+                headers: h,
+                body: { userIdToSuspend: 999999, suspensionStart: new Date().toISOString(), suspensionEnd: new Date(Date.now() + 86400000).toISOString() },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("POST /api/users/suspend-user returns 400 for non-active user", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser({ status: "pending" });
+            const res = await request("POST", "/api/users/suspend-user", {
+                headers: h,
+                body: { userIdToSuspend: user.id, suspensionStart: new Date().toISOString(), suspensionEnd: new Date(Date.now() + 86400000).toISOString() },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("GET /api/users/reinstate-user/:id returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("GET", "/api/users/reinstate-user/1", { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/users/reinstate-user/:id returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/users/reinstate-user/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/reinstate-user/:id returns 400 for non-suspended user", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser({ status: "active" });
+            const res = await request("GET", `/api/users/reinstate-user/${user.id}`, { headers: h });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/update-user-field returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/users/update-user-field", {
+                headers: coderH,
+                body: { user_id: 1, field: "first_name", value: "X" },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/update-user-field returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/update-user-field", {
+                headers: h,
+                body: { user_id: 999999, field: "first_name", value: "X" },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("POST /api/users/update-user-field updates fullname (split path)", async () => {
+            const h = await adminHeaders();
+            const user = await createTestUser({ status: "active" });
+            const res = await request("POST", "/api/users/update-user-field", {
+                headers: h,
+                body: { user_id: user.id, field: "fullname", value: "Jane Doe" },
+            });
+            assert.strictEqual(res.status, 200);
+        });
+
+        it("POST /api/users/delete-user returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/users/delete-user", {
+                headers: coderH,
+                body: { userIdToDelete: 1 },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/delete-user returns 404 for unknown user", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/delete-user", {
+                headers: h,
+                body: { userIdToDelete: 999999 },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Users – change-password                                          */
+    /* ================================================================ */
+
+    describe("users (change-password)", () => {
+        it("POST /api/users/change-password succeeds with valid data", async () => {
+            const user = await createTestUser({ status: "active" });
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-password", {
+                headers: userHeaders,
+                body: { current_password: "Test1!Pass", new_password: "NewStr0ng!Pass99" },
+            });
+            assert.strictEqual(res.status, 200);
+        });
+
+        it("POST /api/users/change-password returns 400 when fields missing", async () => {
+            const user = await createTestUser({ status: "active" });
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-password", {
+                headers: userHeaders,
+                body: { current_password: "Test1!Pass" },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/change-password returns 400 when passwords don't match", async () => {
+            const user = await createTestUser({ status: "active" });
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-password", {
+                headers: userHeaders,
+                body: { current_password: "Test1!Pass", new_password: "NewStr0ng!Pass99", confirm_new_password: "Different1!" },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/change-password returns 403 for wrong current password", async () => {
+            const user = await createTestUser({ status: "active" });
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-password", {
+                headers: userHeaders,
+                body: { current_password: "WrongPassword1!", new_password: "NewStr0ng!Pass99" },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/change-password returns 400 for password reuse", async () => {
+            const user = await createTestUser({ status: "active" });
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-password", {
+                headers: userHeaders,
+                body: { current_password: "Test1!Pass", new_password: "Test1!Pass" },
+            });
+            assert.ok(res.status === 400 || res.status === 500);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Users – change-temp-password branches                            */
+    /* ================================================================ */
+
+    describe("users (change-temp-password)", () => {
+        it("POST /api/users/change-temp-password rejects wrong security question count", async () => {
+            const user = await createTestUser({ status: "active" });
+            await db.query("UPDATE users SET temp_password = true WHERE id = $1", [user.id]);
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-temp-password", {
+                headers: userHeaders,
+                body: { newPassword: "NewStr0ng!Pass99", securityQuestions: [{ question: "q", answer: "a" }] },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/change-temp-password rejects incomplete question entries", async () => {
+            const user = await createTestUser({ status: "active" });
+            await db.query("UPDATE users SET temp_password = true WHERE id = $1", [user.id]);
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-temp-password", {
+                headers: userHeaders,
+                body: {
+                    newPassword: "NewStr0ng!Pass99",
+                    securityQuestions: [{ question: "fav_color", answer: "Blue" }, { question: "pet_name" }, { question: "birth_city", answer: "Denver" }],
+                },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("POST /api/users/change-temp-password returns 400 when temp not required", async () => {
+            const user = await createTestUser({ status: "active" });
+            // temp_password is false by default
+            const { headers: userHeaders } = await loginTestUser(user.id);
+            const res = await request("POST", "/api/users/change-temp-password", {
+                headers: userHeaders,
+                body: {
+                    newPassword: "NewStr0ng!Pass99",
+                    securityQuestions: [
+                        { question: "fav_color", answer: "Blue" },
+                        { question: "pet_name", answer: "Rex" },
+                        { question: "birth_city", answer: "Denver" },
+                    ],
+                },
+            });
+            assert.strictEqual(res.status, 400);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Users – registration & admin create (public/admin routes)        */
+    /* ================================================================ */
+
+    describe("users (registration)", () => {
+        it("POST /api/users/register_new_user registers a user", async () => {
+            const res = await request("POST", "/api/users/register_new_user", {
+                body: {
+                    first_name: "New",
+                    last_name: "Registrant",
+                    email: `reg_${Date.now()}@helm.local`,
+                    password: "Str0ng!Pass1",
+                    role: "coder",
+                    address: "123 Main St",
+                    date_of_birth: "1990-01-01",
+                    security_question_1: "fav_color",
+                    security_answer_1: "blue",
+                    security_question_2: "pet_name",
+                    security_answer_2: "rex",
+                    security_question_3: "birth_city",
+                    security_answer_3: "denver",
+                },
+            });
+            assert.ok(res.status === 200 || res.status === 201);
+            assert.ok(res.json.user);
+        });
+
+        it("POST /api/users/create-user returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/users/create-user", {
+                headers: coderH,
+                body: {
+                    first_name: "Created",
+                    last_name: "User",
+                    email: `cu_${Date.now()}@helm.local`,
+                    password: "Str0ng!Pass1",
+                    role: "coder",
+                },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/users/create-user creates a user as admin", async () => {
+            const h = await adminHeaders();
+            const res = await request("POST", "/api/users/create-user", {
+                headers: h,
+                body: {
+                    first_name: "Admin",
+                    last_name: "Created",
+                    email: `ac_${Date.now()}@helm.local`,
+                    password: "Str0ng!Pass1",
+                    role: "viewer",
+                },
+            });
+            assert.ok(res.status === 200 || res.status === 201);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Users – reset-password (public route)                            */
+    /* ================================================================ */
+
+    describe("users (reset-password)", () => {
+        it("GET /api/users/reset-password/:email/:userName returns 404 for unknown user", async () => {
+            const res = await request("GET", "/api/users/reset-password/nobody@helm.local/nobody");
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/users/reset-password/:email/:userName returns 400 for email mismatch", async () => {
+            const user1 = await createTestUser({ status: "active" });
+            const user2 = await createTestUser({ status: "active" });
+            const user1Row = await db.query("SELECT email FROM users WHERE id = $1", [user1.id]);
+            const user2Row = await db.query("SELECT username FROM users WHERE id = $1", [user2.id]);
+            // user1's email + user2's username = mismatch
+            const res = await request("GET", `/api/users/reset-password/${user1Row.rows[0].email}/${user2Row.rows[0].username}`);
+            assert.strictEqual(res.status, 400);
+        });
+
+        it("GET /api/users/reset-password/:email/:userName sends reset email", async () => {
+            const user = await createTestUser({ status: "active" });
+            const userRow = await db.query("SELECT email, username FROM users WHERE id = $1", [user.id]);
+            const res = await request("GET", `/api/users/reset-password/${userRow.rows[0].email}/${userRow.rows[0].username}`);
+            assert.strictEqual(res.status, 200);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Team – permission branches                                       */
+    /* ================================================================ */
+
+    describe("team (permissions)", () => {
+        it("GET /api/team/available-users returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("GET", "/api/team/available-users", { headers: coderH });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("POST /api/team/assign-member returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("POST", "/api/team/assign-member", {
+                headers: coderH,
+                body: { user_id: 1, role: "Developer" },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+
+        it("GET /api/team/byid/:id returns 404 for unknown member", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/team/byid/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Project settings – permission branches                           */
+    /* ================================================================ */
+
+    describe("project-settings (permissions)", () => {
+        it("PATCH /api/project-settings returns 403 for non-admin", async () => {
+            const { headers: coderH } = await getCoderAuth();
+            const res = await request("PATCH", "/api/project-settings", {
+                headers: coderH,
+                body: { project_name: "Hack" },
+            });
+            assert.strictEqual(res.status, 403);
+        });
+    });
+
+    /* ================================================================ */
     /*  Requirements - additional routes                                 */
     /* ================================================================ */
 
@@ -633,6 +1030,33 @@ describe("API routes integration", () => {
         it("GET /api/requirements/requirement-tags/:count returns tags", async () => {
             const h = await adminHeaders();
             const res = await request("GET", "/api/requirements/requirement-tags/10", { headers: h });
+            assert.strictEqual(res.status, 200);
+        });
+
+        it("GET /api/requirements/byid/:id returns 404 for unknown", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/requirements/byid/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("PATCH /api/requirements/update/:id returns 404 for unknown", async () => {
+            const h = await adminHeaders();
+            const res = await request("PATCH", "/api/requirements/update/999999", {
+                headers: h,
+                body: { title: "Nope" },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/requirements/totals/:id returns 404 for unknown", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/requirements/totals/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/requirements/requirement-tags/:count with contains filter", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/requirements/requirement-tags/10?filter=test&filterType=contains", { headers: h });
             assert.strictEqual(res.status, 200);
         });
     });
@@ -767,6 +1191,162 @@ describe("API routes integration", () => {
                 });
                 assert.strictEqual(res.status, 200);
             }
+        });
+
+        it("GET /api/risks/byid/:id returns 404 for unknown risk", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/risks/byid/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("PATCH /api/risks/update/:id returns 404 for unknown risk", async () => {
+            const h = await adminHeaders();
+            const res = await request("PATCH", "/api/risks/update/999999", {
+                headers: h,
+                body: { risk_title: "Nope" },
+            });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/risks/team returns team members", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/risks/team", { headers: h });
+            assert.strictEqual(res.status, 200);
+        });
+
+        it("GET /api/risks/:id/updates returns updates list", async () => {
+            const h = await adminHeaders();
+            const createRes = await request("POST", "/api/risks/new", {
+                headers: h,
+                body: {
+                    risk_title: "Updates Risk",
+                    risk_code: "RISK-UPD1",
+                    risk_status: "Identified",
+                    risk_impact: "Low",
+                    risk_likelihood: "Low",
+                },
+            });
+            const riskId = createRes.json?.id || createRes.json?.data?.id;
+            if (riskId) {
+                const res = await request("GET", `/api/risks/${riskId}/updates`, { headers: h });
+                assert.strictEqual(res.status, 200);
+            }
+        });
+
+        it("POST /api/risks/:id/updates creates an update", async () => {
+            const h = await adminHeaders();
+            const createRes = await request("POST", "/api/risks/new", {
+                headers: h,
+                body: {
+                    risk_title: "Update Create Risk",
+                    risk_code: "RISK-UC1",
+                    risk_status: "Identified",
+                    risk_impact: "High",
+                    risk_likelihood: "High",
+                },
+            });
+            const riskId = createRes.json?.id || createRes.json?.data?.id;
+            if (riskId) {
+                const res = await request("POST", `/api/risks/${riskId}/updates`, {
+                    headers: h,
+                    body: { update_text: "Mitigation plan in progress" },
+                });
+                assert.ok(res.status === 200 || res.status === 201);
+            }
+        });
+    });
+
+    /* ================================================================ */
+    /*  Effort – 404 paths                                               */
+    /* ================================================================ */
+
+    describe("effort (404 paths)", () => {
+        it("GET /api/effort/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/effort/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("PATCH /api/effort/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("PATCH", "/api/effort/999999", { headers: h, body: { hours: 5 } });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("DELETE /api/effort/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("DELETE", "/api/effort/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Risks – RESTful alias 404 paths                                  */
+    /* ================================================================ */
+
+    describe("risks (404 paths)", () => {
+        it("GET /api/risks/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/risks/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("PATCH /api/risks/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("PATCH", "/api/risks/999999", { headers: h, body: { risk_title: "X" } });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Requirements – RESTful alias & update 404 paths                  */
+    /* ================================================================ */
+
+    describe("requirements (404 paths)", () => {
+        it("GET /api/requirements/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/requirements/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("PATCH /api/requirements/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("PATCH", "/api/requirements/999999", { headers: h, body: { title: "X" } });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Team – RESTful alias 404 path                                    */
+    /* ================================================================ */
+
+    describe("team (404 paths)", () => {
+        it("GET /api/team/999999 returns 404", async () => {
+            const h = await adminHeaders();
+            const res = await request("GET", "/api/team/999999", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+    });
+
+    /* ================================================================ */
+    /*  Project Settings – edge cases                                    */
+    /* ================================================================ */
+
+    describe("project-settings (edge cases)", () => {
+        it("GET /api/project-settings returns 404 when no settings exist", async () => {
+            const h = await adminHeaders();
+            await db.query("DELETE FROM project_settings_change_log");
+            await db.query("DELETE FROM project_settings");
+            const res = await request("GET", "/api/project-settings", { headers: h });
+            assert.strictEqual(res.status, 404);
+        });
+
+        it("GET /api/project-settings/change-log returns 404 when no settings exist", async () => {
+            const h = await adminHeaders();
+            await db.query("DELETE FROM project_settings_change_log");
+            await db.query("DELETE FROM project_settings");
+            const res = await request("GET", "/api/project-settings/change-log", { headers: h });
+            assert.strictEqual(res.status, 404);
         });
     });
 });
