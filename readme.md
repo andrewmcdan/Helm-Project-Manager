@@ -1,163 +1,167 @@
 # HELM Project Manager
 
-A web-based application to manage project tasks, risks, requirements, and effort tracking.
+Web app for project settings, requirements, effort tracking, risks, and team management.
+
+These instructions were checked against the current repo scripts on March 30, 2026.
 
 ## Requirements
-- Node.js 20+ (matches the Docker image)
-- Docker + Docker Compose
 
-## Download the project
+- Node.js 20+ for local runs
+- npm
+- Docker Desktop or Docker Engine with `docker compose`
 
-### Option 1: Clone with Git (recommended)
-```bash
-git clone <your-repo-url>
-cd Helm-Project-Manager
+The repo currently uses:
+
+- app port `3040`
+- Postgres host port `5437`
+- PostgreSQL 16 in Docker
+
+## First-time setup
+
+1. Open a terminal in the project root:
+
+```powershell
+cd "O:\Projects\Helm Project Manager"
 ```
 
-### Option 2: Download ZIP from Git hosting
-1. Open your repository page.
-2. Click **Code** (or equivalent) → **Download ZIP**.
-3. Extract the archive.
-4. Open a terminal in the extracted `Helm-Project-Manager` folder.
-
-## Install Docker on Linux, Windows, and macOS
-
-> This project uses Docker Compose (`docker compose`) to run the app and PostgreSQL together.
-
-### Linux (Ubuntu/Debian)
-
-Install Docker Engine + Compose plugin:
+2. Install dependencies:
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
-  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+npm install
 ```
 
-Optional (run Docker without `sudo`):
+3. Create `.env` from `.env.example`:
 
-```bash
-sudo usermod -aG docker $USER
-newgrp docker
+```powershell
+Copy-Item .env.example .env
 ```
 
-Start and enable Docker:
+macOS/Linux:
 
 ```bash
-sudo systemctl enable --now docker
+cp .env.example .env
 ```
 
-### Windows 10/11
+4. Edit `.env` before starting the app.
 
-1. Install **Docker Desktop for Windows** from Docker's official website.
-2. During installation, allow the installer to enable **WSL 2** integration if prompted.
-3. Reboot if required.
-4. Launch Docker Desktop and wait until it shows "Engine running".
-5. In Docker Desktop settings, ensure **Use WSL 2 based engine** is enabled.
+Minimum values to check:
 
-### macOS (Intel or Apple Silicon)
+- `ADMIN_USERNAME`
+- `ADMIN_PASSWORD`
+- `JWT_SECRET`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DB`
+- `POSTGRES_HOST=localhost` for local host runs
+- `POSTGRES_PORT=5437` for the Docker database exposed on your machine
+- `FRONTEND_BASE_URL=http://localhost:3040`
 
-1. Install **Docker Desktop for Mac** from Docker's official website.
-2. Open the downloaded `.dmg` and drag Docker to Applications.
-3. Start Docker Desktop and finish first-run setup.
-4. Wait until Docker shows as running in the menu bar.
+Notes:
 
-### Verify Docker + Compose installation (all OS)
+- `FRONTEND_BASE_URL` should include the scheme (`http://`), not just `localhost:3040`.
+- SMTP settings are optional for basic startup. The app will run without them, but email-based flows will fail until `SMTP_*` values are configured.
 
-Run:
+## Recommended dev workflow
+
+This is the easiest way to work on the app locally: Postgres in Docker, Node app on your machine.
+
+1. Start the database:
 
 ```bash
-docker --version
-docker compose version
-docker run --rm hello-world
+docker compose up -d db
 ```
 
-If these commands succeed, Docker is ready for this project.
-
-## Installation
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-2. Create your environment file by copying `.env.example` to `.env`
-   ```bash
-   cp .env.example .env
-   ```
-3. Edit `.env` and set at least:
-   - `ADMIN_USERNAME`
-   - `ADMIN_PASSWORD`
-   - `JWT_SECRET`
-   - `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
-
-## Running with Docker (full stack)
-This brings up the app and Postgres using `docker-compose.yml`.
-
-1. Ensure `.env` has the required values (see Installation above).
-2. Start the stack:
-   ```bash
-   docker compose up --build
-   ```
-3. Open the app at `http://localhost:3040` (or your `PORT`).
-4. Stop the stack when finished:
-   ```bash
-   docker compose down
-   ```
-
-### Common Docker commands for daily use
+2. Start the app in dev mode:
 
 ```bash
-# Start in background
+npm run dev
+```
+
+What this does:
+
+- `npm run dev` runs `npm run db-init` first
+- `scripts/init-db.js` creates the database if needed
+- base SQL in `sql/` is applied
+- migrations in `sql/migrations/` are applied
+- `sql/README.md` is refreshed from the live schema
+
+3. Open the app:
+
+- `http://localhost:3040/`
+- login is available from `#/login`
+
+4. Sign in with the admin user from your `.env`:
+
+- username: `ADMIN_USERNAME`
+- password: `ADMIN_PASSWORD`
+
+## Full Docker workflow
+
+If you want both the app and Postgres in Docker:
+
+```bash
+docker compose up --build
+```
+
+Then open `http://localhost:3040/`.
+
+Important:
+
+- The Docker image copies `.env` into the image during build.
+- If you change `.env`, rebuild the app container:
+
+```bash
 docker compose up -d --build
+```
 
-# View logs
+Useful commands:
+
+```bash
 docker compose logs -f
-
-# Restart containers
-docker compose restart
-
-# Stop and remove containers
 docker compose down
-
-# Stop and remove containers + volumes (deletes DB data)
 docker compose down -v
 ```
 
-## Dev mode (Docker DB + local server)
-Run Postgres in Docker and the app on your machine with `npm run dev`.
+`docker compose down -v` deletes the local Postgres volume.
 
-1. Start only the database container:
-   ```bash
-   docker compose up -d db
-   ```
-2. Confirm your `.env` points to the Docker DB from your host:
-   - `POSTGRES_HOST=localhost`
-   - `POSTGRES_PORT` must match the host port in `docker-compose.yml`
-3. Start the dev server (this also runs DB init via `predev`):
-   ```bash
-   npm run dev
-   ```
+## Running tests
 
-## Database init + admin seed
-The DB is initialized by `scripts/init-db.js`, which:
-- runs all SQL files in `sql/` in order
-- applies migrations in `sql/migrations/`
-- updates `sql/README.md` with the current schema
+The automated tests use `.env.test` and a separate `helm_test` database.
 
-Admin user seeding comes from `sql/002_seed_admin.sql` and uses `.env` values:
-- Required: `ADMIN_USERNAME`, `ADMIN_PASSWORD`
-- Optional: `ADMIN_EMAIL` (defaults to `${ADMIN_USERNAME}@helm.local`)
-- Optional: `ADMIN_FIRST_NAME` (default `Admin`), `ADMIN_LAST_NAME` (default `User`)
-- Optional: `PASSWORD_EXPIRATION_DAYS` (default `90`), `PASSWORD_MIN_LENGTH` (default `8`)
+1. Make sure the Docker Postgres container is running:
 
-The seed uses `ON CONFLICT DO NOTHING`, so it will not overwrite an existing admin user.
-Default security answers in the seed are `blue`, `springfield`, and `fluffy`.
+```bash
+docker compose up -d db
+```
+
+2. Create the test role and database once:
+
+```bash
+node --env-file=.env scripts/create-test-db.js
+```
+
+3. Run the test suite:
+
+```bash
+npm test
+```
+
+`npm test` runs `npm run db-init:test` automatically before the tests.
+
+## Common commands
+
+```bash
+npm run db-init
+npm run dev
+npm start
+npm test
+docker compose up -d db
+docker compose up -d --build
+docker compose down
+```
+
+## Troubleshooting
+
+- If the app cannot connect to Postgres from your host machine, make sure `.env` uses `POSTGRES_HOST=localhost` and `POSTGRES_PORT=5437`.
+- If the app cannot connect inside the full Docker stack, rebuild with `docker compose up -d --build` after env changes.
+- If login emails or password reset emails fail, configure `SMTP_HOST`, `SMTP_PORT`, `SMTP_USERNAME`, `SMTP_PASSWORD`, and `SMTP_EMAIL_FROM`.
