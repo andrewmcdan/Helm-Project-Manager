@@ -308,6 +308,44 @@ describe("requirements controller", () => {
             assert.ok(Array.isArray(tags));
             assert.ok(tags.includes("gamma"));
         });
+
+        it("getTagsForProjectById returns tags linked to a project", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Project Tag Test",
+                requirement_type: "Functional",
+                priority: "Low",
+                status: "Proposed",
+                requirement_code: "PTAG-1",
+                tags: ["delta"],
+            });
+            // Link the tag to the project via the junction table
+            const tagResult = await db.query("SELECT id FROM requirements_tags WHERE tag = 'delta'");
+            await db.query("INSERT INTO requirements_tags_project_settings_junction (tag_id, project_settings_id) VALUES ($1, $2) ON CONFLICT DO NOTHING", [tagResult.rows[0].id, project.id]);
+            const tags = await req.getTagsForProjectById(project.id);
+            assert.ok(Array.isArray(tags));
+            assert.ok(tags.includes("delta"));
+        });
+
+        it("getTagsForProjectById returns empty array for unknown project", async () => {
+            const tags = await req.getTagsForProjectById(999999);
+            assert.ok(Array.isArray(tags));
+            assert.strictEqual(tags.length, 0);
+        });
+
+        it("getTagsFiltered returns tags matching a prefix", async () => {
+            await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Filter Tag Test",
+                requirement_type: "Functional",
+                priority: "Low",
+                status: "Proposed",
+                requirement_code: "FTAG-1",
+                tags: ["frontend", "backend"],
+            });
+            const tags = await req.getTagsFiltered("front");
+            assert.ok(Array.isArray(tags));
+            assert.ok(tags.includes("frontend"));
+            assert.ok(!tags.includes("backend"));
+        });
     });
 
     /* ------------------------------------------------------------------ */
@@ -326,6 +364,139 @@ describe("requirements controller", () => {
             const prefixes = await req.getReqCodePrefixes();
             assert.ok(Array.isArray(prefixes));
             assert.ok(prefixes.includes("UNIQ"));
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  updateRequirement – additional field branches                      */
+    /* ------------------------------------------------------------------ */
+
+    describe("updateRequirement (fields)", () => {
+        it("updates description", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Desc Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "DESC-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, { description: "New description" });
+            assert.strictEqual(updated.description, "New description");
+        });
+
+        it("updates status to In Development", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Status Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "STAT-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, { status: "In Development" });
+            assert.strictEqual(updated.status, "In Development");
+        });
+
+        it("updates tags", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Tag Update Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "TAGU-1",
+                tags: ["old-tag"],
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, { tags: ["new-tag-1", "new-tag-2"] });
+            assert.ok(Array.isArray(updated.tags));
+            assert.ok(updated.tags.includes("new-tag-1"));
+            assert.ok(updated.tags.includes("new-tag-2"));
+        });
+
+        it("updates acceptance_criteria with object format", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "AC Update Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "ACUP-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, {
+                acceptance_criteria: [{ criteria_text: "Criterion A", is_met: true }],
+            });
+            assert.ok(Array.isArray(updated.acceptance_criteria));
+            assert.ok(updated.acceptance_criteria.length >= 1);
+        });
+
+        it("updates acceptance_criteria with string format", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "AC String Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "ACST-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, {
+                acceptance_criteria: ["plain string criterion"],
+            });
+            assert.ok(Array.isArray(updated.acceptance_criteria));
+            assert.ok(updated.acceptance_criteria.length >= 1);
+        });
+
+        it("skips empty acceptance_criteria text", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "AC Empty Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "ACEM-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, {
+                acceptance_criteria: ["", "valid criterion"],
+            });
+            assert.ok(Array.isArray(updated.acceptance_criteria));
+            assert.ok(updated.acceptance_criteria.length >= 1);
+        });
+
+        it("updates requirement_code with prefix-number format", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Code Update Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "OLD-1",
+            });
+            const updated = await req.updateRequirement(adminUser.id, adminAuth.token, created.id, { requirement_code: "NEW-42" });
+            assert.strictEqual(updated.requirement_code_prefix, "NEW");
+            assert.strictEqual(updated.requirement_code_number, 42);
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  getRequirementTotals                                               */
+    /* ------------------------------------------------------------------ */
+
+    describe("getRequirementTotals", () => {
+        it("returns totals for a valid requirement", async () => {
+            const created = await req.createRequirement(adminUser.id, adminAuth.token, {
+                title: "Totals Test",
+                requirement_type: "Functional",
+                priority: "Medium",
+                status: "Proposed",
+                requirement_code: "TOT-1",
+                tags: ["t1"],
+                acceptance_criteria: ["ac1"],
+            });
+            const totals = await req.getRequirementTotals(adminUser.id, adminAuth.token, created.id);
+            assert.ok(totals);
+            assert.ok(typeof totals.total_effort === "number");
+        });
+
+        it("returns null for non-existent requirement", async () => {
+            const totals = await req.getRequirementTotals(adminUser.id, adminAuth.token, 999999);
+            assert.strictEqual(totals, null);
+        });
+
+        it("rejects non-numeric ID", async () => {
+            await assert.rejects(() => req.getRequirementTotals(adminUser.id, adminAuth.token, "abc"), /Invalid requirement ID/);
         });
     });
 });

@@ -316,4 +316,130 @@ describe("effort controller", () => {
             assert.ok(members[0].name);
         });
     });
+
+    /* ------------------------------------------------------------------ */
+    /*  listEntries – filter branches                                      */
+    /* ------------------------------------------------------------------ */
+
+    describe("listEntries (filters)", () => {
+        it("filters by category", async () => {
+            const { user, req } = await seedContext();
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            await db.query("INSERT INTO effort_categories (category_name, sort_order) VALUES ($1, $2)", ["Testing", 2]);
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 3, requirement_id: req.id, category: "Testing" });
+            const list = await effort.listEntries(user.id, { category: "Testing" });
+            assert.ok(list.length >= 1);
+            assert.ok(list.every((e) => e.category === "Testing"));
+        });
+
+        it("filters by user_id", async () => {
+            const { user, req } = await seedContext();
+            const other = await createTestUser({ email: "other@test.com" });
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 1, requirement_id: req.id, category: "Development" });
+            await effort.createEntry(other.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            const list = await effort.listEntries(user.id, { user_id: other.id });
+            assert.ok(list.length >= 1);
+            assert.ok(list.every((e) => String(e.user_id) === String(other.id)));
+        });
+
+        it("filters by date_from", async () => {
+            const { user, req } = await seedContext();
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 1, requirement_id: req.id, category: "Development", date: "2025-01-10" });
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development", date: "2025-06-15" });
+            const list = await effort.listEntries(user.id, { date_from: "2025-06-01" });
+            assert.ok(list.length >= 1);
+        });
+
+        it("filters by date_to", async () => {
+            const { user, req } = await seedContext();
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 1, requirement_id: req.id, category: "Development", date: "2025-01-10" });
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development", date: "2025-06-15" });
+            const list = await effort.listEntries(user.id, { date_to: "2025-02-01" });
+            assert.ok(list.length >= 1);
+        });
+
+        it("ignores invalid date_from", async () => {
+            const { user, req } = await seedContext();
+            await effort.createEntry(user.id, { effort_mode: "Daily", hours: 1, requirement_id: req.id, category: "Development" });
+            const list = await effort.listEntries(user.id, { date_from: "not-a-date" });
+            assert.ok(list.length >= 1);
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  updateEntry – additional field branches                            */
+    /* ------------------------------------------------------------------ */
+
+    describe("updateEntry (fields)", () => {
+        it("updates category", async () => {
+            const { user, req } = await seedContext();
+            await db.query("INSERT INTO effort_categories (category_name, sort_order) VALUES ($1, $2) ON CONFLICT DO NOTHING", ["Testing", 2]);
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            const updated = await effort.updateEntry(user.id, entry.id, { category: "Testing" });
+            assert.strictEqual(updated.category, "Testing");
+        });
+
+        it("updates requirement_id", async () => {
+            const { user, req } = await seedContext();
+            const req2 = await createTestRequirement({ requirement_code_number: 42, created_by: user.id });
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            const updated = await effort.updateEntry(user.id, entry.id, { requirement_id: req2.id });
+            assert.strictEqual(updated.requirement_id, req2.id);
+        });
+
+        it("rejects invalid requirement_id", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            await assert.rejects(() => effort.updateEntry(user.id, entry.id, { requirement_id: "abc" }), /Invalid requirement ID/);
+        });
+
+        it("updates date", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            const updated = await effort.updateEntry(user.id, entry.id, { date: "2025-06-01" });
+            assert.ok(new Date(updated.entry_date).toISOString().includes("2025-06-01"));
+        });
+
+        it("rejects invalid date", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            await assert.rejects(() => effort.updateEntry(user.id, entry.id, { date: "xyz" }), /Invalid date/);
+        });
+
+        it("updates week_of", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Weekly", hours: 10, requirement_id: req.id, category: "Development", week_of: "2025-01-06" });
+            const updated = await effort.updateEntry(user.id, entry.id, { week_of: "2025-06-02" });
+            assert.ok(new Date(updated.week_of).toISOString().includes("2025-06-02"));
+        });
+
+        it("rejects invalid week_of", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Weekly", hours: 10, requirement_id: req.id, category: "Development", week_of: "2025-01-06" });
+            await assert.rejects(() => effort.updateEntry(user.id, entry.id, { week_of: "xyz" }), /Invalid week-of date/);
+        });
+
+        it("returns existing entry when body is empty", async () => {
+            const { user, req } = await seedContext();
+            const entry = await effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development" });
+            const result = await effort.updateEntry(user.id, entry.id, {});
+            assert.strictEqual(result.id, entry.id);
+        });
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  createEntry – invalid date branches                                */
+    /* ------------------------------------------------------------------ */
+
+    describe("createEntry (date validation)", () => {
+        it("rejects invalid explicit date in Daily mode", async () => {
+            const { user, req } = await seedContext();
+            await assert.rejects(() => effort.createEntry(user.id, { effort_mode: "Daily", hours: 2, requirement_id: req.id, category: "Development", date: "not-a-date" }), /Invalid entry date/);
+        });
+
+        it("rejects invalid week_of in Weekly mode", async () => {
+            const { user, req } = await seedContext();
+            await assert.rejects(() => effort.createEntry(user.id, { effort_mode: "Weekly", hours: 2, requirement_id: req.id, category: "Development", week_of: "garbage" }), /Invalid week-of date/);
+        });
+    });
 });

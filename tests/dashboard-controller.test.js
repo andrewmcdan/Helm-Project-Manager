@@ -95,6 +95,109 @@ describe("dashboard controller", () => {
                 assert.ok(result[0].trend);
             }
         });
+
+        it("returns 'Starting' trend when previous week has no effort", async () => {
+            const project = await createTestProject({ project_status: "Active" });
+            const user = await createTestUser({ role: "coder" });
+            const req = await createTestRequirement({ created_by: user.id });
+            const today = new Date().toISOString().slice(0, 10);
+            await db.query(
+                `INSERT INTO effort_entries (project_id, requirement_id, user_id, entry_date, effort_mode, effort_amount, category, created_by, updated_by)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8)`,
+                [project.id, req.id, user.id, today, "Daily", 5, "Development", user.id],
+            );
+            const result = await dashboard.getEffortByCategory("week");
+            const dev = result.find((r) => r.category === "Development");
+            if (dev) assert.strictEqual(dev.trend, "Starting");
+        });
+
+        it("returns 'Peak' trend when current week has ≥ 1.5× previous and ≥ 8 hours", async () => {
+            const project = await createTestProject({ project_status: "Active" });
+            const user = await createTestUser({ role: "coder" });
+            const req = await createTestRequirement({ created_by: user.id });
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay() + 1); // Monday of current week
+            const today = weekStart.toISOString().slice(0, 10);
+            const lastWeek = new Date(weekStart);
+            lastWeek.setDate(lastWeek.getDate() - 3); // middle of previous week
+            const lastWeekStr = lastWeek.toISOString().slice(0, 10);
+            // Previous week: 5 hours, Current week: 10 hours (2× = Peak, and >= 8)
+            await db.query(
+                `INSERT INTO effort_entries (project_id, requirement_id, user_id, entry_date, effort_mode, effort_amount, category, created_by, updated_by)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8), ($1, $2, $3, $9, $5, $10, $7, $8, $8)`,
+                [project.id, req.id, user.id, lastWeekStr, "Daily", 5, "Development", user.id, today, 10],
+            );
+            const result = await dashboard.getEffortByCategory("week");
+            const dev = result.find((r) => r.category === "Development");
+            if (dev) assert.strictEqual(dev.trend, "Peak");
+        });
+
+        it("returns 'Rising' trend when current week is moderately higher than previous", async () => {
+            const project = await createTestProject({ project_status: "Active" });
+            const user = await createTestUser({ role: "coder" });
+            const req = await createTestRequirement({ created_by: user.id });
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay() + 1);
+            const today = weekStart.toISOString().slice(0, 10);
+            const lastWeek = new Date(weekStart);
+            lastWeek.setDate(lastWeek.getDate() - 3);
+            const lastWeekStr = lastWeek.toISOString().slice(0, 10);
+            // Previous: 5 hours, Current: 6 hours (1.2× — Rising but not Peak since 6 < 8)
+            await db.query(
+                `INSERT INTO effort_entries (project_id, requirement_id, user_id, entry_date, effort_mode, effort_amount, category, created_by, updated_by)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8), ($1, $2, $3, $9, $5, $10, $7, $8, $8)`,
+                [project.id, req.id, user.id, lastWeekStr, "Daily", 5, "Development", user.id, today, 6],
+            );
+            const result = await dashboard.getEffortByCategory("week");
+            const dev = result.find((r) => r.category === "Development");
+            if (dev) assert.strictEqual(dev.trend, "Rising");
+        });
+
+        it("returns 'Falling' trend when current week is much lower than previous", async () => {
+            const project = await createTestProject({ project_status: "Active" });
+            const user = await createTestUser({ role: "coder" });
+            const req = await createTestRequirement({ created_by: user.id });
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay() + 1);
+            const today = weekStart.toISOString().slice(0, 10);
+            const lastWeek = new Date(weekStart);
+            lastWeek.setDate(lastWeek.getDate() - 3);
+            const lastWeekStr = lastWeek.toISOString().slice(0, 10);
+            // Previous: 10 hours, Current: 2 hours (0.2× — Falling)
+            await db.query(
+                `INSERT INTO effort_entries (project_id, requirement_id, user_id, entry_date, effort_mode, effort_amount, category, created_by, updated_by)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8), ($1, $2, $3, $9, $5, $10, $7, $8, $8)`,
+                [project.id, req.id, user.id, lastWeekStr, "Daily", 10, "Development", user.id, today, 2],
+            );
+            const result = await dashboard.getEffortByCategory("week");
+            const dev = result.find((r) => r.category === "Development");
+            if (dev) assert.strictEqual(dev.trend, "Falling");
+        });
+
+        it("returns 'Steady' trend when current week is similar to previous", async () => {
+            const project = await createTestProject({ project_status: "Active" });
+            const user = await createTestUser({ role: "coder" });
+            const req = await createTestRequirement({ created_by: user.id });
+            const now = new Date();
+            const weekStart = new Date(now);
+            weekStart.setDate(now.getDate() - now.getDay() + 1);
+            const today = weekStart.toISOString().slice(0, 10);
+            const lastWeek = new Date(weekStart);
+            lastWeek.setDate(lastWeek.getDate() - 3);
+            const lastWeekStr = lastWeek.toISOString().slice(0, 10);
+            // Previous: 5 hours, Current: 5 hours (1× — Steady)
+            await db.query(
+                `INSERT INTO effort_entries (project_id, requirement_id, user_id, entry_date, effort_mode, effort_amount, category, created_by, updated_by)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $8), ($1, $2, $3, $9, $5, $10, $7, $8, $8)`,
+                [project.id, req.id, user.id, lastWeekStr, "Daily", 5, "Development", user.id, today, 5],
+            );
+            const result = await dashboard.getEffortByCategory("week");
+            const dev = result.find((r) => r.category === "Development");
+            if (dev) assert.strictEqual(dev.trend, "Steady");
+        });
     });
 
     describe("getRecentActivity", () => {

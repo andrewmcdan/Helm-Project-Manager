@@ -291,4 +291,52 @@ describe("risks controller", () => {
             assert.ok(csv.includes("Server might crash"));
         });
     });
+
+    /* ------------------------------------------------------------------ */
+    /*  updateRisk – additional field branches                             */
+    /* ------------------------------------------------------------------ */
+
+    describe("updateRisk (fields)", () => {
+        it("updates risk_code", async () => {
+            const risk = await risks.createRisk(user.id, validRisk);
+            const updated = await risks.updateRisk(user.id, risk.id, { risk_code: "NEWCODE" });
+            assert.strictEqual(updated.risk_code, "NEWCODE");
+        });
+
+        it("rejects empty risk_code", async () => {
+            const risk = await risks.createRisk(user.id, validRisk);
+            await assert.rejects(() => risks.updateRisk(user.id, risk.id, { risk_code: "" }), /Risk code cannot be empty/);
+        });
+
+        it("updates risk_description", async () => {
+            const risk = await risks.createRisk(user.id, validRisk);
+            const updated = await risks.updateRisk(user.id, risk.id, { risk_description: "Updated desc" });
+            assert.strictEqual(updated.risk_description, "Updated desc");
+        });
+
+        it("sets risk_description to null", async () => {
+            const risk = await risks.createRisk(user.id, { ...validRisk, risk_description: "Some desc" });
+            const updated = await risks.updateRisk(user.id, risk.id, { risk_description: null });
+            assert.strictEqual(updated.risk_description, null);
+        });
+
+        it("updates owner_id", async () => {
+            const other = await createTestUser({ email: "owner@test.com", role: "coder" });
+            const risk = await risks.createRisk(user.id, validRisk);
+            const updated = await risks.updateRisk(user.id, risk.id, { owner_id: other.id });
+            assert.strictEqual(updated.owner_id, other.id);
+        });
+
+        it("sets owner_id to null", async () => {
+            const risk = await risks.createRisk(user.id, validRisk);
+            const updated = await risks.updateRisk(user.id, risk.id, { owner_id: null });
+            assert.strictEqual(updated.owner_id, null);
+        });
+
+        it("updates mitigation_plan", async () => {
+            const risk = await risks.createRisk(user.id, validRisk);
+            const updated = await risks.updateRisk(user.id, risk.id, { mitigation_plan: "Add redundancy" });
+            assert.strictEqual(updated.mitigation_plan, "Add redundancy");
+        });
+    });
 });

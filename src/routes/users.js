@@ -167,9 +167,13 @@ router.get("/approve-user/:userId", async (req, res) => {
     log("info", `User ID ${userIdToApprove} approved by admin user ID ${requestingUserId}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
     const loginLinkUrlBase = process.env.FRONTEND_BASE_URL || "http://localhost:3050";
     const loginLink = `${loginLinkUrlBase}/#/login`;
-    const emailResult = await sendEmail(userData.email, "Your HELM Account Has Been Approved", `Dear ${userData.first_name},\n\nWe are pleased to inform you that your HELM account has been approved by an administrator. You can now log in with your username and start using our services.\n\nUsername: ${userData.username}\n\nLogin here: ${loginLink}\n\nBest regards,\nThe HELM Team\n\n`);
-    if (!emailResult.accepted || emailResult.accepted.length === 0) {
-        log("warn", `Failed to send approval email to ${userData.email} for user ID ${userIdToApprove}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
+    try {
+        const emailResult = await sendEmail(userData.email, "Your HELM Account Has Been Approved", `Dear ${userData.first_name},\n\nWe are pleased to inform you that your HELM account has been approved by an administrator. You can now log in with your username and start using our services.\n\nUsername: ${userData.username}\n\nLogin here: ${loginLink}\n\nBest regards,\nThe HELM Team\n\n`);
+        if (!emailResult.accepted || emailResult.accepted.length === 0) {
+            log("warn", `Failed to send approval email to ${userData.email} for user ID ${userIdToApprove}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
+        }
+    } catch (error) {
+        log("error", `Error sending approval email to ${userData.email}: ${error}`, { function: "approve-user" }, utilities.getCallerInfo(), requestingUserId);
     }
     return res.json({ message: "User approved successfully" });
 });
@@ -220,27 +224,6 @@ router.post("/create-user", uploadProfile.single("user_icon"), async (req, res) 
         return res.status(500).json({ error: "Failed to create user" });
     }
 });
-
-// TODO: Remove maybe?
-// router.post("/changePassword", async (req, res) => {
-//     const requestingUserId = req.user.id;
-//     if (!requestingUserId) {
-//         return res.status(401).json({ error: "Unauthorized" });
-//     }
-//     const { newPassword, securityAnswers } = req.body;
-//     const verified = await verifySecurityAnswers(requestingUserId, securityAnswers);
-//     if (!verified) {
-//         log("warn", `Security answers verification failed for user ID ${requestingUserId} during password change`, { function: "changePassword" }, utilities.getCallerInfo());
-//         return res.status(403).json({ error: "Security answers verification failed" });
-//     }
-//     try {
-//         await changePassword(requestingUserId, newPassword);
-//         return res.json({ message: "Password changed successfully" });
-//     } catch (error) {
-//         log("error", `Error changing password for user ID ${requestingUserId}: ${error}`, { function: "changePassword" }, utilities.getCallerInfo());
-//         return res.status(500).json({ error: "Failed to change password" });
-//     }
-// });
 
 router.post("/change-password", uploadNone.none(), async (req, res) => {
     const requestingUserId = req.user.id;
@@ -415,10 +398,14 @@ router.post("/register_new_user", async (req, res) => {
         log("info", "Register new user request received", { email, role }, utilities.getCallerInfo());
         const newUser = await createUser(first_name, last_name, email, password, role, address, date_of_birth, null);
         log("info", `New user registered with ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
-        const emailResult = await sendEmail(email, "Welcome to HELM - Registration Successful", `Dear ${first_name},\n\nThank you for registering with HELM. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe HELM Team\n\n`);
-        log("info", `Registration email sent to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
-        if (!emailResult.accepted || emailResult.accepted.length === 0) {
-            log("warn", `Failed to send registration email to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+        try {
+            const emailResult = await sendEmail(email, "Welcome to HELM - Registration Successful", `Dear ${first_name},\n\nThank you for registering with HELM. Your account is currently pending approval by an administrator. You will receive another email once your account has been approved.\n\nBest regards,\nThe HELM Team\n\n`);
+            log("info", `Registration email sent to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+            if (!emailResult.accepted || emailResult.accepted.length === 0) {
+                log("warn", `Failed to send registration email to ${email} for new user ID ${newUser.id}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
+            }
+        } catch (emailError) {
+            log("error", `Error sending registration email to ${email}: ${emailError}`, { function: "register_new_user" }, utilities.getCallerInfo(), newUser.id);
         }
         await updateSecurityQuestions(newUser.id, [
             { question: security_question_1, answer: security_answer_1 },
@@ -458,13 +445,17 @@ router.get("/reset-password/:email/:userName", async (req, res) => {
     // Store the reset token and its expiration (e.g., 1 hour) in the database
     const tokenExpiry = new Date(Date.now() + 3600 * 1000); // 1 hour from now
     await db.query("UPDATE users SET reset_token = $1, reset_token_expires_at = $2, updated_at = now() WHERE id = $3", [resetToken, tokenExpiry, userData2.id]);
-    const emailResult = await sendEmail(
-        userData2.email,
-        "HELM Password Reset Request",
-        `Dear ${userData2.first_name},\n\nWe received a request to reset your HELM account password. Please use the link below to reset your password. This link will expire in 1 hour.\n\nPassword Reset Link: ${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nThe HELM Team\n\n`,
-    );
-    if (!emailResult.accepted || emailResult.accepted.length === 0) {
-        log("warn", `Failed to send password reset email to ${userData2.email} for user ID ${userData2.id}`, { function: "reset-password" }, utilities.getCallerInfo(), userData2.id);
+    try {
+        const emailResult = await sendEmail(
+            userData2.email,
+            "HELM Password Reset Request",
+            `Dear ${userData2.first_name},\n\nWe received a request to reset your HELM account password. Please use the link below to reset your password. This link will expire in 1 hour.\n\nPassword Reset Link: ${resetLink}\n\nIf you did not request a password reset, please ignore this email.\n\nBest regards,\nThe HELM Team\n\n`,
+        );
+        if (!emailResult.accepted || emailResult.accepted.length === 0) {
+            log("warn", `Failed to send password reset email to ${userData2.email} for user ID ${userData2.id}`, { function: "reset-password" }, utilities.getCallerInfo(), userData2.id);
+        }
+    } catch (error) {
+        log("error", `Error sending password reset email to ${userData2.email}: ${error}`, { function: "reset-password" }, utilities.getCallerInfo(), userData2.id);
     }
     log("info", "Password reset email sent", { userId: userData2.id }, utilities.getCallerInfo(), userData2.id);
     return res.json({ message: "Password reset email sent successfully" });
